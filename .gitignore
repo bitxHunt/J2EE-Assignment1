@@ -1,2 +1,5 @@
-.settings .classpath
+.settings
+/build
+.classpath
 .project
+/src/main/java/util/db.properties
