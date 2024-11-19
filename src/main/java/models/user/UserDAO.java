@@ -36,4 +36,28 @@ public class UserDAO {
 		}
 		return users;
 	}
+	
+	public User loginUser(String email, String password) throws SQLException{
+		Connection conn = DB.connect();
+		User user = new User();
+		try {
+			String sqlStr = "SELECT * FROM users WHERE email = ? AND password = ?";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setString(1, email);
+			pstmt.setString(2, password);
+			ResultSet rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				user.setId(rs.getInt("user_id"));
+				user.setFirstName(rs.getString("first_name"));
+				user.setLastName(rs.getString("last_name"));
+				user.setRole(rs.getInt("role_id"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return user;
+	}
 }

@@ -1,6 +1,7 @@
 package models.user;
 
 public class User {
+	private Integer id = 0;
 	private String first_name = "";
 	private String last_name = "";
 	private String email = "";
@@ -9,22 +10,32 @@ public class User {
 
 	// Implicit Constructor
 	public User() {
+		this.id = 0;
 		this.first_name = "";
 		this.last_name = "";
 		this.email = "";
 		this.password = "";
 		this.role = 0;
 	}
-	
+
 	// Explicit Constructor
-	public User(String first_name, String last_name, String email, String password, int role) {
+	public User(Integer id, String first_name, String last_name, String email, String password, int role) {
 
 		// Booting Up
+		this.id = 0;
 		this.first_name = first_name;
 		this.last_name = last_name;
 		this.email = email;
 		this.password = password;
 		this.role = role;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getFirstName() {
@@ -58,7 +69,7 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public int getRole() {
 		return role;
 	}
