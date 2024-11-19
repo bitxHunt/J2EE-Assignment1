@@ -2,4 +2,4 @@
 /build
 .classpath
 .project
-/src/main/java/db.properties
+/src/main/java/util/db.properties
