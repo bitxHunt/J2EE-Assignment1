@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class UserDAO {
 	public ArrayList<User> getAllUsers() throws SQLException {
 
-		Connection conn = db.connect();
+		Connection conn = DB.connect();
 		ArrayList<User> users = new ArrayList<User>();
 		try {
 			String sqlStr = "SELECT * FROM users";
