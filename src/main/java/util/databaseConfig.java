@@ -5,32 +5,36 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class databaseConfig {
-    private static final Properties properties = new Properties();
+	private static final Properties properties = new Properties();
 
-    static {
-        try (InputStream input = databaseConfig.class.getClassLoader().getResourceAsStream("db.properties")) {
-            if (input == null) {
-                System.out.println("Sorry, unable to find db.properties");
-                System.exit(1);
-            }
+	static {
+		try (InputStream input = databaseConfig.class.getClassLoader().getResourceAsStream("db.properties")) {
+			if (input == null) {
+				System.out.println("Sorry, unable to find db.properties");
+				System.exit(1);
+			}
 
-            // Load the properties file
-            properties.load(input);            
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+			// Load the properties file
+			properties.load(input);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    public static String getDbUrl() {
+	public static String getDbUrl() {
 
-        return properties.getProperty("db.url");
-    }
+		return properties.getProperty("db.url");
+	}
 
-    public static String getDbUsername() {
-        return properties.getProperty("db.username");
-    }
+	public static String getDbUsername() {
+		return properties.getProperty("db.username");
+	}
 
-    public static String getDbPassword() {
-        return properties.getProperty("db.password");
-    }
+	public static String getDbPassword() {
+		return properties.getProperty("db.password");
+	}
+
+	public static String getDbClass() {
+		return properties.getProperty("db.class");
+	}
 }

@@ -1,11 +1,16 @@
 package servlets;
 
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import models.user.User;
+import models.user.UserDAO;
+
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Servlet implementation class UserDetails
@@ -27,7 +32,20 @@ public class UserDetails extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		ArrayList<User> users = new ArrayList<User>();
+		try {
+			UserDAO userDB = new UserDAO();
+			users = userDB.getAllUsers();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("error");
+			request.setAttribute("err", e.getMessage());
+//			response.sendRedirect(request.getContextPath() + "/home");
+			return;
+		}
+		request.setAttribute("users", users);
+		RequestDispatcher rd = request.getRequestDispatcher("userDetails.jsp");
+		rd.forward(request, response);
 	}
 
 	/**
