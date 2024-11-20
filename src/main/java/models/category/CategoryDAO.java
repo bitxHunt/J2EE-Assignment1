@@ -51,22 +51,22 @@ public class CategoryDAO {
 //        return category;
 //    }
 //
-//    public boolean createCategory(String categoryName) throws SQLException {
-//        Connection conn = DB.connect();
-//        boolean success = false;
-//        
-//        try {
-//            String sqlStr = "INSERT INTO category (category_name) VALUES (?)";
-//            PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-//            pstmt.setString(1, categoryName);
-//            
-//            int rowsAffected = pstmt.executeUpdate();
-//            success = rowsAffected > 0;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            conn.close();
-//        }
-//        return success;
-//    }
+    public boolean createCategory(String categoryName) throws SQLException {
+        Connection conn = DB.connect();
+        boolean success = false;
+        
+        try {
+            String sqlStr = "INSERT INTO category (category_name) VALUES (?)";
+            PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+            pstmt.setString(1, categoryName);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            success = rowsAffected > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+        return success;
+    }
 }

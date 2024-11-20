@@ -115,7 +115,7 @@
 
 							<div class="flex flex-col sm:flex-row gap-2 justify-end mt-4">
 								<button type="button"
-									onclick="window.location='${pageContext.request.contextPath}/admin/home.jsp'"
+									onclick="window.location='${pageContext.request.contextPath}/admin'"
 									class="btn btn-neutral w-full sm:w-auto">Cancel</button>
 								<button type="submit" class="btn btn-primary w-full sm:w-auto">Create
 									Service</button>
@@ -177,7 +177,7 @@
 
 							<div class="flex flex-col sm:flex-row gap-2 justify-end mt-4">
 								<button type="button"
-									onclick="window.location='${pageContext.request.contextPath}/admin/home.jsp'"
+									onclick="window.location='${pageContext.request.contextPath}/admin'"
 									class="btn btn-neutral w-full sm:w-auto">Cancel</button>
 								<button type="submit" class="btn btn-primary w-full sm:w-auto">Create
 									Bundle</button>
@@ -192,7 +192,7 @@
 				<div class="card-body">
 					<h2 class="card-title text-xl md:text-2xl mb-4">Create
 						Category</h2>
-					<form action="createForm" method="POST">
+					<form action="create-new-category" method="POST">
 						<input type="hidden" name="formType" value="category">
 
 						<div class="grid gap-4">
@@ -203,7 +203,7 @@
 
 							<div class="flex flex-col sm:flex-row gap-2 justify-end mt-4">
 								<button type="button"
-									onclick="window.location='${pageContext.request.contextPath}/admin/home.jsp'"
+									onclick="window.location='${pageContext.request.contextPath}/admin'"
 									class="btn btn-neutral w-full sm:w-auto">Cancel</button>
 								<button type="submit" class="btn btn-primary w-full sm:w-auto">Create
 									Category</button>
