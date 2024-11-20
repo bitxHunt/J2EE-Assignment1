@@ -2,6 +2,7 @@ package servlets.auth;
 
 import models.user.User;
 import models.user.UserDAO;
+import util.org.mindrot.jbcrypt.BCrypt;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -57,20 +58,26 @@ public class Login extends HttpServlet {
 			String password = request.getParameter("password");
 
 			UserDAO userDB = new UserDAO();
-			User user = userDB.loginUser(email, password);
+			User user = userDB.loginUser(email);
 
-			if (user != null) {
+			if (BCrypt.checkpw(password, user.getPassword())) {
+				System.out.println("Password Matched");
+			}
+
+			if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+				System.out.println("Login Successful");
 				session.setAttribute("user_id", user.getId());
 				RequestDispatcher rd = request.getRequestDispatcher("/user/index.jsp");
 				rd.forward(request, response);
 			} else {
+				System.out.println("Invalid Password");
 				request.setAttribute("err", "Invalid Email or Password");
 				RequestDispatcher rd = request.getRequestDispatcher("/user/login.jsp");
 				rd.forward(request, response);
 			}
 		} catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("err",e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("err", e.getMessage());
 			RequestDispatcher rd = request.getRequestDispatcher("/user/login.jsp");
 			rd.forward(request, response);
 		}
