@@ -65,4 +65,5 @@ public class Service {
     public void setPrice(float price) {
         this.price = price;
     }
+    
 }

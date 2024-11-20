@@ -1,8 +1,3 @@
-<!-- 
-	Author: Thiha Swan Htet (p2336671)
-	Date: 8/11/24
-	Description: ST0510/JAD Week4 Submission
- -->
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>

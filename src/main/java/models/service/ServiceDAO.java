@@ -31,24 +31,24 @@ public class ServiceDAO {
         return services;
     }
 
-//    public boolean createService(Service service) throws SQLException {
-//        Connection conn = DB.connect();
-//        boolean success = false;
-//        try {
-//            String sqlStr = "INSERT INTO service (service_name, service_description, category_id, price) VALUES (?, ?, ?, ?)";
-//            PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-//            pstmt.setString(1, service.getServiceName());
-//            pstmt.setString(2, service.getServiceDescription());
-//            pstmt.setInt(3, service.getCategoryId());
-//            pstmt.setFloat(4, service.getPrice());
-//            
-//            int rowsAffected = pstmt.executeUpdate();
-//            success = rowsAffected > 0;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            conn.close();
-//        }
-//        return success;
-//    }
+    public boolean createService(Service service) throws SQLException {
+        Connection conn = DB.connect();
+        boolean success = false;
+        try {
+            String sqlStr = "INSERT INTO service (service_name, service_description, category_id, price) VALUES (?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+            pstmt.setString(1, service.getServiceName());
+            pstmt.setString(2, service.getServiceDescription());
+            pstmt.setInt(3, service.getCategoryId());
+            pstmt.setFloat(4, service.getPrice());
+            
+            int rowsAffected = pstmt.executeUpdate();
+            success = rowsAffected > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            conn.close();
+        }
+        return success;
+    }
 }
