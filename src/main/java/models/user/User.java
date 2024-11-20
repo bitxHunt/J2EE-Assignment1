@@ -2,32 +2,35 @@ package models.user;
 
 public class User {
 	private Integer id = 0;
-	private String first_name = "";
-	private String last_name = "";
+	private String firstName = "";
+	private String lastName = "";
 	private String email = "";
 	private String password = "";
 	private int role = 0;
+	private String phoneNo = "";
 
 	// Implicit Constructor
 	public User() {
 		this.id = 0;
-		this.first_name = "";
-		this.last_name = "";
+		this.firstName = "";
+		this.lastName = "";
 		this.email = "";
 		this.password = "";
 		this.role = 0;
+		this.phoneNo = "";
 	}
 
 	// Explicit Constructor
-	public User(Integer id, String first_name, String last_name, String email, String password, int role) {
+	public User(Integer id, String firstName, String lastName, String email, String password, int role, String phoneNo) {
 
 		// Booting Up
 		this.id = 0;
-		this.first_name = first_name;
-		this.last_name = last_name;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
 		this.role = role;
+		this.phoneNo = phoneNo;
 	}
 
 	public Integer getId() {
@@ -39,19 +42,19 @@ public class User {
 	}
 
 	public String getFirstName() {
-		return first_name;
+		return firstName;
 	}
 
-	public void setFirstName(String first_name) {
-		this.first_name = first_name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
 	public String getLastName() {
-		return last_name;
+		return lastName;
 	}
 
-	public void setLastName(String last_name) {
-		this.last_name = last_name;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public String getEmail() {
@@ -76,5 +79,13 @@ public class User {
 
 	public void setRole(int role) {
 		this.role = role;
+	}
+
+	public String getPhoneNo() {
+		return phoneNo;
+	}
+
+	public void setPhoneNo(String phoneNo) {
+		this.phoneNo = phoneNo;
 	}
 }

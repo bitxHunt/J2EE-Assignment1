@@ -31,6 +31,7 @@ public class ServiceDAO {
         return services;
     }
 
+
     public boolean createService(Service service) throws SQLException {
         Connection conn = DB.connect();
         boolean success = false;
@@ -51,4 +52,5 @@ public class ServiceDAO {
         }
         return success;
     }
+
 }
