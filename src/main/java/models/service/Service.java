@@ -1,16 +1,23 @@
 package models.service;
 
-import java.math.BigDecimal;
-
 public class Service {
     private int serviceId;
     private String serviceName;
     private String serviceDescription;
     private int categoryId;
-    private BigDecimal price;
+    private float price;
 
-    //Explicit Constructor with all fields
-    public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, BigDecimal price) {
+    // Default Constructor
+    public Service() {
+        this.serviceId = 0;
+        this.serviceName = "";
+        this.serviceDescription = "";
+        this.categoryId = 0;
+        this.price = 0.0f;  
+    }
+
+    // Explicit Constructor with all fields
+    public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price) {
         this.serviceId = serviceId;
         this.serviceName = serviceName;
         this.serviceDescription = serviceDescription;
@@ -51,12 +58,11 @@ public class Service {
         this.categoryId = categoryId;
     }
 
-    public BigDecimal getPrice() {
+    public float getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(float price) {
         this.price = price;
     }
-
 }
