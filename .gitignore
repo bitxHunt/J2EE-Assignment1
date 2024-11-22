@@ -3,3 +3,4 @@
 .classpath
 .project
 /src/main/java/db.properties
+/src/main/java/cloudinary.properties

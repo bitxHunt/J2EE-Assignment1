@@ -1,89 +1,100 @@
 package models.service;
 
 public class Service {
-    private int serviceId;
-    private String serviceName;
-    private String serviceDescription;
-    private int categoryId;
-    private String categoryName;
-    private float price;
+	private int serviceId;
+	private String serviceName;
+	private String serviceDescription;
+	private int categoryId;
+	private String categoryName;
+	private float price;
+	private String imageUrl;
 
-    // Default Constructor
-    public Service() {
-        this.serviceId = 0;
-        this.serviceName = "";
-        this.serviceDescription = "";
-        this.categoryId = 0;
-        this.price = 0.0f;  
-        this.categoryName="";
-    }
+	// Default Constructor
+	public Service() {
+		this.serviceId = 0;
+		this.serviceName = "";
+		this.serviceDescription = "";
+		this.categoryId = 0;
+		this.price = 0.0f;
+		this.categoryName = "";
+	}
 
-    // Explicit Constructor with all fields with default categoryName
-    public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price) {
-        this.serviceId = serviceId;
-        this.serviceName = serviceName;
-        this.serviceDescription = serviceDescription;
-        this.categoryId = categoryId;
-        this.price = price;
-        this.categoryName="";
-    }
-    
-    // Explicit Constructor with all fields
-    public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price,String categoryName) {
-        this.serviceId = serviceId;
-        this.serviceName = serviceName;
-        this.serviceDescription = serviceDescription;
-        this.categoryId = categoryId;
-        this.price = price;
-        this.categoryName=categoryName;
-    }
+	// Explicit Constructor with all fields with default categoryName
+	public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price) {
+		this.serviceId = serviceId;
+		this.serviceName = serviceName;
+		this.serviceDescription = serviceDescription;
+		this.categoryId = categoryId;
+		this.price = price;
+		this.categoryName = "";
+	}
 
-    // Getters and Setters
-    public int getServiceId() {
-        return serviceId;
-    }
+	// Explicit Constructor with all fields
+	public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price,
+			String categoryName, String imageUrl) {
+		this.serviceId = serviceId;
+		this.serviceName = serviceName;
+		this.serviceDescription = serviceDescription;
+		this.categoryId = categoryId;
+		this.price = price;
+		this.categoryName = categoryName;
+		this.imageUrl = imageUrl;
+	}
 
-    public void setServiceId(int serviceId) {
-        this.serviceId = serviceId;
-    }
+	// Getters and Setters
+	public int getServiceId() {
+		return serviceId;
+	}
 
-    public String getServiceName() {
-        return serviceName;
-    }
+	public void setServiceId(int serviceId) {
+		this.serviceId = serviceId;
+	}
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
+	public String getServiceName() {
+		return serviceName;
+	}
 
-    public String getServiceDescription() {
-        return serviceDescription;
-    }
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
 
-    public void setServiceDescription(String serviceDescription) {
-        this.serviceDescription = serviceDescription;
-    }
+	public String getServiceDescription() {
+		return serviceDescription;
+	}
 
-    public int getCategoryId() {
-        return categoryId;
-    }
+	public void setServiceDescription(String serviceDescription) {
+		this.serviceDescription = serviceDescription;
+	}
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
-    }
+	public int getCategoryId() {
+		return categoryId;
+	}
 
-    public float getPrice() {
-        return price;
-    }
+	public void setCategoryId(int categoryId) {
+		this.categoryId = categoryId;
+	}
 
-    public void setPrice(float price) {
-        this.price = price;
-    }
-    
-    public String getCategoryName() {
-        return categoryName;
-    }
+	public float getPrice() {
+		return price;
+	}
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
+	public void setPrice(float price) {
+		this.price = price;
+	}
+
+	public String getCategoryName() {
+		return categoryName;
+	}
+
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 }

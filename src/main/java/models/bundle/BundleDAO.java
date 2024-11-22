@@ -4,11 +4,16 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import models.service.*;
 
+import com.cloudinary.Cloudinary;
+
+import jakarta.servlet.http.Part;
+import models.service.*;
+import util.CloudinaryConnection;
 import util.db;
 
 public class BundleDAO {
+	private Cloudinary cloudinary;
 
 	public ArrayList<Bundle> getAllBundlesWithServices() throws SQLException {
 		Connection conn = db.connect();
@@ -16,7 +21,7 @@ public class BundleDAO {
 
 		try {
 			String sqlStr = """
-                       SELECT
+					                  SELECT
 					   b.*,
 					   s.service_id,
 					   s.service_name,
@@ -46,14 +51,15 @@ public class BundleDAO {
 				int bundleId = rs.getInt("bundle_id");
 
 				if (currentBundle == null || bundleId != currentBundleId) {
-				    currentBundle = new Bundle();
-				    currentBundle.setBundleId(bundleId);
-				    currentBundle.setBundleName(rs.getString("bundle_name"));
-				    currentBundle.setDiscountPercent(rs.getInt("discount_percent"));
-				    currentBundle.setOriginalPrice(rs.getFloat("original_price"));
-				    currentBundle.setDiscountedPrice(rs.getFloat("discounted_price"));
-				    bundles.add(currentBundle);
-				    currentBundleId = bundleId;
+					currentBundle = new Bundle();
+					currentBundle.setBundleId(bundleId);
+					currentBundle.setBundleName(rs.getString("bundle_name"));
+					currentBundle.setDiscountPercent(rs.getInt("discount_percent"));
+					currentBundle.setOriginalPrice(rs.getFloat("original_price"));
+					currentBundle.setDiscountedPrice(rs.getFloat("discounted_price"));
+					currentBundle.setImageUrl(rs.getString("image_url"));
+					bundles.add(currentBundle);
+					currentBundleId = bundleId;
 				}
 
 				// Add service if it exists
@@ -76,32 +82,30 @@ public class BundleDAO {
 		return bundles;
 	}
 
-	public boolean createBundle(Bundle bundle, List<Integer> serviceIds) throws SQLException {
-		Connection conn = db.connect();
+	public boolean createBundle(Bundle bundle, List<Integer> serviceIds, Part imagePart) throws SQLException {
+		Connection conn = DB.connect();
+		this.cloudinary = CloudinaryConnection.getCloudinary();
 		try {
+			String imageUrl = imagePart.getSize() > 0
+					? CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart)
+					: null;
 			String serviceIdsStr = String.join(",",
 					serviceIds.stream().map(String::valueOf).collect(Collectors.toList()));
 
-			// Modified to use PostgreSQL's CALL syntax exactly
-			CallableStatement cstmt = conn.prepareCall("CALL sp_create_bundle(?, ?, ?)");
-
-			// Set the IN parameters
+			CallableStatement cstmt = imagePart.getSize() > 0 ? conn.prepareCall("CALL sp_create_bundle(?, ?, ?, ?)")
+					: conn.prepareCall("CALL sp_create_bundle_without_image(?, ?, ?)");
 			cstmt.setString(1, bundle.getBundleName());
 			cstmt.setInt(2, bundle.getDiscountPercent());
 			cstmt.setString(3, serviceIdsStr);
-
-			// Execute the procedure
-			cstmt.execute();
-
-			// Close the statement
-			cstmt.close();
-
-			return true;
-
-		} finally {
-			if (conn != null) {
-				conn.close();
+			if (imagePart.getSize() > 0) {
+				cstmt.setString(4, imageUrl); // For sp_create_bundle
 			}
+
+			cstmt.execute();
+			return true;
+		} finally {
+			conn.close();
 		}
 	}
+
 }

@@ -45,8 +45,11 @@
 			%>
 			<div class="card bg-base-200 shadow-xl">
 				<figure class="px-6 pt-6">
-					<img src="https://picsum.photos/400/300" alt="Service Image"
-						class="rounded-xl object-cover h-48 w-full" />
+					<img
+						src="<%=service.getImageUrl() != null
+		? service.getImageUrl()
+		: "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_cleaning_image_fz3izs.webp"%>"
+						alt="Service Image" class="rounded-xl object-cover h-48 w-full" />
 				</figure>
 				<div class="card-body">
 					<div class="flex justify-between items-start">
@@ -80,8 +83,11 @@
 			%>
 			<div class="card bg-base-200 shadow-xl">
 				<figure class="px-6 pt-6">
-					<img src="https://picsum.photos/400/300" alt="Bundle Image"
-						class="rounded-xl object-cover h-48 w-full" />
+					<img
+						src="<%=bundle.getImageUrl() != null
+		? bundle.getImageUrl()
+		: "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_cleaning_image_fz3izs.webp"%>"
+						alt="Bundle Image" class="rounded-xl object-cover h-48 w-full" />
 				</figure>
 				<div class="card-body">
 					<div class="flex justify-between items-center">

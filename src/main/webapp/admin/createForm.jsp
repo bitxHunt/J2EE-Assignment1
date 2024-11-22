@@ -71,11 +71,13 @@
 			%>
 
 
-			<div id="serviceForm" class="card bg-base-200 shadow-xl <%= request.getParameter("tab") != null && !request.getParameter("tab").equals("service") ? "hidden" : "" %>">
-    <!-- Service form content -->
+			<div id="serviceForm"
+				class="card bg-base-200 shadow-xl <%=request.getParameter("tab") != null && !request.getParameter("tab").equals("service") ? "hidden" : ""%>">
+				<!-- Service form content -->
 				<div class="card-body">
 					<h2 class="card-title text-xl md:text-2xl mb-4">Create Service</h2>
-					<form action="create-new-service" method="POST">
+					<form action="create-new-service" method="POST"
+						enctype="multipart/form-data">
 						<input type="hidden" name="formType" value="service">
 
 						<div class="grid gap-4">
@@ -108,6 +110,12 @@
 								</div>
 
 								<div class="form-control">
+									<label class="label">Service Image (Optional)</label> <input
+										type="file" name="serviceImage" accept="image/*"
+										class="file-input file-input-bordered w-full">
+								</div>
+
+								<div class="form-control">
 									<label class="label">Price ($)</label> <input type="number"
 										name="price" class="input input-bordered" step="0.01" required>
 								</div>
@@ -126,10 +134,12 @@
 			</div>
 
 			<!-- Bundle Form -->
-			<div id="bundleForm" class="card bg-base-200 shadow-xl <%= request.getParameter("tab") == null || !request.getParameter("tab").equals("bundle") ? "hidden" : "" %>">
+			<div id="bundleForm"
+				class="card bg-base-200 shadow-xl <%=request.getParameter("tab") == null || !request.getParameter("tab").equals("bundle") ? "hidden" : ""%>">
 				<div class="card-body">
 					<h2 class="card-title text-xl md:text-2xl mb-4">Create Bundle</h2>
 					<form action="create-new-bundle" method="POST"
+						enctype="multipart/form-data"
 						onsubmit="return validateBundleForm()">
 						<input type="hidden" name="formType" value="bundle">
 
@@ -145,6 +155,12 @@
 										name="discount" class="input input-bordered" min="0" max="100"
 										required>
 								</div>
+							</div>
+
+							<div class="form-control">
+								<label class="label">Bundle Image (Optional)</label> <input
+									type="file" name="bundleImage" accept="image/*"
+									class="file-input file-input-bordered w-full">
 							</div>
 
 							<div class="form-control">
@@ -188,7 +204,8 @@
 			</div>
 
 			<!-- Category Form -->
-			<div id="categoryForm" class="card bg-base-200 shadow-xl <%= request.getParameter("tab") == null || !request.getParameter("tab").equals("category") ? "hidden" : "" %>">
+			<div id="categoryForm"
+				class="card bg-base-200 shadow-xl <%=request.getParameter("tab") == null || !request.getParameter("tab").equals("category") ? "hidden" : ""%>">
 				<div class="card-body">
 					<h2 class="card-title text-xl md:text-2xl mb-4">Create
 						Category</h2>

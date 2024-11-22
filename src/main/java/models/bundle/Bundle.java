@@ -4,80 +4,91 @@ import models.service.Service;
 import java.util.ArrayList;
 
 public class Bundle {
-   private int bundleId;
-   private String bundleName;
-   private int discountPercent;
-   private ArrayList<Service> services;
-   private float originalPrice;
-   private float discountedPrice;
+	private int bundleId;
+	private String bundleName;
+	private int discountPercent;
+	private ArrayList<Service> services;
+	private float originalPrice;
+	private float discountedPrice;
+	private String imageUrl;
 
-   public Bundle() {
-       this.services = new ArrayList<>();
-   }
+	public Bundle() {
+		this.services = new ArrayList<>();
+	}
 
-   public Bundle(int bundleId, String bundleName, int discountPercent) {
-       this.bundleId = bundleId;
-       this.bundleName = bundleName;
-       this.discountPercent = discountPercent;
-       this.services = new ArrayList<>();
-   }
-   public Bundle(int bundleId, String bundleName, int discountPercent,ArrayList<Service> services) {
-       this.bundleId = bundleId;
-       this.bundleName = bundleName;
-       this.discountPercent = discountPercent;
-       this.services = services;
-       
-   }
+	public Bundle(int bundleId, String bundleName, int discountPercent) {
+		this.bundleId = bundleId;
+		this.bundleName = bundleName;
+		this.discountPercent = discountPercent;
+		this.services = new ArrayList<>();
+	}
 
-   public int getBundleId() {
-       return bundleId;
-   }
+	public Bundle(int bundleId, String bundleName, int discountPercent, ArrayList<Service> services, String imageUrl) {
+		this.bundleId = bundleId;
+		this.bundleName = bundleName;
+		this.discountPercent = discountPercent;
+		this.services = services;
+		this.imageUrl = imageUrl;
 
-   public void setBundleId(int bundleId) {
-       this.bundleId = bundleId;
-   }
+	}
 
-   public String getBundleName() {
-       return bundleName;
-   }
+	public int getBundleId() {
+		return bundleId;
+	}
 
-   public void setBundleName(String bundleName) {
-       this.bundleName = bundleName;
-   }
+	public void setBundleId(int bundleId) {
+		this.bundleId = bundleId;
+	}
 
-   public int getDiscountPercent() {
-       return discountPercent;
-   }
+	public String getBundleName() {
+		return bundleName;
+	}
 
-   public void setDiscountPercent(int discountPercent) {
-       this.discountPercent = discountPercent;
-   }
+	public void setBundleName(String bundleName) {
+		this.bundleName = bundleName;
+	}
 
-   public ArrayList<Service> getServices() {
-       return services;
-   }
+	public int getDiscountPercent() {
+		return discountPercent;
+	}
 
-   public void setServices(ArrayList<Service> services) {
-       this.services = services;
-   }
+	public void setDiscountPercent(int discountPercent) {
+		this.discountPercent = discountPercent;
+	}
 
-   public void addService(Service service) {
-       this.services.add(service);
-   }
-   
-   public float getOriginalPrice() {
-	    return originalPrice;
+	public ArrayList<Service> getServices() {
+		return services;
+	}
+
+	public void setServices(ArrayList<Service> services) {
+		this.services = services;
+	}
+
+	public void addService(Service service) {
+		this.services.add(service);
+	}
+
+	public float getOriginalPrice() {
+		return originalPrice;
 	}
 
 	public void setOriginalPrice(float originalPrice) {
-	    this.originalPrice = originalPrice;
+		this.originalPrice = originalPrice;
 	}
 
 	public float getDiscountedPrice() {
-	    return discountedPrice;
+		return discountedPrice;
 	}
 
 	public void setDiscountedPrice(float discountedPrice) {
-	    this.discountedPrice = discountedPrice;
+		this.discountedPrice = discountedPrice;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 }
