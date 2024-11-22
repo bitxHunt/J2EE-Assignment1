@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class UserDAO {
 	public ArrayList<User> getAllUsers() throws SQLException {
 
-		Connection conn = DB.connect();
+		Connection conn = db.connect();
 		ArrayList<User> users = new ArrayList<User>();
 		try {
 			String sqlStr = "SELECT * FROM users";
@@ -61,7 +61,7 @@ public class UserDAO {
 	}
 
 	public User loginUser(String email) throws SQLException {
-		Connection conn = DB.connect();
+		Connection conn = db.connect();
 		User user = new User();
 		try {
 			String sqlStr = "SELECT * FROM users WHERE email = ?;";
@@ -87,7 +87,7 @@ public class UserDAO {
 
 	public Integer registerUser(String firstName, String lastName, String email, String hashedPassword, String phoneNo)
 			throws SQLException {
-		Connection conn = DB.connect();
+		Connection conn = db.connect();
 		Integer rowsAffected = 0;
 		try {
 			String sqlStr = "INSERT INTO users (first_name, last_name, email, password, phone_number) VALUES (?, ?, ?, ?, ?);";

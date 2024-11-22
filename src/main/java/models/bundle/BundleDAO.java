@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import models.service.*;
 
-import util.DB;
+import util.db;
 
 public class BundleDAO {
 
 	public ArrayList<Bundle> getAllBundlesWithServices() throws SQLException {
-		Connection conn = DB.connect();
+		Connection conn = db.connect();
 		ArrayList<Bundle> bundles = new ArrayList<Bundle>();
 
 		try {
@@ -77,7 +77,7 @@ public class BundleDAO {
 	}
 
 	public boolean createBundle(Bundle bundle, List<Integer> serviceIds) throws SQLException {
-		Connection conn = DB.connect();
+		Connection conn = db.connect();
 		try {
 			String serviceIdsStr = String.join(",",
 					serviceIds.stream().map(String::valueOf).collect(Collectors.toList()));

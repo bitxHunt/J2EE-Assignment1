@@ -1,12 +1,12 @@
 package models.service;
 
-import util.DB;
+import util.db;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class ServiceDAO {
 	public ArrayList<Service> getAllServices() throws SQLException {
-		Connection conn = DB.connect();
+		Connection conn = db.connect();
 		ArrayList<Service> services = new ArrayList<Service>();
 		try {
 			String sqlStr = "SELECT s.*, c.category_name FROM service s LEFT JOIN category c ON s.category_id = c.category_id";
@@ -32,7 +32,7 @@ public class ServiceDAO {
 	}
 
 	public boolean createService(Service service) throws SQLException {
-		Connection conn = DB.connect();
+		Connection conn = db.connect();
 		boolean success = false;
 		try {
 			String sqlStr = "INSERT INTO service (service_name, service_description, category_id, price) VALUES (?, ?, ?, ?)";
