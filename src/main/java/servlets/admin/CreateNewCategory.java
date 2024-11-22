@@ -46,7 +46,7 @@ public class CreateNewCategory extends HttpServlet {
            if (success) {
                HttpSession session = request.getSession();
                session.removeAttribute("createFormErrors");
-               response.sendRedirect(request.getContextPath() + "/admin/home.jsp");
+               response.sendRedirect(request.getContextPath() + "/admin");
            } else {
                throw new SQLException("Failed to create category");
            }
