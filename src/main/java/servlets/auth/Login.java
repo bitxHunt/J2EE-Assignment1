@@ -36,7 +36,7 @@ public class Login extends HttpServlet {
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		HttpSession session = request.getSession(false);
-		if (session != null && session.getAttribute("userID") != null && session.getAttribute("role") != null) {
+		if (session != null && session.getAttribute("userId") != null && session.getAttribute("role") != null) {
 			RequestDispatcher rd = request.getRequestDispatcher("/user/index.jsp");
 			rd.forward(request, response);
 		} else {
@@ -66,7 +66,8 @@ public class Login extends HttpServlet {
 
 			if (user != null && BCrypt.checkpw(password, user.getPassword())) {
 				System.out.println("Login Successful");
-				session.setAttribute("user_id", user.getId());
+				session.setAttribute("userId", user.getId());
+				session.setAttribute("role", user.getRole());
 				RequestDispatcher rd = request.getRequestDispatcher("/user/index.jsp");
 				rd.forward(request, response);
 			} else {
