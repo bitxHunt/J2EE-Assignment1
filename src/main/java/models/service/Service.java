@@ -5,6 +5,7 @@ public class Service {
     private String serviceName;
     private String serviceDescription;
     private int categoryId;
+    private String categoryName;
     private float price;
 
     // Default Constructor
@@ -14,15 +15,27 @@ public class Service {
         this.serviceDescription = "";
         this.categoryId = 0;
         this.price = 0.0f;  
+        this.categoryName="";
     }
 
-    // Explicit Constructor with all fields
+    // Explicit Constructor with all fields with default categoryName
     public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price) {
         this.serviceId = serviceId;
         this.serviceName = serviceName;
         this.serviceDescription = serviceDescription;
         this.categoryId = categoryId;
         this.price = price;
+        this.categoryName="";
+    }
+    
+    // Explicit Constructor with all fields
+    public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price,String categoryName) {
+        this.serviceId = serviceId;
+        this.serviceName = serviceName;
+        this.serviceDescription = serviceDescription;
+        this.categoryId = categoryId;
+        this.price = price;
+        this.categoryName=categoryName;
     }
 
     // Getters and Setters
@@ -64,5 +77,13 @@ public class Service {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+    
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }
