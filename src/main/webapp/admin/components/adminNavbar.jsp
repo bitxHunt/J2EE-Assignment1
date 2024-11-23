@@ -5,19 +5,34 @@
 <head>
 <meta charset="UTF-8">
 <title>Admin Nav Bar</title>
+<link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css"
+	rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
 	<!-- Top Navigation Bar -->
-	<div class="navbar bg-base-200 rounded-box mb-8">
-		<div class="flex-1">
-			<span class="material-symbols-outlined text-blue-500 text-5xl">
-				vacuum </span> <a class="btn btn-ghost text-xl">Admin View</a>
+	<div class="navbar bg-base-200 flex items-center h-16 mb-8">
+		<!-- Left side -->
+		<div class="flex-1 flex items-center gap-4">
+			<a href="${pageContext.request.contextPath}/admin"
+				class="btn btn-ghost"> <span
+				class="material-symbols-outlined text-blue-500 text-4xl">
+					vacuum </span>
+			</a> <a href="${pageContext.request.contextPath}/admin"
+				class="btn btn-ghost text-xl"> Admin View </a>
 		</div>
-		<div class="flex-none">
+
+		<!-- Right side -->
+		<div class="flex items-center gap-4">
+			<a href="${pageContext.request.contextPath}/admin/manage-users"
+				class="btn btn-ghost"> HR Management </a> <a
+				href="${pageContext.request.contextPath}/admin/statistics"
+				class="btn btn-ghost"> Statistics </a>
 			<button
 				onclick="window.location='${pageContext.request.contextPath}/admin/createForm'"
 				class="btn btn-primary">Create New</button>
 		</div>
 	</div>
+
 </body>
 </html>
