@@ -23,6 +23,8 @@
 		try {
 			services = (ArrayList<Service>) request.getAttribute("services");
 			categories = (ArrayList<Category>) request.getAttribute("categories");
+			
+		
 		%>
 		<div id="createForm">
 			<div

@@ -27,7 +27,6 @@ public class GetExistingServiceAndCategory extends HttpServlet {
 			throws ServletException, IOException {
 
 		try {
-			
 
 			ArrayList<Service> services = serviceDAO.getAllServices();
 			ArrayList<Category> categories = categoryDAO.getAllCategories();

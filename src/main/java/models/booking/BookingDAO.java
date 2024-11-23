@@ -1,6 +1,6 @@
 package models.booking;
 
-import util.db;
+import util.*;
 
 import java.sql.Array;
 import java.sql.Connection;
@@ -15,7 +15,7 @@ import java.util.List;
 public class BookingDAO {
 	public List<Booking> getAvailableSlots() throws SQLException {
 
-		Connection conn = db.connect();
+		Connection conn = DB.connect();
 		List<Booking> availableSlots = new ArrayList<>();
 		try {
 			String sqlStr = "SELECT * FROM get_available_slots(CURRENT_DATE, 7)";

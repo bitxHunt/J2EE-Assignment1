@@ -71,6 +71,7 @@ public class CloudinaryConnection {
 		return null;
 	}
 
+
 	public static void deleteFromCloudinary(Cloudinary cloudinary, String url) throws IOException {
 		String id = "";
 		int lastSlashIndex = url.lastIndexOf('/');

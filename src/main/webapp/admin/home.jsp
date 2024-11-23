@@ -40,10 +40,11 @@
 			class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			<%
 			ArrayList<Service> services = (ArrayList<Service>) request.getAttribute("services");
-			if (services != null) {
+			if (services != null && !services.isEmpty()) {
 				for (Service service : services) {
 			%>
-			<div class="card bg-base-200 shadow-xl">
+			<div
+				class="card bg-base-200 shadow-xl <%=!service.getIsActive() ? "opacity-40" : ""%>">
 				<figure class="px-6 pt-6">
 					<img
 						src="<%=service.getImageUrl() != null
@@ -61,14 +62,34 @@
 		: service.getServiceDescription()%></p>
 					<p class="text-xl font-bold mt-2">
 						$<%=String.format("%.2f", service.getPrice())%></p>
-					<div class="card-actions justify-end mt-4">
+					<div class="card-actions justify-between items-center mt-4">
+						<div class="flex items-center gap-2">
+							<span class="text-sm font-medium">Status:</span> <span
+								class="px-3 py-1 rounded-full text-sm font-semibold <%=service.getIsActive() ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"%>">
+								<%=service.getIsActive() ? "Active" : "Inactive"%>
+							</span>
+						</div>
 						<button class="btn btn-primary"
-							onclick="editService(<%=service.getServiceId()%>)">Edit</button>
+							onclick="window.location.href='${pageContext.request.contextPath}/admin/edit-service/<%=service.getServiceId()%>'">
+							Edit</button>
 					</div>
 				</div>
 			</div>
 			<%
 			}
+			} else {
+			%>
+			<div class="col-span-full text-center py-8">
+				<div class="max-w-md mx-auto bg-base-200 rounded-xl shadow-lg p-6">
+					<h3 class="text-lg font-semibold mb-2">No Services Available</h3>
+					<p class="text-sm opacity-70 mb-4">There are currently no
+						services. Click 'Create New' to add a service.</p>
+					<button
+						onclick="window.location='${pageContext.request.contextPath}/admin/createForm?tab=service'"
+						class="btn btn-primary">Create Service</button>
+				</div>
+			</div>
+			<%
 			}
 			%>
 		</div>
@@ -78,10 +99,11 @@
 			class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			<%
 			ArrayList<Bundle> bundles = (ArrayList<Bundle>) request.getAttribute("bundles");
-			if (bundles != null) {
+			if (bundles != null && !bundles.isEmpty()) {
 				for (Bundle bundle : bundles) {
 			%>
-			<div class="card bg-base-200 shadow-xl">
+			<div
+				class="card bg-base-200 shadow-xl <%=!bundle.getIsActive() ? "opacity-40" : ""%>">
 				<figure class="px-6 pt-6">
 					<img
 						src="<%=bundle.getImageUrl() != null
@@ -114,14 +136,35 @@
 						}
 						%>
 					</ul>
-					<div class="card-actions justify-end mt-4">
+					<div class="card-actions justify-between items-center mt-4">
+						<div class="flex items-center gap-2">
+							<span class="text-sm font-medium">Status:</span> <span
+								class="px-3 py-1 rounded-full text-sm font-semibold <%=bundle.getIsActive() ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"%>">
+								<%=bundle.getIsActive() ? "Active" : "Inactive"%>
+							</span>
+						</div>
 						<button class="btn btn-primary"
-							onclick="editBundle(<%=bundle.getBundleId()%>)">Edit</button>
+							onclick="window.location.href='${pageContext.request.contextPath}/admin/edit-bundle/<%=bundle.getBundleId()%>'">
+							Edit</button>
 					</div>
+
 				</div>
 			</div>
 			<%
 			}
+			} else {
+			%>
+			<div class="col-span-full text-center py-8">
+				<div class="max-w-md mx-auto bg-base-200 rounded-xl shadow-lg p-6">
+					<h3 class="text-lg font-semibold mb-2">No Bundles Available</h3>
+					<p class="text-sm opacity-70 mb-4">There are currently no
+						bundles. Click 'Create New' to add a bundle.</p>
+					<button
+						onclick="window.location='${pageContext.request.contextPath}/admin/createForm?tab=bundle'"
+						class="btn btn-primary">Create Bundle</button>
+				</div>
+			</div>
+			<%
 			}
 			%>
 		</div>
@@ -131,7 +174,7 @@
 			class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			<%
 			ArrayList<Category> categories = (ArrayList<Category>) request.getAttribute("categories");
-			if (categories != null) {
+			if (categories != null && !categories.isEmpty()) {
 				for (Category category : categories) {
 			%>
 			<div class="card bg-base-200 shadow-xl">
@@ -145,11 +188,23 @@
 			</div>
 			<%
 			}
+			} else {
+			%>
+			<div class="col-span-full text-center py-8">
+				<div class="max-w-md mx-auto bg-base-200 rounded-xl shadow-lg p-6">
+					<h3 class="text-lg font-semibold mb-2">No Categories Available</h3>
+					<p class="text-sm opacity-70 mb-4">There are currently no
+						categories. Click 'Create New' to add a category.</p>
+					<button
+						onclick="window.location='${pageContext.request.contextPath}/admin/createForm?tab=category'"
+						class="btn btn-primary">Create Category</button>
+				</div>
+			</div>
+			<%
 			}
 			%>
 		</div>
 	</div>
-
 	<script>
        function switchTab(tabId, element) {
            // Hide all tabs

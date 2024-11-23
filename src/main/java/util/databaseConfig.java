@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class databaseConfig {
+public class DatabaseConfig {
 	private static final Properties properties = new Properties();
 
 	static {
-		try (InputStream input = databaseConfig.class.getClassLoader().getResourceAsStream("db.properties")) {
+		try (InputStream input = DatabaseConfig.class.getClassLoader().getResourceAsStream("db.properties")) {
 			if (input == null) {
 				System.out.println("Sorry, unable to find db.properties");
 				System.exit(1);

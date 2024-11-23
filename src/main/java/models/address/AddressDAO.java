@@ -9,7 +9,7 @@ import java.sql.SQLException;
 public class AddressDAO {
 	public Address getAddressByUserId(Integer userId, Integer addTypeId)
 			throws SQLException {
-		Connection conn = db.connect();
+		Connection conn = DB.connect();
 		Address address = new Address();
 		try {
 			String sqlStr = "SELECT at.address_type, a.address_id, a.user_id, a.address, a.postal_code, a.unit, a.is_active FROM address a INNER JOIN address_type at ON a.type_id = at.type_id WHERE a.user_id = ? AND a.type_id = ?;";

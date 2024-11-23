@@ -1,12 +1,12 @@
 package models.category;
 
-import util.db;
+import util.*;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class CategoryDAO {
     public ArrayList<Category> getAllCategories() throws SQLException {
-        Connection conn = db.connect();
+        Connection conn = DB.connect();
         ArrayList<Category> categories = new ArrayList<Category>();
         
         try {
@@ -52,7 +52,7 @@ public class CategoryDAO {
 //    }
 //
     public boolean createCategory(String categoryName) throws SQLException {
-        Connection conn = db.connect();
+        Connection conn = DB.connect();
         boolean success = false;
         
         try {

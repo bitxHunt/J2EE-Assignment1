@@ -44,7 +44,7 @@ public class CreateNewService extends HttpServlet {
 		}
 
 		// Validate description
-		if (description.length() > 255) { // Adjust max length as needed
+		if (description != null && description.length() > 255) { // Adjust max length as needed
 			errors.put("description", "Description must be less than 500 characters");
 		}
 
@@ -109,12 +109,13 @@ public class CreateNewService extends HttpServlet {
 				// Redirect to success page or listing
 				response.sendRedirect(request.getContextPath() + "/admin");
 			} else {
+
 				throw new SQLException("Failed to create service");
 			}
 
 		} catch (SQLException e) {
 			request.setAttribute("err", "Database error: " + e.getMessage());
-			RequestDispatcher rd = request.getRequestDispatcher("/admin/createForm.jsp");
+			RequestDispatcher rd = request.getRequestDispatcher("/error/500");
 			rd.forward(request, response);
 		}
 	}
