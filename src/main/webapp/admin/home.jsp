@@ -13,6 +13,8 @@
 <title>Home Page</title>
 <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css"
 	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=vacuum" />
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-base-100">
@@ -20,7 +22,8 @@
 		<!-- Top Navigation Bar -->
 		<div class="navbar bg-base-200 rounded-box mb-8">
 			<div class="flex-1">
-				<a class="btn btn-ghost text-xl">Admin View</a>
+				<span class="material-symbols-outlined text-blue-500 text-5xl">
+					vacuum </span> <a class="btn btn-ghost text-xl">Admin View</a>
 			</div>
 			<div class="flex-none">
 				<button
@@ -182,7 +185,8 @@
 					<h2 class="card-title"><%=category.getCategoryName()%></h2>
 					<div class="card-actions justify-end mt-4">
 						<button class="btn btn-primary"
-							onclick="editCategory(<%=category.getCategoryId()%>)">Edit</button>
+							onclick="window.location.href='${pageContext.request.contextPath}/admin/edit-category/<%=category.getCategoryId()%>'">
+							Edit</button>
 					</div>
 				</div>
 			</div>
