@@ -1,4 +1,3 @@
-```jsp
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="models.address.Address"%>
@@ -21,10 +20,11 @@
 				<ul class="steps steps-horizontal w-full mb-8">
 					<li class="step step-primary">Select Time</li>
 					<li class="step step-primary">Choose Address</li>
-					<li class="step">Confirmation</li>
+					<li class="step">Service Info</li>
+					<li class="step">Review</li>
 				</ul>
 
-				<form action="${pageContext.request.contextPath}/book/confirmation"
+				<form action="${pageContext.request.contextPath}/book/services"
 					method="post">
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<!-- Left Column - Saved Addresses -->
@@ -50,7 +50,7 @@
 										<label class="label cursor-pointer"> <span
 											class="label-text"> <%=homeAddress.getAddress()%><br>
 												Unit: <%=homeAddress.getUnit()%><br> <%=homeAddress.getPostalCode()%>
-										</span> <input type="radio" name="address_type" value="home"
+										</span> <input type="radio" name="address_type" value="1"
 											class="radio radio-primary">
 										</label>
 									</div>
@@ -67,7 +67,7 @@
 										<label class="label cursor-pointer"> <span
 											class="label-text"> <%=officeAddress.getAddress()%><br>
 												Unit: <%=officeAddress.getUnit()%><br> <%=officeAddress.getPostalCode()%>
-										</span> <input type="radio" name="address_type" value="office"
+										</span> <input type="radio" name="address_type" value="2"
 											class="radio radio-primary">
 										</label>
 									</div>
@@ -86,7 +86,7 @@
 								<div class="form-control">
 									<label class="label"> <span class="label-text">Use
 											external address</span> <input type="radio" name="address_type"
-										value="external" class="radio radio-primary"
+										value="3" class="radio radio-primary"
 										<%=(homeAddress == null && officeAddress == null) ? "checked" : ""%>>
 									</label>
 								</div>
@@ -119,7 +119,7 @@
 						<a href="${pageContext.request.contextPath}/book/slots"
 							class="btn">Back</a>
 						<button type="submit" class="btn btn-primary">Continue to
-							Confirmation</button>
+							Services</button>
 					</div>
 				</form>
 			</div>

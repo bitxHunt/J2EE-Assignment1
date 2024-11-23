@@ -15,10 +15,10 @@ public class DB {
 
 		try {
 			// Get database credentials from databaseConfig class
-			String jdbcUrl = databaseConfig.getDbUrl();
-			String user = databaseConfig.getDbUsername();
-			String password = databaseConfig.getDbPassword();
-			String dbClass = databaseConfig.getDbClass();
+			String jdbcUrl = DatabaseConfig.getDbUrl();
+			String user = DatabaseConfig.getDbUsername();
+			String password = DatabaseConfig.getDbPassword();
+			String dbClass = DatabaseConfig.getDbClass();
 
 			try {
 
@@ -27,8 +27,8 @@ public class DB {
 				e.printStackTrace();
 			}
 			
-			System.out.print(jdbcUrl);
-
+			System.out.println("Connecting to database...");
+			
 			// Open a connection
 			return DriverManager.getConnection(jdbcUrl, user, password);
 

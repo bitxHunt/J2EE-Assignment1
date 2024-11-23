@@ -18,6 +18,8 @@ public class Service {
 		this.categoryId = 0;
 		this.price = 0.0f;
 		this.categoryName = "";
+		this.imageUrl = "";
+		this.isActive = true;
 	}
 
 	// Explicit Constructor with all fields with default categoryName
@@ -32,7 +34,7 @@ public class Service {
 
 	// Explicit Constructor with all fields
 	public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price,
-			String categoryName, String imageUrl) {
+			String categoryName, String imageUrl, Boolean isActive) {
 		this.serviceId = serviceId;
 		this.serviceName = serviceName;
 		this.serviceDescription = serviceDescription;
@@ -40,6 +42,7 @@ public class Service {
 		this.price = price;
 		this.categoryName = categoryName;
 		this.imageUrl = imageUrl;
+		this.isActive = isActive;
 	}
 	
 	// Explicit Constructor with all fields

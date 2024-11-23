@@ -23,14 +23,16 @@
 					<li class="step step-primary">Select Time</li>
 					<li class="step">Choose Address</li>
 					<li class="step">Service Info</li>
+					<li class="step">Review</li>
 				</ul>
 
 				<form action="${pageContext.request.contextPath}/book/address"
 					method="post">
-					<div class="grid grid-cols-1 md:grid-cols-7 gap-4">
+					<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
 						<%
+
+						// Get the list of available slots from the servlet backend
 						List<Booking> slots = (List<Booking>) request.getAttribute("timeslots");
-						String selectedSlot = (String) request.getAttribute("selectedSlot");
 						DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEEE, MMM dd");
 						DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -48,7 +50,6 @@
 									<label class="label cursor-pointer justify-start gap-2">
 										<input type="radio" name="selected_slot"
 										value="<%=slot.getDate() + "_" + time%>"
-										<%=(selectedSlot != null && selectedSlot.equals(slot.getDate() + "_" + time)) ? "checked" : ""%>
 										class="radio radio-primary"> <span class="label-text"><%=time.format(timeFormatter)%></span>
 									</label>
 									<%

@@ -24,12 +24,14 @@ public class Bundle {
 		this.services = new ArrayList<>();
 	}
 
-	public Bundle(int bundleId, String bundleName, int discountPercent, ArrayList<Service> services, String imageUrl) {
+	public Bundle(int bundleId, String bundleName, int discountPercent, ArrayList<Service> services, String imageUrl,
+			Boolean isActive) {
 		this.bundleId = bundleId;
 		this.bundleName = bundleName;
 		this.discountPercent = discountPercent;
 		this.services = services;
 		this.imageUrl = imageUrl;
+		this.isActive = isActive;
 
 	}
 

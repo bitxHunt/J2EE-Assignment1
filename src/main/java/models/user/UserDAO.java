@@ -1,6 +1,6 @@
 package models.user;
 
-import util.*;
+import util.DB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
