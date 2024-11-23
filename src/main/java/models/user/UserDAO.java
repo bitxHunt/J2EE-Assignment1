@@ -37,6 +37,29 @@ public class UserDAO {
 		return users;
 	}
 
+	public User getUserById(Integer userId) throws SQLException {
+		Connection conn = DB.connect();
+		User user = new User();
+		try {
+			String sqlStr = "SELECT first_name, last_name, email, phone_number FROM users WHERE user_id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, userId);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				user.setFirstName(rs.getString("first_name"));
+				user.setLastName(rs.getString("last_name"));
+				user.setEmail(rs.getString("email"));
+				user.setPhoneNo(rs.getString("phone_number"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return user;
+	}
+
 	public User loginUser(String email) throws SQLException {
 		Connection conn = DB.connect();
 		User user = new User();

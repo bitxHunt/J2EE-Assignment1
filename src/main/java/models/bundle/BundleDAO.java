@@ -11,7 +11,7 @@ import com.cloudinary.Cloudinary;
 import jakarta.servlet.http.Part;
 import models.service.*;
 import util.CloudinaryConnection;
-import util.DB;
+import util.*;
 
 public class BundleDAO {
 	private Cloudinary cloudinary;

@@ -1,6 +1,6 @@
 package models.category;
 
-import util.DB;
+import util.*;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -29,7 +29,7 @@ public class CategoryDAO {
     }
 
 //    public Category getCategoryById(int id) throws SQLException {
-//        Connection conn = DB.connect();
+//        Connection conn = db.connect();
 //        Category category = null;
 //        
 //        try {
