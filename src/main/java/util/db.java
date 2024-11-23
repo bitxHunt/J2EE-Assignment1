@@ -27,8 +27,6 @@ public class db {
 				e.printStackTrace();
 			}
 			
-			System.out.print(jdbcUrl);
-
 			// Open a connection
 			return DriverManager.getConnection(jdbcUrl, user, password);
 

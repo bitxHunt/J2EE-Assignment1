@@ -82,8 +82,67 @@ public class BundleDAO {
 		return bundles;
 	}
 
+public Bundle getBundleById(int bundleId) throws SQLException {
+		Connection conn = db.connect();
+		Bundle bundle = null;
+
+		try {
+			String sqlStr = """
+					    SELECT b.*,
+					           s.service_id,
+					           s.service_name,
+					           s.service_description,
+					           s.category_id,
+					           s.price,
+					           (SELECT SUM(s2.price) FROM bundle_service bs2
+					            JOIN service s2 ON bs2.service_id = s2.service_id
+					            WHERE bs2.bundle_id = b.bundle_id) as original_price,
+					           (SELECT SUM(s2.price) * (1 - b.discount_percent::float/100)
+					            FROM bundle_service bs2
+					            JOIN service s2 ON bs2.service_id = s2.service_id
+					            WHERE bs2.bundle_id = b.bundle_id) as discounted_price
+					    FROM bundle b
+					    LEFT JOIN bundle_service bs ON b.bundle_id = bs.bundle_id
+					    LEFT JOIN service s ON bs.service_id = s.service_id
+					    WHERE b.bundle_id = ?
+					    ORDER BY b.bundle_id
+					""";
+
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, bundleId);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				if (bundle == null) {
+					bundle = new Bundle();
+					bundle.setBundleId(bundleId);
+					bundle.setBundleName(rs.getString("bundle_name"));
+					bundle.setDiscountPercent(rs.getInt("discount_percent"));
+					bundle.setOriginalPrice(rs.getFloat("original_price"));
+					bundle.setDiscountedPrice(rs.getFloat("discounted_price"));
+					bundle.setImageUrl(rs.getString("image_url"));
+					bundle.setIsActive(rs.getBoolean("is_active"));
+				}
+
+				// Add service if it exists
+				if (rs.getInt("service_id") != 0) {
+					Service service = new Service();
+					service.setServiceId(rs.getInt("service_id"));
+					service.setServiceName(rs.getString("service_name"));
+					service.setServiceDescription(rs.getString("service_description"));
+					service.setCategoryId(rs.getInt("category_id"));
+					service.setPrice(rs.getFloat("price"));
+					bundle.addService(service);
+				}
+			}
+		} finally {
+			conn.close();
+		}
+		return bundle;
+	}
+
 	public boolean createBundle(Bundle bundle, List<Integer> serviceIds, Part imagePart) throws SQLException {
-		Connection conn = DB.connect();
+		Connection conn = db.connect();
 		this.cloudinary = CloudinaryConnection.getCloudinary();
 		try {
 			String imageUrl = imagePart.getSize() > 0
