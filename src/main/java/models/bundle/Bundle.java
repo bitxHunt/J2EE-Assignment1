@@ -11,6 +11,7 @@ public class Bundle {
 	private float originalPrice;
 	private float discountedPrice;
 	private String imageUrl;
+	private boolean isActive;
 
 	public Bundle() {
 		this.services = new ArrayList<>();
@@ -29,6 +30,17 @@ public class Bundle {
 		this.discountPercent = discountPercent;
 		this.services = services;
 		this.imageUrl = imageUrl;
+
+	}
+
+	public Bundle(int bundleId, String bundleName, int discountPercent, ArrayList<Service> services, String imageUrl,
+			boolean isActive) {
+		this.bundleId = bundleId;
+		this.bundleName = bundleName;
+		this.discountPercent = discountPercent;
+		this.services = services;
+		this.imageUrl = imageUrl;
+		this.isActive = isActive;
 
 	}
 
@@ -90,5 +102,13 @@ public class Bundle {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+	}
+
+	public boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 }

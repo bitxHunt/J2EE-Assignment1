@@ -1,5 +1,6 @@
 package models.bundle;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,7 @@ public class BundleDAO {
 					currentBundle.setOriginalPrice(rs.getFloat("original_price"));
 					currentBundle.setDiscountedPrice(rs.getFloat("discounted_price"));
 					currentBundle.setImageUrl(rs.getString("image_url"));
+					currentBundle.setIsActive(rs.getBoolean("is_active"));
 					bundles.add(currentBundle);
 					currentBundleId = bundleId;
 				}
@@ -80,6 +82,65 @@ public class BundleDAO {
 			conn.close();
 		}
 		return bundles;
+	}
+
+	public Bundle getBundleById(int bundleId) throws SQLException {
+		Connection conn = DB.connect();
+		Bundle bundle = null;
+
+		try {
+			String sqlStr = """
+					    SELECT b.*,
+					           s.service_id,
+					           s.service_name,
+					           s.service_description,
+					           s.category_id,
+					           s.price,
+					           (SELECT SUM(s2.price) FROM bundle_service bs2
+					            JOIN service s2 ON bs2.service_id = s2.service_id
+					            WHERE bs2.bundle_id = b.bundle_id) as original_price,
+					           (SELECT SUM(s2.price) * (1 - b.discount_percent::float/100)
+					            FROM bundle_service bs2
+					            JOIN service s2 ON bs2.service_id = s2.service_id
+					            WHERE bs2.bundle_id = b.bundle_id) as discounted_price
+					    FROM bundle b
+					    LEFT JOIN bundle_service bs ON b.bundle_id = bs.bundle_id
+					    LEFT JOIN service s ON bs.service_id = s.service_id
+					    WHERE b.bundle_id = ?
+					    ORDER BY b.bundle_id
+					""";
+
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, bundleId);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				if (bundle == null) {
+					bundle = new Bundle();
+					bundle.setBundleId(bundleId);
+					bundle.setBundleName(rs.getString("bundle_name"));
+					bundle.setDiscountPercent(rs.getInt("discount_percent"));
+					bundle.setOriginalPrice(rs.getFloat("original_price"));
+					bundle.setDiscountedPrice(rs.getFloat("discounted_price"));
+					bundle.setImageUrl(rs.getString("image_url"));
+					bundle.setIsActive(rs.getBoolean("is_active"));
+				}
+
+				// Add service if it exists
+				if (rs.getInt("service_id") != 0) {
+					Service service = new Service();
+					service.setServiceId(rs.getInt("service_id"));
+					service.setServiceName(rs.getString("service_name"));
+					service.setServiceDescription(rs.getString("service_description"));
+					service.setCategoryId(rs.getInt("category_id"));
+					service.setPrice(rs.getFloat("price"));
+					bundle.addService(service);
+				}
+			}
+		} finally {
+			conn.close();
+		}
+		return bundle;
 	}
 
 	public boolean createBundle(Bundle bundle, List<Integer> serviceIds, Part imagePart) throws SQLException {
@@ -106,6 +167,91 @@ public class BundleDAO {
 		} finally {
 			conn.close();
 		}
+	}
+
+	public boolean updateBundle(Bundle bundle, List<Integer> serviceIds, Part imagePart) throws SQLException {
+		Connection conn = DB.connect();
+		this.cloudinary = CloudinaryConnection.getCloudinary();
+		boolean success = false;
+
+		try {
+			// Prepare serviceIds string
+			String serviceIdsStr = String.join(",",
+					serviceIds.stream().map(String::valueOf).collect(Collectors.toList()));
+
+			if (imagePart.getSize() > 0) {
+				// Get current image URL for deletion
+				Bundle currentBundle = getBundleById(bundle.getBundleId());
+				String currentImageUrl = currentBundle.getImageUrl();
+
+				// Upload new image
+				String newImageUrl = CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart);
+
+				if (newImageUrl != null && currentImageUrl != null && !currentImageUrl.equals(
+						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_bundle_image.webp")) {
+					// Delete old image
+					try {
+						CloudinaryConnection.deleteFromCloudinary(cloudinary, currentImageUrl);
+					} catch (Exception e) {
+						System.out.println("Error deleting old image: " + e.getMessage());
+					}
+				}
+
+				// Call stored procedure with new image
+				CallableStatement cstmt = conn.prepareCall("CALL sp_update_bundle_with_image(?, ?, ?, ?, ?, ?)");
+				cstmt.setInt(1, bundle.getBundleId());
+				cstmt.setString(2, bundle.getBundleName());
+				cstmt.setInt(3, bundle.getDiscountPercent());
+				cstmt.setString(4, serviceIdsStr);
+				cstmt.setString(5, newImageUrl);
+				cstmt.setBoolean(6, bundle.getIsActive());
+				cstmt.execute();
+				success = true;
+			} else {
+				// Call stored procedure without image
+				CallableStatement cstmt = conn.prepareCall("CALL sp_update_bundle(?, ?, ?, ?, ?)");
+				cstmt.setInt(1, bundle.getBundleId());
+				cstmt.setString(2, bundle.getBundleName());
+				cstmt.setInt(3, bundle.getDiscountPercent());
+				cstmt.setString(4, serviceIdsStr);
+				cstmt.setBoolean(5, bundle.getIsActive());
+				cstmt.execute();
+				success = true;
+			}
+		} finally {
+			conn.close();
+		}
+		return success;
+	}
+
+	public boolean deleteBundle(int bundleId) throws SQLException {
+		Connection conn = DB.connect();
+		this.cloudinary = CloudinaryConnection.getCloudinary();
+		boolean success = false;
+		try {
+			// Get bundle info first for image deletion
+			Bundle bundle = getBundleById(bundleId);
+
+			// Call stored procedure to delete bundle
+			CallableStatement cstmt = conn.prepareCall("CALL sp_delete_bundle(?)");
+			cstmt.setInt(1, bundleId);
+			cstmt.execute();
+			success = true;
+			//if successful, delete image inside Cloudinary
+			if (success) {
+				if (bundle != null && bundle.getImageUrl() != null && !bundle.getImageUrl().equals(
+						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_bundle_image.webp")) {
+					try {
+						CloudinaryConnection.deleteFromCloudinary(cloudinary, bundle.getImageUrl());
+					} catch (IOException e) {
+						System.out.println("Error deleting bundle image: " + e.getMessage());
+					}
+				}
+			}
+		} finally {
+			conn.close();
+		}
+		return success;
 	}
 
 }

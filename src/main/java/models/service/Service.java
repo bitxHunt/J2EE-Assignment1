@@ -8,6 +8,7 @@ public class Service {
 	private String categoryName;
 	private float price;
 	private String imageUrl;
+	private boolean isActive;
 
 	// Default Constructor
 	public Service() {
@@ -39,6 +40,19 @@ public class Service {
 		this.price = price;
 		this.categoryName = categoryName;
 		this.imageUrl = imageUrl;
+	}
+	
+	// Explicit Constructor with all fields
+	public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price,
+			String categoryName, String imageUrl, boolean isActive) {
+		this.serviceId = serviceId;
+		this.serviceName = serviceName;
+		this.serviceDescription = serviceDescription;
+		this.categoryId = categoryId;
+		this.price = price;
+		this.categoryName = categoryName;
+		this.imageUrl = imageUrl;
+		this.isActive=isActive;
 	}
 
 	// Getters and Setters
@@ -96,5 +110,13 @@ public class Service {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+	}
+	
+	public boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 }
