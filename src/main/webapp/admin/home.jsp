@@ -19,18 +19,7 @@
 </head>
 <body class="min-h-screen bg-base-100">
 	<div class="container mx-auto px-4 py-8">
-		<!-- Top Navigation Bar -->
-		<div class="navbar bg-base-200 rounded-box mb-8">
-			<div class="flex-1">
-				<span class="material-symbols-outlined text-blue-500 text-5xl">
-					vacuum </span> <a class="btn btn-ghost text-xl">Admin View</a>
-			</div>
-			<div class="flex-none">
-				<button
-					onclick="window.location='${pageContext.request.contextPath}/admin/createForm'"
-					class="btn btn-primary">Create New</button>
-			</div>
-		</div>
+		<%@ include file="./components/adminNavbar.jsp"%>
 		<!-- Tabs -->
 		<div class="tabs tabs-boxed mb-8 flex flex-wrap justify-center">
 			<a class="tab tab-active" onclick="switchTab('services', this)">Services</a>
@@ -39,175 +28,11 @@
 		</div>
 
 		<!-- Services Section -->
-		<div id="services"
-			class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			<%
-			ArrayList<Service> services = (ArrayList<Service>) request.getAttribute("services");
-			if (services != null && !services.isEmpty()) {
-				for (Service service : services) {
-			%>
-			<div
-				class="card bg-base-200 shadow-xl <%=!service.getIsActive() ? "opacity-40" : ""%>">
-				<figure class="px-6 pt-6">
-					<img
-						src="<%=service.getImageUrl() != null
-		? service.getImageUrl()
-		: "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_cleaning_image_fz3izs.webp"%>"
-						alt="Service Image" class="rounded-xl object-cover h-48 w-full" />
-				</figure>
-				<div class="card-body">
-					<div class="flex justify-between items-start">
-						<h2 class="card-title"><%=service.getServiceName()%></h2>
-						<div class="badge badge-primary"><%=service.getCategoryName()%></div>
-					</div>
-					<p class="text-sm opacity-70"><%=(service.getServiceDescription() == null || service.getServiceDescription() == "")
-		? "No description available"
-		: service.getServiceDescription()%></p>
-					<p class="text-xl font-bold mt-2">
-						$<%=String.format("%.2f", service.getPrice())%></p>
-					<div class="card-actions justify-between items-center mt-4">
-						<div class="flex items-center gap-2">
-							<span class="text-sm font-medium">Status:</span> <span
-								class="px-3 py-1 rounded-full text-sm font-semibold <%=service.getIsActive() ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"%>">
-								<%=service.getIsActive() ? "Active" : "Inactive"%>
-							</span>
-						</div>
-						<button class="btn btn-primary"
-							onclick="window.location.href='${pageContext.request.contextPath}/admin/edit-service/<%=service.getServiceId()%>'">
-							Edit</button>
-					</div>
-				</div>
-			</div>
-			<%
-			}
-			} else {
-			%>
-			<div class="col-span-full text-center py-8">
-				<div class="max-w-md mx-auto bg-base-200 rounded-xl shadow-lg p-6">
-					<h3 class="text-lg font-semibold mb-2">No Services Available</h3>
-					<p class="text-sm opacity-70 mb-4">There are currently no
-						services. Click 'Create New' to add a service.</p>
-					<button
-						onclick="window.location='${pageContext.request.contextPath}/admin/createForm?tab=service'"
-						class="btn btn-primary">Create Service</button>
-				</div>
-			</div>
-			<%
-			}
-			%>
-		</div>
-
+		<%@ include file="./components/serviceContainer.jsp"%>
 		<!-- Bundles Section -->
-		<div id="bundles"
-			class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			<%
-			ArrayList<Bundle> bundles = (ArrayList<Bundle>) request.getAttribute("bundles");
-			if (bundles != null && !bundles.isEmpty()) {
-				for (Bundle bundle : bundles) {
-			%>
-			<div
-				class="card bg-base-200 shadow-xl <%=!bundle.getIsActive() ? "opacity-40" : ""%>">
-				<figure class="px-6 pt-6">
-					<img
-						src="<%=bundle.getImageUrl() != null
-		? bundle.getImageUrl()
-		: "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_cleaning_image_fz3izs.webp"%>"
-						alt="Bundle Image" class="rounded-xl object-cover h-48 w-full" />
-				</figure>
-				<div class="card-body">
-					<div class="flex justify-between items-center">
-						<h2 class="card-title"><%=bundle.getBundleName()%></h2>
-						<div class="badge badge-secondary"><%=bundle.getDiscountPercent()%>%
-							OFF
-						</div>
-					</div>
-
-					<!-- Price Section -->
-					<div class="flex items-end gap-2 mt-2">
-						<span class="text-xl font-bold text-primary"> $<%=String.format("%.2f", bundle.getDiscountedPrice())%>
-						</span> <span class="text-sm line-through opacity-50"> $<%=String.format("%.2f", bundle.getOriginalPrice())%>
-						</span>
-					</div>
-
-					<div class="divider">Included Services</div>
-					<ul class="list-disc list-inside text-sm">
-						<%
-						for (Service service : bundle.getServices()) {
-						%>
-						<li><%=service.getServiceName()%> - $<%=String.format("%.2f", service.getPrice())%></li>
-						<%
-						}
-						%>
-					</ul>
-					<div class="card-actions justify-between items-center mt-4">
-						<div class="flex items-center gap-2">
-							<span class="text-sm font-medium">Status:</span> <span
-								class="px-3 py-1 rounded-full text-sm font-semibold <%=bundle.getIsActive() ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"%>">
-								<%=bundle.getIsActive() ? "Active" : "Inactive"%>
-							</span>
-						</div>
-						<button class="btn btn-primary"
-							onclick="window.location.href='${pageContext.request.contextPath}/admin/edit-bundle/<%=bundle.getBundleId()%>'">
-							Edit</button>
-					</div>
-
-				</div>
-			</div>
-			<%
-			}
-			} else {
-			%>
-			<div class="col-span-full text-center py-8">
-				<div class="max-w-md mx-auto bg-base-200 rounded-xl shadow-lg p-6">
-					<h3 class="text-lg font-semibold mb-2">No Bundles Available</h3>
-					<p class="text-sm opacity-70 mb-4">There are currently no
-						bundles. Click 'Create New' to add a bundle.</p>
-					<button
-						onclick="window.location='${pageContext.request.contextPath}/admin/createForm?tab=bundle'"
-						class="btn btn-primary">Create Bundle</button>
-				</div>
-			</div>
-			<%
-			}
-			%>
-		</div>
-
+		<%@ include file="./components/bundleContainer.jsp"%>
 		<!-- Categories Section -->
-		<div id="categories"
-			class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			<%
-			ArrayList<Category> categories = (ArrayList<Category>) request.getAttribute("categories");
-			if (categories != null && !categories.isEmpty()) {
-				for (Category category : categories) {
-			%>
-			<div class="card bg-base-200 shadow-xl">
-				<div class="card-body">
-					<h2 class="card-title"><%=category.getCategoryName()%></h2>
-					<div class="card-actions justify-end mt-4">
-						<button class="btn btn-primary"
-							onclick="window.location.href='${pageContext.request.contextPath}/admin/edit-category/<%=category.getCategoryId()%>'">
-							Edit</button>
-					</div>
-				</div>
-			</div>
-			<%
-			}
-			} else {
-			%>
-			<div class="col-span-full text-center py-8">
-				<div class="max-w-md mx-auto bg-base-200 rounded-xl shadow-lg p-6">
-					<h3 class="text-lg font-semibold mb-2">No Categories Available</h3>
-					<p class="text-sm opacity-70 mb-4">There are currently no
-						categories. Click 'Create New' to add a category.</p>
-					<button
-						onclick="window.location='${pageContext.request.contextPath}/admin/createForm?tab=category'"
-						class="btn btn-primary">Create Category</button>
-				</div>
-			</div>
-			<%
-			}
-			%>
-		</div>
+		<%@ include file="./components/categoryContainer.jsp"%>
 	</div>
 	<script>
        function switchTab(tabId, element) {
@@ -224,20 +49,6 @@
            element.classList.add('tab-active');
        }
 
-       function editService(id) {
-           // Add edit functionality
-           console.log('Edit service:', id);
-       }
-
-       function editBundle(id) {
-           // Add edit functionality
-           console.log('Edit bundle:', id);
-       }
-
-       function editCategory(id) {
-           // Add edit functionality
-           console.log('Edit category:', id);
-       }
    </script>
 </body>
 </html>
