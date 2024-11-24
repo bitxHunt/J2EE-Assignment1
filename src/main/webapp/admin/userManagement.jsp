@@ -49,7 +49,7 @@
 						for (User user : users) {
 							String roleName = "Unknown";
 							for (Role role : roles) {
-						if (role.getRoleId() == user.getRole()) {
+						if (role.getRoleId() == user.getRole().intValue()) {
 							roleName = role.getRoleName();
 							break;
 						}
