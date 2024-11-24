@@ -13,7 +13,7 @@ public class UserDAO {
 		Connection conn = DB.connect();
 		ArrayList<User> users = new ArrayList<User>();
 		try {
-			String sqlStr = "SELECT u.user_id, u.first_name, u.last_name, u.email, u.password, r.role_name FROM users u INNER JOIN role r ON r.role_id = u.role_id";
+			String sqlStr = "SELECT * FROM users;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			ResultSet rs = pstmt.executeQuery();
 
@@ -25,7 +25,7 @@ public class UserDAO {
 				user.setLastName(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));
 				user.setPassword(rs.getString("password"));
-				user.setRole(rs.getString("role_id"));
+				user.setRole(rs.getInt("role_id"));
 				users.add(user);
 			}
 
@@ -64,7 +64,7 @@ public class UserDAO {
 		Connection conn = DB.connect();
 		User user = new User();
 		try {
-			String sqlStr = "SELECT u.user_id, u.first_name, u.last_name, u.email, u.password, r.role_name FROM users u INNER JOIN role r ON r.role_id = u.role_id WHERE email = ?;";
+			String sqlStr = "SELECT * FROM users WHERE email = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setString(1, email);
 			ResultSet rs = pstmt.executeQuery();
@@ -75,7 +75,7 @@ public class UserDAO {
 				user.setLastName(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));
 				user.setPassword(rs.getString("password"));
-				user.setRole(rs.getString("role_name"));
+				user.setRole(rs.getInt("role_id"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

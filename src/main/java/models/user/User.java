@@ -6,7 +6,7 @@ public class User {
 	private String lastName = "";
 	private String email = "";
 	private String password = "";
-	private String role = "";
+	private Integer role = 0;
 	private String phoneNo = "";
 
 	// Implicit Constructor
@@ -16,12 +16,12 @@ public class User {
 		this.lastName = "";
 		this.email = "";
 		this.password = "";
-		this.role = "";
+		this.role = 0;
 		this.phoneNo = "";
 	}
 
 	// Explicit Constructor
-	public User(Integer id, String firstName, String lastName, String email, String password, String role, String phoneNo) {
+	public User(Integer id, String firstName, String lastName, String email, String password, Integer role, String phoneNo) {
 
 		// Booting Up
 		this.id = id;
@@ -73,11 +73,11 @@ public class User {
 		this.password = password;
 	}
 
-	public String getRole() {
+	public Integer getRole() {
 		return role;
 	}
 
-	public void setRole(String role) {
+	public void setRole(Integer role) {
 		this.role = role;
 	}
 
