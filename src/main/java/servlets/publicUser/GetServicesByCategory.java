@@ -38,8 +38,8 @@ public class GetServicesByCategory extends HttpServlet {
 
 				// Check for null category before setting attributes
 				if (category == null) {
-					request.getRequestDispatcher("/error/404ErrorPage.jsp").forward(request, response);
-					return; // Important to return here
+					response.sendRedirect(request.getContextPath() + "/error/404ErrorPage.jsp");
+					return;
 				}
 
 				ArrayList<Service> services = serviceDAO.getServicesByCategory(categoryId);
@@ -51,6 +51,8 @@ public class GetServicesByCategory extends HttpServlet {
 				response.sendRedirect(request.getContextPath() + "/categories");
 			}
 
+		} catch (NumberFormatException e) {
+			response.sendRedirect(request.getContextPath() + "/error/400ErrorPage.jsp");
 		} catch (Exception e) {
 			e.printStackTrace();
 			// Use forward instead of sendError for error handling

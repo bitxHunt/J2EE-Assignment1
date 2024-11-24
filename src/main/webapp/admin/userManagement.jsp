@@ -193,9 +193,9 @@
 					</select>
 				</div>
 				<div class="modal-action">
-					<button type="submit" class="btn btn-primary">Update Role</button>
 					<button type="button" class="btn"
 						onclick="document.getElementById('editUserModal').close()">Cancel</button>
+					<button type="submit" class="btn btn-primary">Update Role</button>
 				</div>
 			</form>
 		</div>
@@ -211,9 +211,9 @@
 					type="hidden" name="userId" id="deleteUserId"> <input
 					type="hidden" name="currentRoleId" id="deleteCurrentRoleId">
 				<div class="modal-action">
-					<button type="submit" class="btn btn-error">Delete</button>
 					<button type="button" class="btn"
 						onclick="document.getElementById('deleteUserModal').close()">Cancel</button>
+					<button type="submit" class="btn btn-error">Delete</button>
 				</div>
 			</form>
 		</div>

@@ -11,7 +11,7 @@ public class CategoryDAO {
 		ArrayList<Category> categories = new ArrayList<Category>();
 
 		try {
-			String sqlStr = "SELECT * FROM category";
+			String sqlStr = "SELECT * FROM category ORDER BY category_id";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			ResultSet rs = pstmt.executeQuery();
 

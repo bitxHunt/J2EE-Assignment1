@@ -37,9 +37,12 @@ public class EditCategoryById extends HttpServlet {
 				request.setAttribute("deleteable", isDeleteable);
 				request.getRequestDispatcher("/admin/editCategory.jsp").forward(request, response);
 			} else {
-				response.sendRedirect(request.getContextPath() + "/admin");
+				response.sendRedirect(request.getContextPath() + "/error/404ErrorPage.jsp");
 			}
-		} catch (SQLException e) {
+		}catch(NumberFormatException e) {
+			response.sendRedirect(request.getContextPath() + "/error/400ErrorPage.jsp");
+		}
+		catch (SQLException e) {
 			request.setAttribute("err", "Database error: " + e.getMessage());
 			request.getRequestDispatcher("/error/500").forward(request, response);
 		}

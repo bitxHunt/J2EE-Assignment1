@@ -45,8 +45,10 @@ public class EditServiceById extends HttpServlet {
 				request.setAttribute("categories", categories);
 				request.getRequestDispatcher("/admin/editService.jsp").forward(request, response);
 			} else {
-				response.sendRedirect(request.getContextPath() + "/admin");
+				response.sendRedirect(request.getContextPath() + "/error/404ErrorPage.jsp");
 			}
+		} catch (NumberFormatException e) {
+			response.sendRedirect(request.getContextPath() + "/error/400ErrorPage.jsp");
 		} catch (SQLException e) {
 			request.setAttribute("err", "Database error: " + e.getMessage());
 			request.getRequestDispatcher("/error/500").forward(request, response);
@@ -61,7 +63,7 @@ public class EditServiceById extends HttpServlet {
 			int serviceId = Integer.parseInt(request.getPathInfo().substring(1));
 
 			// Get and validate form data
-			
+
 			String serviceName = request.getParameter("serviceName");
 			String description = request.getParameter("description");
 			String categoryIdStr = request.getParameter("categoryId");
