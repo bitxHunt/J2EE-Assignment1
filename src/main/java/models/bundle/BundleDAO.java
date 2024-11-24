@@ -1,3 +1,9 @@
+/***********************************************************
+* Name: Soe Zaw Aung, Scott
+* Class: DIT/FT/2B/01
+* Admin No: P2340474
+* Description: Model class to store database operations related to bundles
+************************************************************/
 package models.bundle;
 
 import java.io.IOException;
@@ -16,6 +22,7 @@ import util.*;
 public class BundleDAO {
 	private Cloudinary cloudinary;
 
+	// Get all bundles with their services and calculated prices
 	public ArrayList<Bundle> getAllBundlesWithServices() throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Bundle> bundles = new ArrayList<Bundle>();
@@ -84,6 +91,7 @@ public class BundleDAO {
 		return bundles;
 	}
 
+	// Get only active bundles with their services and calculated prices
 	public ArrayList<Bundle> getAllActiveBundlesWithServices() throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Bundle> bundles = new ArrayList<Bundle>();
@@ -153,6 +161,7 @@ public class BundleDAO {
 		return bundles;
 	}
 
+	// Get specific bundle by ID with its services
 	public Bundle getBundleById(int bundleId) throws SQLException {
 		Connection conn = DB.connect();
 		Bundle bundle = null;
@@ -212,10 +221,12 @@ public class BundleDAO {
 		return bundle;
 	}
 
+	// Create new bundle with services and optional image
 	public boolean createBundle(Bundle bundle, List<Integer> serviceIds, Part imagePart) throws SQLException {
 		Connection conn = DB.connect();
 		this.cloudinary = CloudinaryConnection.getCloudinary();
 		try {
+			// Skip Cloudinary upload if no image, database will use default image_url
 			String imageUrl = imagePart.getSize() > 0
 					? CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart)
 					: null;
@@ -238,6 +249,7 @@ public class BundleDAO {
 		}
 	}
 
+	// Update bundle info, services and optionally its image
 	public boolean updateBundle(Bundle bundle, List<Integer> serviceIds, Part imagePart) throws SQLException {
 		Connection conn = DB.connect();
 		this.cloudinary = CloudinaryConnection.getCloudinary();
@@ -256,9 +268,9 @@ public class BundleDAO {
 				// Upload new image
 				String newImageUrl = CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart);
 
+				// Only delete old image from Cloudinary if it's not the default image
 				if (newImageUrl != null && currentImageUrl != null && !currentImageUrl.equals(
-						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_bundle_image.webp")) {
-					// Delete old image
+						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg")) {
 					try {
 						CloudinaryConnection.deleteFromCloudinary(cloudinary, currentImageUrl);
 					} catch (Exception e) {
@@ -293,6 +305,7 @@ public class BundleDAO {
 		return success;
 	}
 
+	// Delete bundle and its non-default image
 	public boolean deleteBundle(int bundleId) throws SQLException {
 		Connection conn = DB.connect();
 		this.cloudinary = CloudinaryConnection.getCloudinary();
@@ -308,8 +321,9 @@ public class BundleDAO {
 			success = true;
 			// if successful, delete image inside Cloudinary
 			if (success) {
+				// Only delete from Cloudinary if not using default image
 				if (bundle != null && bundle.getImageUrl() != null && !bundle.getImageUrl().equals(
-						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_bundle_image.webp")) {
+						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg")) {
 					try {
 						CloudinaryConnection.deleteFromCloudinary(cloudinary, bundle.getImageUrl());
 					} catch (IOException e) {

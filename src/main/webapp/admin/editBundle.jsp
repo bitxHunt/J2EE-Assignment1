@@ -1,3 +1,8 @@
+<%-- 
+    Name: Soe Zaw Aung, Scott
+    Class: DIT/FT/2B/01
+    Admin No: p2340474
+--%>
 <%@page import="java.util.Map"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
@@ -133,7 +138,7 @@
 								onclick="window.location='${pageContext.request.contextPath}/admin'"
 								class="btn btn-neutral w-full sm:w-auto">Cancel</button>
 
-							<!-- Delete form -->
+							
 							<button type="submit" form="deleteBundleForm"
 								class="btn btn-error w-full sm:w-auto">Delete Bundle</button>
 

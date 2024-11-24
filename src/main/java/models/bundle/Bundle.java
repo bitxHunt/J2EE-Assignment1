@@ -1,3 +1,9 @@
+/***********************************************************
+* Name: Soe Zaw Aung, Scott
+* Class: DIT/FT/2B/01
+* Admin No: P2340474
+* Description: Model class to store bundle information
+************************************************************/
 package models.bundle;
 
 import models.service.Service;
@@ -13,10 +19,17 @@ public class Bundle {
 	private String imageUrl;
 	private boolean isActive;
 
+	// Default Constructors
 	public Bundle() {
+		this.bundleId = 0;
+		this.bundleName = "";
+		this.discountPercent = 0;
+		this.imageUrl = "";
+		this.isActive = false;
 		this.services = new ArrayList<>();
 	}
 
+	// Explicit Constructors
 	public Bundle(int bundleId, String bundleName, int discountPercent) {
 		this.bundleId = bundleId;
 		this.bundleName = bundleName;
@@ -45,6 +58,8 @@ public class Bundle {
 		this.isActive = isActive;
 
 	}
+	
+	// Getters and Setters
 
 	public int getBundleId() {
 		return bundleId;

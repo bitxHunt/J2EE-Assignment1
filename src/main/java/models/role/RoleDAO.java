@@ -1,3 +1,9 @@
+/***********************************************************
+ * Name: Soe Zaw Aung, Scott
+ * Class: DIT/FT/2B/01
+ * Admin No: P2340474
+ * Description: Model class to store database operations related to role
+ ************************************************************/
 package models.role;
 import java.sql.*;
 import java.util.ArrayList;
@@ -5,7 +11,7 @@ import java.util.List;
 import util.DB;
 
 public class RoleDAO {
-    
+	// Retrieves all roles from the database
     public ArrayList<Role> getAllRoles() throws SQLException {
         ArrayList<Role> roles = new ArrayList<>();
         Connection conn = null;

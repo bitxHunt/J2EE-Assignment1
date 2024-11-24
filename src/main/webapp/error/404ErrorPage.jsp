@@ -1,3 +1,8 @@
+<%-- 
+    Name: Soe Zaw Aung, Scott
+    Class: DIT/FT/2B/01
+    Admin No: p2340474
+--%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -43,7 +48,7 @@
 
 		<p class="mt-12 text-base-content/50 italic">"Even our best
 			cleaners couldn't find this page!"</p>
-		<p class="text-base-content/30 text-sm mt-2">- Soe Zaw Aung
+		<p class="text-base-content/30 text-md mt-2">- Soe Zaw Aung
 			(Scott), CEO</p>
 	</div>
 
