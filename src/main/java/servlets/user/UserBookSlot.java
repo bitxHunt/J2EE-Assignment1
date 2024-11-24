@@ -8,7 +8,13 @@ import models.service.Service;
 import models.service.ServiceDAO;
 import models.bundle.Bundle;
 import models.bundle.BundleDAO;
-
+import models.timeSlot.TimeSlot;
+import models.timeSlot.TimeSlotDAO;
+import models.transaction.Transaction;
+import models.transaction.TransactionDAO;
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,6 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.ArrayList;
@@ -93,6 +100,7 @@ public class UserBookSlot extends HttpServlet {
 			break;
 		case "/confirm":
 			System.out.println("Running POST request for /confirm");
+			handleBooking(request, response, session);
 			break;
 		default:
 			doGet(request, response);
@@ -189,10 +197,13 @@ public class UserBookSlot extends HttpServlet {
 				throw new IllegalStateException("User not logged in");
 			}
 
+			Address selectedAddress = new Address();
+
 			// Get the address from the user.
 			// If there is no selection, it will throw a NumberFormatException which is
 			// catched under.
 			Integer selectedAddressId = Integer.parseInt(request.getParameter("address_type"));
+			System.out.println("Selected address id: " + selectedAddressId);
 
 			// If the address is external, get the address details from the form
 			if (selectedAddressId != null) {
@@ -200,22 +211,23 @@ public class UserBookSlot extends HttpServlet {
 				// ID 3 is external address
 				if (selectedAddressId == 3) {
 					String address = request.getParameter("external_address");
-					String unit = request.getParameter("exteral_unit");
+					String unit = request.getParameter("external_unit");
 					String postal = request.getParameter("external_postal");
-					session.setAttribute("externalAddress", address);
-					session.setAttribute("externalUnit", unit);
-					session.setAttribute("externalPostal", postal);
+
+					selectedAddress.setAddress(address);
+					selectedAddress.setUnit(unit);
+					selectedAddress.setPostalCode(Integer.parseInt(postal));
 				}
 
 				// Get the selected address from the database if home or office is selected.
 				else {
 					AddressDAO addDB = new AddressDAO();
-					Address selectedAddress = addDB.getAddressByUserId(userId, selectedAddressId);
-					session.setAttribute("selectedAddress", selectedAddress);
-					session.setAttribute("selectedAddressId", selectedAddressId);
+					selectedAddress = addDB.getAddressByUserId(userId, selectedAddressId);
 				}
+
+				session.setAttribute("selectedAddress", selectedAddress);
+				session.setAttribute("selectedAddressId", selectedAddressId);
 			}
-			
 
 			// Get all services and bundles from the database to pass on to the frontend for
 			// the get request
@@ -267,21 +279,7 @@ public class UserBookSlot extends HttpServlet {
 			System.out.println("Selected date: " + selectedDate);
 			System.out.println("Selected time: " + selectedTime);
 			System.out.println("Selected address id: " + selectedAddressId);
-			System.out.println("Selected address: " + selectedAddress.getAddress());
-
-			if (selectedAddressId == 3) {
-				String externalAddress = (String) session.getAttribute("externalAddress");
-				String externalUnit = (String) session.getAttribute("externalUnit");
-				String externalPostal = (String) session.getAttribute("externalPostal");
-
-				request.setAttribute("externalAddress", externalAddress);
-				request.setAttribute("externalUnit", externalUnit);
-				request.setAttribute("externalPostal", externalPostal);
-
-				System.out.println("External address: " + externalAddress);
-				System.out.println("External unit: " + externalUnit);
-				System.out.println("External postal: " + externalPostal);
-			}
+			System.out.println("Selected address: " + selectedAddress.getUnit());
 
 			ArrayList<Service> selectedServices = new ArrayList<Service>();
 			Service selectedService = new Service();
@@ -326,6 +324,109 @@ public class UserBookSlot extends HttpServlet {
 			response.sendRedirect(request.getContextPath() + "/book/slots");
 		} catch (Exception e) {
 			System.out.println("Error handling confirmation: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("errorMessage", "Unable to process booking confirmation. Please try again.");
+			request.getRequestDispatcher("/error.jsp").forward(request, response);
+		}
+	}
+
+	private void handleBooking(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws ServletException, IOException {
+		try {
+			Address selectedAddress = new Address();
+			TimeSlotDAO timeSlotDB = new TimeSlotDAO();
+			BundleDAO bundleDB = new BundleDAO();
+			ServiceDAO serviceDB = new ServiceDAO();
+
+			Integer buttonPressed = Integer.parseInt(request.getParameter("btnSubmit"));
+			String status = "PENDING";
+			LocalDateTime paidAt = null;
+
+			// Set status and paidAt based on button press
+			if (buttonPressed == 2) {
+				status = "IN_PROGRESS";
+				paidAt = LocalDateTime.now();
+			}
+
+			Integer userId = (Integer) session.getAttribute("userId");
+
+			selectedAddress = (Address) session.getAttribute("selectedAddress");
+
+			LocalDate selectedDate = (LocalDate) session.getAttribute("selectedDate");
+			Integer selectedSlotId = timeSlotDB.getTimeSlotByTime((LocalTime) session.getAttribute("selectedTime")).getId();
+
+			// Handle services and bundles
+			String bundleIdStr = request.getParameter("bundleId");
+			String[] serviceIds = request.getParameterValues("selectedServices");
+
+			Double subtotal = 0.0;
+			String bundleName = null;
+			String bundleImg = null;
+			Integer discountPercent = 0;
+			String servicesJson = null;
+			String bundleServicesJson = null;
+
+			// Handle bundle selection
+			if (bundleIdStr != null && !bundleIdStr.isEmpty() && !bundleIdStr.equals("0")) {
+				Integer bundleId = Integer.parseInt(bundleIdStr);
+				Bundle bundle = bundleDB.getBundleById(bundleId);
+
+				if (bundle != null) {
+					bundleName = bundle.getBundleName();
+					bundleImg = bundle.getImageUrl();
+					discountPercent = bundle.getDiscountPercent();
+
+					// Calculate total price of services in bundle
+					double originalPrice = 0.0;
+					JsonArrayBuilder bundleServiceArray = Json.createArrayBuilder();
+
+					for (Service service : bundle.getServices()) {
+						
+						System.out.println("Service Image for Review: " + service.getImageUrl());
+						JsonObjectBuilder serviceObj = Json.createObjectBuilder()
+								.add("service", service.getServiceName()).add("price", service.getPrice())
+								.add("img_url", service.getImageUrl());
+						bundleServiceArray.add(serviceObj);
+						originalPrice += service.getPrice();
+					}
+
+					// Calculate discounted price
+					subtotal = originalPrice * (1 - (discountPercent / 100.0));
+					bundleServicesJson = bundleServiceArray.build().toString();
+				}
+			}
+			// Handle individual services
+			if (serviceIds != null && serviceIds.length > 0) {
+				JsonArrayBuilder servicesArray = Json.createArrayBuilder();
+				subtotal = 0.0;
+
+				for (String serviceId : serviceIds) {
+					
+					Service service = serviceDB.getServiceById(Integer.parseInt(serviceId));
+					if (service != null) {
+						
+						System.out.println("Service Image for Review: " + service.getImageUrl());
+						JsonObjectBuilder serviceObj = Json.createObjectBuilder()
+								.add("service", service.getServiceName()).add("price", service.getPrice())
+								.add("img_url", service.getImageUrl());
+						servicesArray.add(serviceObj);
+						subtotal += service.getPrice();
+					}
+				}
+				servicesJson = servicesArray.build().toString();
+			}
+
+			// Insert transaction into database
+			TransactionDAO transactionDB = new TransactionDAO();
+			transactionDB.insertTransaction(userId, selectedAddress.getAddress(), selectedAddress.getPostalCode(),
+					selectedAddress.getUnit(), selectedSlotId, selectedDate, servicesJson, bundleName, bundleImg,
+					bundleServicesJson, discountPercent, status, subtotal, paidAt);
+
+			// Redirect to user dashboard
+			response.sendRedirect(request.getContextPath() + "/profile");
+
+		} catch (Exception e) {
+			System.out.println("Error handling booking: " + e.getMessage());
 			e.printStackTrace();
 			request.setAttribute("errorMessage", "Unable to process booking confirmation. Please try again.");
 			request.getRequestDispatcher("/error.jsp").forward(request, response);

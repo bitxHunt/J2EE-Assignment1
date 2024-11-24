@@ -68,8 +68,12 @@ public class Login extends HttpServlet {
 				System.out.println("Login Successful");
 				session.setAttribute("userId", user.getId());
 				session.setAttribute("role", user.getRole());
-				RequestDispatcher rd = request.getRequestDispatcher("/user/index.jsp");
-				rd.forward(request, response);
+				
+				if (user.getRole().equals("ADMIN")) {
+					response.sendRedirect(request.getContextPath() + "/admin");
+				} else {
+					response.sendRedirect(request.getContextPath() + "/profile");
+				}
 			} else {
 				System.out.println("Invalid Password");
 				request.setAttribute("err", "Invalid Email or Password");

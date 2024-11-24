@@ -20,6 +20,20 @@ public class Address {
 		this.isActive = false;
 	}
 
+		// Explicit Constructor
+	public Address(Integer id, Integer userId, String addType, String address, Integer postalCode, String unit,
+			Boolean isActive) {
+
+		// Booting Up
+		this.id = id;
+		this.userId = userId;
+		this.addType = addType;
+		this.address = address;
+		this.postalCode = postalCode;
+		this.unit = unit;
+		this.isActive = isActive;
+	}
+
 	public Integer getId() {
 		return id;
 	}
@@ -73,20 +87,6 @@ public class Address {
 	}
 
 	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
-
-	// Explicit Constructor
-	public Address(Integer id, Integer userId, String addType, String address, Integer postalCode, String unit,
-			Boolean isActive) {
-
-		// Booting Up
-		this.id = id;
-		this.userId = userId;
-		this.addType = addType;
-		this.address = address;
-		this.postalCode = postalCode;
-		this.unit = unit;
 		this.isActive = isActive;
 	}
 }

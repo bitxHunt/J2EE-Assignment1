@@ -153,13 +153,61 @@
 				<div class="flex flex-col md:flex-row gap-4 justify-end mt-6">
 					<form action="${pageContext.request.contextPath}/book/confirm"
 						method="post" class="flex-1 md:flex-none">
-						<button type="submit" class="btn btn-outline w-full md:w-auto" name="addCart" value="1">Add
+						<input type="hidden" name="bookingDate"
+							value="<%=request.getAttribute("bookingDate")%>"> <input
+							type="hidden" name="timeSlot"
+							value="<%=request.getAttribute("timeSlot")%>"> <input
+							type="hidden" name="address"
+							value="<%=request.getAttribute("address")%>">
+						<%
+						if (selectedBundle != null) {
+						%>
+						<input type="hidden" name="bundleId"
+							value="<%=selectedBundle.getBundleId()%>">
+						<%
+						}
+						%>
+						<%
+						if (selectedServices != null && !selectedServices.isEmpty()) {
+							for (Service service : selectedServices) {
+						%>
+						<input type="hidden" name="selectedServices"
+							value="<%=service.getServiceId()%>">
+						<%
+						}
+						}
+						%>
+						<button type="submit" class="btn btn-outline w-full md:w-auto" name="btnSubmit" value="1">Add
 							to Cart</button>
 					</form>
 
 					<form action="${pageContext.request.contextPath}/book/confirm"
 						method="post" class="flex-1 md:flex-none">
-						<button type="submit" class="btn btn-primary w-full md:w-auto" name="confirm" value="2">Proceed
+						<input type="hidden" name="bookingDate"
+							value="<%=request.getAttribute("bookingDate")%>"> <input
+							type="hidden" name="timeSlot"
+							value="<%=request.getAttribute("timeSlot")%>"> <input
+							type="hidden" name="address"
+							value="<%=request.getAttribute("address")%>">
+						<%
+						if (selectedBundle != null) {
+						%>
+						<input type="hidden" name="bundleId"
+							value="<%=selectedBundle.getBundleId()%>">
+						<%
+						}
+						%>
+						<%
+						if (selectedServices != null && !selectedServices.isEmpty()) {
+							for (Service service : selectedServices) {
+						%>
+						<input type="hidden" name="selectedServices"
+							value="<%=service.getServiceId()%>">
+						<%
+						}
+						}
+						%>
+						<button type="submit" class="btn btn-primary w-full md:w-auto" name="btnSubmit" value="2">Proceed
 							to Payment</button>
 					</form>
 				</div>

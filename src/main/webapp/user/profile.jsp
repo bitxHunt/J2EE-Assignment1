@@ -1,7 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ page import="models.user.*"%>
-<%@ page import="models.address.*"%>
+<%@ page import="models.user.User"%>
+<%@ page import="models.address.Address"%>
+<%@ page import="models.transaction.Transaction"%>
+<%@ page import="models.service.Service"%>
+<%@ page import="java.util.ArrayList"%>
+
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -20,6 +24,9 @@
 	User user = (User) request.getAttribute("user");
 	Address homeAddress = (Address) request.getAttribute("homeAddress");
 	Address officeAddress = (Address) request.getAttribute("officeAddress");
+	ArrayList<Transaction> transactions = (ArrayList<Transaction>) request.getAttribute("transactions");
+	String totalAmount = (String) request.getAttribute("totalAmount");
+	String totalSaving = (String) request.getAttribute("totalSaving");
 	%>
 
 	<!-- Navbar -->
@@ -46,294 +53,246 @@
 		</div>
 	</div>
 
-	<div class="container mx-auto p-6">
-		<!-- Hero Section -->
-		<div class="hero bg-base-200 rounded-box mb-8 relative">
+	<div class="container mx-auto p-6 max-w-7xl">
+		<div
+			class="hero bg-base-200 rounded-box mb-8 relative overflow-hidden">
+			<!-- Added decorative background pattern -->
+			<div class="absolute inset-0 opacity-5">
+				<div class="absolute inset-0 bg-primary/10 pattern-grid"></div>
+			</div>
+
 			<a href="${pageContext.request.contextPath}/editProfile"
-				class="btn btn-primary btn-sm absolute top-4 right-4">Edit
-				Profile</a>
-			<div class="hero-content flex-col lg:flex-row">
+				class="btn btn-primary btn-sm absolute top-4 right-4 gap-2"> <span
+				class="material-symbols-outlined">edit</span> Edit Profile
+			</a>
+
+			<div class="hero-content flex-col lg:flex-row gap-8 py-8">
 				<div class="avatar">
 					<div
-						class="w-32 rounded-full ring ring-primary ring-offset-base-200 ring-offset-2">
+						class="w-40 lg:w-48 rounded-full ring ring-primary ring-offset-base-200 ring-offset-4">
 						<img src="${pageContext.request.contextPath}/assets/avatar.jpg"
-							alt="Profile" />
+							alt="Profile" class="mask mask-circle" />
 					</div>
 				</div>
-				<div>
+				<div class="text-center lg:text-left">
 					<h1 class="text-4xl font-bold mb-4"><%=user.getFirstName()%>
 						<%=user.getLastName()%></h1>
-					<div class="mb-2 text-sm opacity-90 flex align-items-center">
-						<span class="material-symbols-outlined text-teal-500">
-							phone_in_talk </span> <span class="ps-2"><%=user.getPhoneNo()%></span>
-					</div>
-					<div class="text-sm opacity-90 flex align-items-center">
-						<span class="material-symbols-outlined text-red-700"> mail
-						</span> <span class="ps-2"><%=user.getEmail()%></span>
+					<div class="flex flex-col gap-3">
+						<div class="flex items-center gap-3 p-2 bg-base-100/50 rounded-lg">
+							<span class="material-symbols-outlined text-primary">phone_in_talk</span>
+							<span><%=user.getPhoneNo()%></span>
+						</div>
+						<div class="flex items-center gap-3 p-2 bg-base-100/50 rounded-lg">
+							<span class="material-symbols-outlined text-primary">mail</span>
+							<span><%=user.getEmail()%></span>
+						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+
+		<!-- Stats Section -->
+		<div class="stats shadow bg-base-200 w-full mb-8">
+			<div class="stat">
+				<div class="stat-figure text-primary">
+					<span class="material-symbols-outlined text-4xl">calendar_month</span>
+				</div>
+				<div class="stat-title">Total Bookings</div>
+				<div class="stat-value text-primary"><%=transactions.size() %></div>
+				<div class="stat-desc">↗︎ All time record</div>
+			</div>
+
+			<div class="stat">
+				<div class="stat-figure text-secondary">
+					<span class="material-symbols-outlined text-4xl">payments</span>
+				</div>
+				<div class="stat-title">Amount Spent</div>
+				<div class="stat-value text-secondary">
+					$<%=totalAmount%>
+				</div>
+				<div class="stat-desc">Lifetime spending</div>
+			</div>
+
+			<div class="stat">
+				<div class="stat-figure text-accent">
+					<span class="material-symbols-outlined text-4xl">redeem</span>
+				</div>
+				<div class="stat-title">Discount Earned</div>
+				<div class="stat-value text-accent">
+					$<%=totalSaving%></div>
+				<div class="stat-desc">21 rewards claimed</div>
+			</div>
+		</div>
+
+		<!-- Address and Booking Grid - Enhanced layout -->
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+			<!-- Address Section - Enhanced cards -->
+			<div class="card bg-base-200 shadow-xl">
+				<div class="card-body">
+					<div class="flex justify-between items-center mb-6">
+						<h2 class="card-title text-2xl">My Addresses</h2>
+						<button class="btn btn-ghost btn-sm btn-circle">
+							<span class="material-symbols-outlined">add</span>
+						</button>
+					</div>
+
+					<!-- Home Address Card -->
+					<div
+						class="bg-base-100 rounded-xl p-6 mb-4 hover:bg-base-100/80 transition-colors">
+						<div class="flex items-center gap-4 mb-4">
+							<div class="p-3 bg-primary/10 rounded-full">
+								<span class="material-symbols-outlined text-primary text-2xl">home</span>
+							</div>
+							<div>
+								<h3 class="font-bold text-lg">Home Address</h3>
+								<div class="badge badge-primary badge-sm">Primary</div>
+							</div>
+						</div>
+						<div class="space-y-2 ml-2 border-l-2 border-primary/20 pl-4">
+							<p class="text-base-content/90"><%=homeAddress.getAddress()%></p>
+							<p class="text-base-content/75">
+								Unit #<%=homeAddress.getUnit()%></p>
+							<p class="text-base-content/75">
+								Singapore
+								<%=homeAddress.getPostalCode()%></p>
+						</div>
+					</div>
+
+					<!-- Office Address Card -->
+					<div
+						class="bg-base-100 rounded-xl p-6 hover:bg-base-100/80 transition-colors">
+						<div class="flex items-center gap-4 mb-4">
+							<div class="p-3 bg-secondary/10 rounded-full">
+								<span class="material-symbols-outlined text-secondary text-2xl">apartment</span>
+							</div>
+							<div>
+								<h3 class="font-bold text-lg">Office Address</h3>
+								<div class="badge badge-secondary badge-sm">Secondary</div>
+							</div>
+						</div>
+						<div class="space-y-2 ml-2 border-l-2 border-secondary/20 pl-4">
+							<p class="text-base-content/90"><%=officeAddress.getAddress()%></p>
+							<p class="text-base-content/75">
+								Unit #<%=officeAddress.getUnit()%></p>
+							<p class="text-base-content/75">
+								Singapore
+								<%=officeAddress.getPostalCode()%></p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Booking History -->
+			<div class="space-y-6">
+				<div class="flex justify-between items-center">
+					<h2 class="text-2xl font-bold">Recent Bookings</h2>
+					<a href="${pageContext.request.contextPath}/transactions"
+						class="btn btn-ghost btn-sm"> View All <span
+						class="material-symbols-outlined">chevron_right</span>
+					</a>
+				</div>
+
+				<%
+				if (transactions != null) {
+				%>
+				<div
+					class="card bg-base-200 shadow-xl transition-all hover:shadow-2xl">
+					<div class="flex flex-col md:flex-row">
+						<!-- Image with status overlay -->
+						<figure class="w-full md:w-48 relative">
+							<img src="<%=transactions.get(0).getBundle_img()%>"
+								alt="Service Image" class="h-48 md:h-full w-full object-cover" />
+							<div class="absolute top-2 right-2">
+								<div class="badge badge-success gap-2">
+									<span class="material-symbols-outlined">check_circle</span>
+									IN_PROGRESS
+								</div>
+							</div>
+						</figure>
+
+						<div class="card-body">
+							<div class="flex flex-col gap-4">
+								<!-- Service Info -->
+								<div>
+									<h2 class="card-title text-primary">
+										<%=transactions.get(0).getBundleName() == null ? "Services" : transactions.get(0).getBundleName()%>
+									</h2>
+									<div class="flex items-center gap-2 text-sm opacity-75 mt-1">
+										<span class="material-symbols-outlined">schedule</span>
+										<%=transactions.get(0).getStartDate()%>
+									</div>
+								</div>
+
+								<!-- Services List -->
+								<div class="bg-base-100 rounded-box p-4">
+									<div class="text-sm font-medium mb-2">Ordered Services:</div>
+									<div class="divide-y divide-base-content/10">
+										<%
+										for (Service service : transactions.get(0).getServices()) {
+										%>
+										<div class="flex items-center gap-3 py-2">
+											<span class="material-symbols-outlined text-primary">cleaning_services</span>
+											<span><%=service.getServiceName()%></span>
+										</div>
+										<%
+										}
+										%>
+									</div>
+								</div>
+
+								<!-- Price and Location -->
+								<div class="flex flex-wrap gap-4">
+									<div
+										class="flex items-center gap-2 bg-warning/10 text-warning rounded-lg px-3 py-2">
+										<span class="material-symbols-outlined">paid</span> <span
+											class="font-medium">$<%=String.format("%.2f", transactions.get(0).getSubTotal())%></span>
+									</div>
+									<div
+										class="flex items-center gap-2 bg-error/10 text-error rounded-lg px-3 py-2">
+										<span class="material-symbols-outlined">location_on</span> <span>Singapore
+											<%=transactions.get(0).getAddress().getPostalCode()%></span>
+									</div>
+								</div>
+
+								<!-- Action Button -->
+								<div class="card-actions justify-end">
+									<a
+										href="${pageContext.request.contextPath}/transaction/details?id=<%=transactions.get(0).getId()%>"
+										class="btn btn-primary gap-2"> <span
+										class="material-symbols-outlined">visibility</span> View
+										Details
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<%
+				} else {
+				%>
+				<!-- Empty State Card -->
+				<div class="card bg-base-200 shadow-xl text-center p-8">
+					<div class="flex flex-col items-center gap-4">
+						<div class="p-4 bg-base-100 rounded-full">
+							<span class="material-symbols-outlined text-4xl opacity-50">calendar_month</span>
+						</div>
+						<div>
+							<h3 class="font-bold text-lg">No Recent Bookings</h3>
+							<p class="text-base-content/70 mb-4">Start your cleaning
+								journey today!</p>
+							<a href="${pageContext.request.contextPath}/book"
+								class="btn btn-primary gap-2"> <span
+								class="material-symbols-outlined">add</span> Book a Service
+							</a>
+						</div>
+					</div>
+				</div>
+				<%
+				}
+				%>
 			</div>
 		</div>
 	</div>
-
-	<!-- Stats Section -->
-	<div class="stats shadow bg-base-200 w-full mb-8">
-		<div class="stat">
-			<div class="stat-figure text-primary">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none"
-					viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                        <path stroke-linecap="round"
-						stroke-linejoin="round" stroke-width="2"
-						d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-			</div>
-			<div class="stat-title">Total Bookings</div>
-			<div class="stat-value text-primary">31</div>
-		</div>
-		<div class="stat">
-			<div class="stat-figure text-secondary">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none"
-					viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                        <path stroke-linecap="round"
-						stroke-linejoin="round" stroke-width="2"
-						d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-                    </svg>
-			</div>
-			<div class="stat-title">Amount Spent</div>
-			<div class="stat-value text-secondary">$4,200</div>
-		</div>
-		<div class="stat">
-			<div class="stat-figure text-accent">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none"
-					viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                        <path stroke-linecap="round"
-						stroke-linejoin="round" stroke-width="2"
-						d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                    </svg>
-			</div>
-			<div class="stat-title">Discount Earned</div>
-			<div class="stat-value text-accent">$150</div>
-		</div>
-	</div>
-
-	<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-		<!-- Address Section -->
-		<div class="card bg-base-200 shadow-xl">
-			<div class="card-body">
-				<h2 class="card-title text-2xl mb-6">My Addresses</h2>
-
-				<!-- Home Address -->
-				<div class="bg-base-100 rounded-xl p-6 mb-4">
-					<div class="flex items-center gap-3 mb-4">
-						<div class="p-3 bg-primary/10 rounded-lg">
-							<svg xmlns="http://www.w3.org/2000/svg"
-								class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24"
-								stroke="currentColor">
-                                    <path stroke-linecap="round"
-									stroke-linejoin="round" stroke-width="2"
-									d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                </svg>
-						</div>
-						<div>
-							<h3 class="font-bold text-lg">Home Address</h3>
-							<p class="text-sm opacity-70">Primary Address</p>
-						</div>
-					</div>
-					<div class="space-y-2 ml-2">
-						<p class="text-base-content/90"><%=homeAddress.getAddress()%></p>
-						<p class="text-base-content/75">
-							Unit #<%=homeAddress.getUnit()%></p>
-						<p class="text-base-content/75">
-							Singapore
-							<%=homeAddress.getPostalCode()%></p>
-					</div>
-				</div>
-
-				<!-- Office Address -->
-				<div class="bg-base-100 rounded-xl p-6">
-					<div class="flex items-center gap-3 mb-4">
-						<div class="p-3 bg-secondary/10 rounded-lg">
-							<svg xmlns="http://www.w3.org/2000/svg"
-								class="h-6 w-6 text-secondary" fill="none" viewBox="0 0 24 24"
-								stroke="currentColor">
-                                    <path stroke-linecap="round"
-									stroke-linejoin="round" stroke-width="2"
-									d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                </svg>
-						</div>
-						<div>
-							<h3 class="font-bold text-lg">Office Address</h3>
-							<p class="text-sm opacity-70">Secondary Address</p>
-						</div>
-					</div>
-					<div class="space-y-2 ml-2">
-						<p class="text-base-content/90"><%=officeAddress.getAddress()%></p>
-						<p class="text-base-content/75">
-							Unit #<%=officeAddress.getUnit()%></p>
-						<p class="text-base-content/75">
-							Singapore
-							<%=officeAddress.getPostalCode()%></p>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Booking History -->
-		<div class="space-y-6">
-			<h2 class="text-2xl font-bold">Recent Bookings</h2>
-
-			<!-- Booking Card 1 -->
-			<div class="card card-side bg-base-200 shadow-xl">
-				<figure class="w-48">
-					<img
-						src="${pageContext.request.contextPath}/assets/deep-cleaning.jpg"
-						alt="Deep Cleaning" class="h-full w-full object-cover" />
-				</figure>
-				<div class="card-body">
-					<div class="flex justify-between items-start">
-						<div>
-							<h2 class="card-title text-primary">Deep Cleaning</h2>
-							<p class="text-sm opacity-75">March 15, 2024</p>
-						</div>
-						<div class="badge badge-success gap-2">
-							<svg xmlns="http://www.w3.org/2000/svg" fill="none"
-								viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-								class="w-4 h-4">
-                                    <path stroke-linecap="round"
-									stroke-linejoin="round"
-									d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-							Completed
-						</div>
-					</div>
-					<div class="my-2 space-y-1">
-						<div class="flex items-center gap-2 opacity-90">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-								fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round"
-									stroke-linejoin="round" stroke-width="2"
-									d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-							<span>$150</span>
-						</div>
-						<div class="flex items-center gap-2 opacity-90">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-								fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round"
-									stroke-linejoin="round" stroke-width="2"
-									d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round"
-									stroke-linejoin="round" stroke-width="2"
-									d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-							<span>Home</span>
-						</div>
-					</div>
-					<div class="card-actions justify-between items-center">
-						<div class="rating rating-sm">
-							<input type="radio" name="rating-1"
-								class="mask mask-star-2 bg-orange-400" checked disabled /> <input
-								type="radio" name="rating-1"
-								class="mask mask-star-2 bg-orange-400" checked disabled /> <input
-								type="radio" name="rating-1"
-								class="mask mask-star-2 bg-orange-400" checked disabled /> <input
-								type="radio" name="rating-1"
-								class="mask mask-star-2 bg-orange-400" checked disabled /> <input
-								type="radio" name="rating-1"
-								class="mask mask-star-2 bg-orange-400" disabled />
-						</div>
-						<button class="btn btn-primary btn-sm gap-2">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-								fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round"
-									stroke-linejoin="round" stroke-width="2"
-									d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round"
-									stroke-linejoin="round" stroke-width="2"
-									d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-							View Details
-						</button>
-					</div>
-				</div>
-			</div>
-
-			<!-- Booking Card 2 -->
-			<div class="card card-side bg-base-200 shadow-xl">
-				<figure class="w-48">
-					<img src="${pageContext.request.contextPath}/assets/laundry.jpg"
-						alt="Laundry" class="h-full w-full object-cover" />
-				</figure>
-				<div class="card-body">
-					<div class="flex justify-between items-start">
-						<div>
-							<h2 class="card-title
-									text-primary">Laundry</h2>
-							<p class="text-sm opacity-75">March 15, 2024</p>
-						</div>
-						<div class="badge badge-warning gap-2">
-							<svg xmlns="http://www.w3.org/2000/svg" fill="none"
-								viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-								class="w-4 h-4">
-									<path stroke-linecap="round" stroke-linejoin="round"
-									d="M9 12l2.25 2.25L15 9" />
-									<path stroke-linecap="round" stroke-linejoin="round"
-									d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-								</svg>
-							In Progress
-						</div>
-					</div>
-					<div class="my-2 space-y-1">
-						<div class="flex items
-								-center gap-2 opacity-90">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-								fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round"
-									stroke-width="2"
-									d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-								</svg>
-							<span>$50</span>
-						</div>
-						<div class="flex items-center gap-2 opacity-90">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-								fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round"
-									stroke-width="2"
-									d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-									<path stroke-linecap="round" stroke-linejoin="round"
-									stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-								</svg>
-							<span>Office</span>
-						</div>
-					</div>
-					<div class="card-actions justify-between items-center">
-						<div class="rating rating-sm">
-							<input type="radio" name="rating-2"
-								class="mask mask-star-2 bg-orange-400" checked disabled /> <input
-								type="radio" name="rating-2"
-								class="mask mask-star-2 bg-orange-400" checked disabled /> <input
-								type="radio" name="rating-2"
-								class="mask mask-star-2 bg-orange-400" checked disabled /> <input
-								type="radio" name="rating-2"
-								class="mask mask-star-2 bg-orange-400" checked disabled /> <input
-								type="radio" name="rating-2"
-								class="mask mask-star-2 bg-orange-400" disabled />
-						</div>
-						<button class="btn btn-primary btn-sm gap-2">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-								fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round"
-									stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-									<path stroke-linecap="round" stroke-linejoin="round"
-									stroke-width="2"
-									d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-								</svg>
-							View Details
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
 	</div>
 </body>
