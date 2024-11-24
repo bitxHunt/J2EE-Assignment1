@@ -45,7 +45,7 @@ public class AuthenticationFilter implements Filter {
 				} else {
 					// User is authenticated but does not have the admin role, redirect to the user
 					// page
-					httpResponse.sendRedirect(httpRequest.getContextPath() + "/home");
+					httpResponse.sendRedirect(httpRequest.getContextPath() + "/profile");
 				}
 			} else {
 				// User is not authenticated, redirect to the login page
