@@ -16,7 +16,7 @@ import java.io.IOException;
 /**
  * Servlet implementation class UserAddress
  */
-@WebServlet("/address")
+@WebServlet("/address/*")
 public class UserAddress extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -35,7 +35,7 @@ public class UserAddress extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		doPost(request, response);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class UserAddress extends HttpServlet {
 			String strAddId = request.getParameter("addressId");
 			Integer addressId = Integer.parseInt(strAddId);
 			String address = request.getParameter("address");
-			String postalCode = request.getParameter("postal_code");
+			String postalCode = request.getParameter("postalCode");
 			String unit = request.getParameter("unit");
 
 			AddressDAO addressDB = new AddressDAO();
@@ -89,7 +89,7 @@ public class UserAddress extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void handleDeleteAddress(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws ServletException, IOException {
 		try {
@@ -100,6 +100,7 @@ public class UserAddress extends HttpServlet {
 
 			String strAddId = request.getParameter("addressId");
 			Integer addressId = Integer.parseInt(strAddId);
+			System.out.println("Address ID: " + addressId);
 
 			AddressDAO addressDB = new AddressDAO();
 			addressDB.deleteAddressById(userId, addressId);

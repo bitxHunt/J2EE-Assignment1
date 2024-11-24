@@ -51,7 +51,7 @@ public class Register extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
+
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
 		String email = request.getParameter("email");
@@ -73,14 +73,16 @@ public class Register extends HttpServlet {
 
 		UserDAO userDB = new UserDAO();
 		try {
-			Integer rowsAffected = userDB.registerUser(firstName, lastName, email, hashedPassword, phoneNo);
-			if (rowsAffected > 0) {
+			Integer userId = userDB.registerUser(firstName, lastName, email, hashedPassword, phoneNo);
+
+			if (userId != null && userId > 0) {
 				request.getSession().setAttribute("message", "Registration successful. Please log in.");
 				response.sendRedirect(request.getContextPath() + "/login");
 			} else {
-				request.getSession().setAttribute("errMsg", "An error occurred during registration. Please try again.");
+				request.getSession().setAttribute("errMsg", "Registration failed. Please try again.");
 				response.sendRedirect(request.getContextPath() + "/register");
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.getSession().setAttribute("errMsg", "An unexpected error occurred: " + e.getMessage());

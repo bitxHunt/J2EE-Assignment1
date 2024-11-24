@@ -138,8 +138,8 @@ public class UserBookSlot extends HttpServlet {
 		} catch (Exception e) {
 			System.out.println("Error handling slots: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Unable to load available slots. Please try again later.");
-			request.getRequestDispatcher("/error.jsp").forward(request, response);
+			request.setAttribute("err", "Unable to load available slots. Please try again later.");
+			request.getRequestDispatcher("/error/500").forward(request, response);
 		}
 	}
 
@@ -176,6 +176,7 @@ public class UserBookSlot extends HttpServlet {
 
 			// Get the user's address from the database for the GET request
 			AddressDAO addDB = new AddressDAO();
+
 			Address homeAddress = addDB.getAddressByUserId(userId, 1);
 			Address officeAddress = addDB.getAddressByUserId(userId, 2);
 
@@ -188,18 +189,18 @@ public class UserBookSlot extends HttpServlet {
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Please log in to continue booking.");
+			request.setAttribute("err", "Please log in to continue booking.");
 			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (NullPointerException e) {
 			System.out.println("No slot selected: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Please select a time slot to continue booking.");
-			response.sendRedirect(request.getContextPath() + "/book/slots");
+			request.setAttribute("err", "Please select a time slot to continue booking.");
+			request.getRequestDispatcher("/404ErrorPage.jsp").forward(request, response);
 		} catch (Exception e) {
 			System.out.println("Error handling address: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Unable to load address information. Please try again.");
-			request.getRequestDispatcher("/error.jsp").forward(request, response);
+			request.setAttribute("err", "Unable to load address information. Please try again.");
+			request.getRequestDispatcher("/error/500").forward(request, response);
 		}
 	}
 
@@ -261,18 +262,18 @@ public class UserBookSlot extends HttpServlet {
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Please log in to continue booking.");
+			request.setAttribute("err", "Please log in to continue booking.");
 			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (NumberFormatException e) {
 			System.out.println("Invalid address type: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Invalid address type. Please try again.");
+			request.setAttribute("err", "Invalid address type. Please try again.");
 			response.sendRedirect(request.getContextPath() + "/book/address");
 		} catch (Exception e) {
 			System.out.println("Error handling address: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Unable to load address information. Please try again.");
-			request.getRequestDispatcher("/error.jsp").forward(request, response);
+			request.setAttribute("err", "Unable to load address information. Please try again.");
+			request.getRequestDispatcher("/error/500").forward(request, response);
 		}
 	}
 
@@ -334,20 +335,20 @@ public class UserBookSlot extends HttpServlet {
 			request.setAttribute("selectedAddress", selectedAddress);
 			request.getRequestDispatcher("/user/bookReview.jsp").forward(request, response);
 		} catch (IllegalStateException e) {
-			System.out.println("Incomplete booking data: " + e.getMessage());
+			System.out.println("Session expired: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Please complete all booking steps.");
-			response.sendRedirect(request.getContextPath() + "/book/slots");
+			request.setAttribute("err", "Please log in to continue booking.");
+			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (NullPointerException e) {
 			System.out.println("Incomplete booking data: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Please complete all booking steps.");
+			request.setAttribute("err", "Please complete all booking steps.");
 			response.sendRedirect(request.getContextPath() + "/book/slots");
 		} catch (Exception e) {
 			System.out.println("Error handling confirmation: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Unable to process booking confirmation. Please try again.");
-			request.getRequestDispatcher("/error.jsp").forward(request, response);
+			request.setAttribute("err", "Unable to process booking confirmation. Please try again.");
+			request.getRequestDispatcher("/error/500").forward(request, response);
 		}
 	}
 
@@ -359,6 +360,12 @@ public class UserBookSlot extends HttpServlet {
 			BundleDAO bundleDB = new BundleDAO();
 			ServiceDAO serviceDB = new ServiceDAO();
 
+			// Check session exists for user
+			Integer userId = (Integer) session.getAttribute("userId");
+			if (userId == null) {
+				throw new IllegalStateException("User not logged in");
+			}
+
 			Integer buttonPressed = Integer.parseInt(request.getParameter("btnSubmit"));
 			String status = "PENDING";
 			LocalDateTime paidAt = null;
@@ -368,8 +375,6 @@ public class UserBookSlot extends HttpServlet {
 				status = "IN_PROGRESS";
 				paidAt = LocalDateTime.now();
 			}
-
-			Integer userId = (Integer) session.getAttribute("userId");
 
 			selectedAddress = (Address) session.getAttribute("selectedAddress");
 
@@ -446,11 +451,16 @@ public class UserBookSlot extends HttpServlet {
 			// Redirect to user dashboard
 			response.sendRedirect(request.getContextPath() + "/profile");
 
+		} catch (IllegalStateException e) {
+			System.out.println("Session expired: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("err", "Please log in to continue booking.");
+			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (Exception e) {
 			System.out.println("Error handling booking: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Unable to process booking confirmation. Please try again.");
-			request.getRequestDispatcher("/error.jsp").forward(request, response);
+			request.setAttribute("err", "Unable to process booking confirmation. Please try again.");
+			request.getRequestDispatcher("/error/500").forward(request, response);
 		}
 	}
 
@@ -474,10 +484,11 @@ public class UserBookSlot extends HttpServlet {
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Please log in to continue.");
+			request.setAttribute("err", "Please log in to continue.");
 			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (Exception e) {
 			e.printStackTrace();
+			request.setAttribute("err", "Unable to load the booking history");
 			response.sendRedirect(request.getContextPath() + "/error");
 		}
 	}
@@ -498,7 +509,7 @@ public class UserBookSlot extends HttpServlet {
 
 			int rowsAffected = transDAO.updateTransactionStatus(transId, status);
 			if (rowsAffected < 0) {
-				request.setAttribute("errorMessage", "Error Cancelling Booking");
+				request.setAttribute("err", "Error Cancelling Booking");
 			}
 
 			response.sendRedirect(request.getContextPath() + "/book/view");
@@ -506,7 +517,7 @@ public class UserBookSlot extends HttpServlet {
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Please log in to continue.");
+			request.setAttribute("err", "Please log in to continue.");
 			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -536,7 +547,7 @@ public class UserBookSlot extends HttpServlet {
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Please log in to continue.");
+			request.setAttribute("err", "Please log in to continue.");
 			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -562,7 +573,7 @@ public class UserBookSlot extends HttpServlet {
 
 			int rowsAffected = transDAO.updateTransactionStatus(transId, status);
 			if (rowsAffected < 0) {
-				request.setAttribute("errorMessage", "Error Making Payment");
+				request.setAttribute("err", "Error Making Payment");
 				request.getRequestDispatcher("/error.jsp").forward(request, response);
 			}
 
@@ -571,7 +582,7 @@ public class UserBookSlot extends HttpServlet {
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("errorMessage", "Please log in to continue.");
+			request.setAttribute("err", "Please log in to continue.");
 			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (Exception e) {
 			e.printStackTrace();

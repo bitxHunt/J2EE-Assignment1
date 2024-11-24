@@ -162,8 +162,6 @@ public class UserProfile extends HttpServlet {
 			request.setAttribute("homeAddress", homeAddress);
 			request.setAttribute("officeAddress", officeAddress);
 
-			System.out.println("Office Address: " + officeAddress.getId());
-
 			request.getRequestDispatcher("/user/profileEdit.jsp").forward(request, response);
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
@@ -192,26 +190,8 @@ public class UserProfile extends HttpServlet {
 			String phoneNo = request.getParameter("phoneNo");
 			Part imagePart = request.getPart("profileImage");
 
-			String strHomeAddId = request.getParameter("homeAddressId");
-			String strOfficeAddId = request.getParameter("officeAddressId");
-
 			userDB.updateUserProfile(userId, firstName, lastName, imagePart, phoneNo);
 			System.out.println("User Profile Updated");
-			System.out.println("Home Address ID: " + strHomeAddId);
-			System.out.println("Office Address ID: " + strOfficeAddId);
-
-			String homeAddress = request.getParameter("homeAddress");
-			String homePostal = request.getParameter("homePostal");
-			String homeUnit = request.getParameter("homeUnit");
-			Integer homeAddId = Integer.parseInt(strHomeAddId);
-
-			String officeAddress = request.getParameter("officeAddress");
-			String officePostal = request.getParameter("officePostal");
-			String officeUnit = request.getParameter("officeUnit");
-			Integer officeAddId = Integer.parseInt(strOfficeAddId);
-
-			addressDB.updateAddressById(userId, homeAddId, homeAddress, Integer.parseInt(homePostal), homeUnit);
-			addressDB.updateAddressById(userId, officeAddId, officeAddress, Integer.parseInt(officePostal), officeUnit);
 
 			response.sendRedirect(request.getContextPath() + "/profile");
 		} catch (IllegalStateException e) {

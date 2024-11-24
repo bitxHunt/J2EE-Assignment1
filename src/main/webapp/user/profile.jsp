@@ -30,7 +30,18 @@
 	%>
 
 	<!-- Navbar -->
+	<%
+	Integer userId = (Integer) session.getAttribute("userId");
+	if (userId != null) {
+	%>
 	<%@ include file="./components/header.jsp"%>
+	<%
+	} else {
+	%>
+	<%@ include file="../../public/components/header.jsp"%>
+	<%
+	}
+	%>
 
 	<div class="container mx-auto p-6 max-w-7xl">
 		<div

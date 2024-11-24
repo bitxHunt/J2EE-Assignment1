@@ -70,9 +70,14 @@ public class GetIndex extends HttpServlet {
 			ArrayList<Category> categories = categoryDAO.getAllCategoriesWithServiceCount();
 			request.setAttribute("categories", categories);
 			request.getRequestDispatcher("public/index.jsp").forward(request, response);
+		} catch(NullPointerException e){
+			System.out.println("Invalid Page: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("err", "Invalid Page. Please try again.");
+			request.getRequestDispatcher("404ErrorPage.jsp").forward(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
-			request.getRequestDispatcher("public/error.jsp").forward(request, response);
+			request.getRequestDispatcher("err/500").forward(request, response);
 		}
 	}
 

@@ -113,6 +113,12 @@
 							</label>
 						</div>
 
+						<!-- Home link -->
+						<div class="row mt-4">
+							<a href="${pageContext.request.contextPath}/"
+								class="text-blue-500 hover:text-blue-700 font-semibold transition duration-200 p-1">
+								Back To Home </a>
+						</div>
 						<!-- Submit Button -->
 						<button class="btn btn-primary w-full">Register</button>
 

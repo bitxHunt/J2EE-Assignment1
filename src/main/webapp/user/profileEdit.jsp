@@ -17,7 +17,6 @@
 	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body class="bg-base-300 min-h-screen">
-
 	<%
 	User user = (User) request.getAttribute("user");
 	Address homeAddress = (Address) request.getAttribute("homeAddress");
@@ -25,10 +24,22 @@
 	%>
 
 	<!-- Navbar -->
+	<%
+	Integer userId = (Integer) session.getAttribute("userId");
+	if (userId != null) {
+	%>
 	<%@ include file="./components/header.jsp"%>
+	<%
+	} else {
+	%>
+	<%@ include file="../../public/components/header.jsp"%>
+	<%
+	}
+	%>
 
-	<div class="container mx-auto p-6 max-w-4xl">
-		<div class="flex items-center gap-4 mb-8">
+	<div class="container mx-auto p-6 max-w-4xl space-y-6">
+		<!-- Back Navigation -->
+		<div class="flex items-center gap-4">
 			<a href="${pageContext.request.contextPath}/profile"
 				class="btn btn-circle btn-ghost"> <span
 				class="material-symbols-outlined">arrow_back</span>
@@ -36,256 +47,205 @@
 			<h1 class="text-3xl font-bold">Edit Profile</h1>
 		</div>
 
-		<form action="${pageContext.request.contextPath}/profile/edit"
-			method="POST" enctype="multipart/form-data">
-			<input type="hidden" name="homeAddressId"
-				value="<%=homeAddress != null ? homeAddress.getId() : ""%>">
-			<input type="hidden" name="officeAddressId"
-				value="<%=officeAddress != null ? officeAddress.getId() : ""%>">
-			<div class="grid grid-cols-1 gap-6">
-				<!-- Personal Information Card -->
-				<div class="card bg-base-100 shadow-xl">
-					<div class="card-body">
-						<h2 class="card-title mb-4">Personal Information</h2>
-
-						<!-- Profile Image -->
-						<div class="flex flex-col items-center gap-4 mb-6">
-							<div class="avatar">
-								<div
-									class="w-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-									<img src="<%=user.getImageURL()%>" alt="Profile" />
-								</div>
-							</div>
-							<div class="form-control w-full max-w-xs">
-								<label class="label"> <span class="label-text">Change
-										Profile Picture</span>
-								</label> <input type="file" name="profileImage" accept="image/*"
-									class="file-input file-input-bordered w-full max-w-xs" />
+		<!-- Personal Information Form -->
+		<div class="card bg-base-100 shadow-xl">
+			<div class="card-body">
+				<h2 class="card-title text-2xl mb-6">Personal Information</h2>
+				<form action="${pageContext.request.contextPath}/profile/edit"
+					method="POST" enctype="multipart/form-data">
+					<!-- Profile Picture -->
+					<div class="flex flex-col items-center gap-4 mb-8">
+						<div class="avatar">
+							<div
+								class="w-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+								<img src="<%=user.getImageURL()%>" alt="Profile" />
 							</div>
 						</div>
-
-						<!-- Name Fields -->
-						<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<div class="form-control">
-								<label class="label"> <span class="label-text">First
-										Name</span>
-								</label> <input type="text" name="firstName"
-									value="<%=user.getFirstName()%>" class="input input-bordered"
-									required />
-							</div>
-							<div class="form-control">
-								<label class="label"> <span class="label-text">Last
-										Name</span>
-								</label> <input type="text" name="lastName"
-									value="<%=user.getLastName()%>" class="input input-bordered"
-									required />
-							</div>
-						</div>
-
-						<!-- Contact Information -->
-						<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-							<div class="form-control">
-								<label class="label"> <span class="label-text">Phone
-										Number</span>
-								</label> <input type="tel" name="phoneNo" value="<%=user.getPhoneNo()%>"
-									class="input input-bordered" required />
-							</div>
-							<div class="form-control">
-								<label class="label"> <span class="label-text">Email</span>
-								</label> <input type="email" value="<%=user.getEmail()%>"
-									class="input input-bordered" disabled /> <label class="label">
-									<span class="label-text-alt text-base-content/60">Email
-										cannot be changed</span>
-								</label>
-							</div>
+						<div class="form-control w-full max-w-xs">
+							<label class="label"> <span class="label-text">Update
+									Profile Picture</span>
+							</label> <input type="file" name="profileImage" accept="image/*"
+								class="file-input file-input-bordered w-full" />
 						</div>
 					</div>
-				</div>
 
-				<!-- Addresses Card -->
-				<div class="card bg-base-100 shadow-xl">
-					<div class="card-body">
-						<div class="flex justify-between items-center mb-4">
-							<h2 class="card-title">My Addresses</h2>
-							<%
-							boolean canAddAddress = (homeAddress == null || officeAddress == null);
-							if (canAddAddress) {
-							%>
-							<label for="add-address-modal"
-								class="btn btn-primary btn-sm gap-2"> <span
-								class="material-symbols-outlined">add</span> Add Address
+					<!-- User Details -->
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<div class="form-control">
+							<label class="label"> <span class="label-text">First
+									Name</span>
+							</label> <input type="text" name="firstName"
+								value="<%=user.getFirstName()%>" class="input input-bordered"
+								required />
+						</div>
+
+						<div class="form-control">
+							<label class="label"> <span class="label-text">Last
+									Name</span>
+							</label> <input type="text" name="lastName"
+								value="<%=user.getLastName()%>" class="input input-bordered"
+								required />
+						</div>
+
+						<div class="form-control">
+							<label class="label"> <span class="label-text">Phone
+									Number</span>
+							</label> <input type="tel" name="phoneNo" value="<%=user.getPhoneNo()%>"
+								class="input input-bordered" required />
+						</div>
+
+						<div class="form-control">
+							<label class="label"> <span class="label-text">Email</span>
+							</label> <input type="email" value="<%=user.getEmail()%>"
+								class="input input-bordered" disabled /> <label class="label">
+								<span class="label-text-alt text-error">Email cannot be
+									changed</span>
 							</label>
-							<%
-							}
-							%>
 						</div>
+					</div>
 
-						<!-- Home Address -->
-						<%
-						if (homeAddress != null) {
-						%>
-						<div class="bg-base-200 rounded-xl p-6 mb-4">
-							<div class="flex items-center justify-between mb-4">
-								<div class="flex items-center gap-4">
-									<div class="p-3 bg-primary/10 rounded-full">
-										<span class="material-symbols-outlined text-primary text-2xl">home</span>
-									</div>
-									<h3 class="font-bold text-lg">Home Address</h3>
-								</div>
-								<form action="${pageContext.request.contextPath}/address/delete"
-									method="POST" class="inline">
-									<input type="hidden" name="homeAddressId"
-										value="<%=homeAddress.getId()%>">
-									<button type="submit"
-										class="btn btn-ghost btn-sm btn-circle text-error">
-										<span class="material-symbols-outlined">delete</span>
-									</button>
-								</form>
-							</div>
-							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div class="form-control">
-									<label class="label"> <span class="label-text">Address</span>
-									</label> <input type="text" name="homeAddress"
-										value="<%=homeAddress.getAddress()%>"
-										class="input input-bordered" required />
-								</div>
-								<div class="form-control">
-									<label class="label"> <span class="label-text">Unit
-											Number</span>
-									</label> <input type="text" name="homeUnit"
-										value="<%=homeAddress.getUnit()%>"
-										class="input input-bordered" required />
-								</div>
-								<div class="form-control">
-									<label class="label"> <span class="label-text">Postal
-											Code</span>
-									</label> <input type="text" name="homePostal"
-										value="<%=homeAddress.getPostalCode()%>"
-										class="input input-bordered" required pattern="[0-9]{6}" />
-								</div>
-							</div>
-						</div>
-						<%
-						}
-						%>
-
-						<!-- Office Address -->
-						<%
-						if (officeAddress != null) {
-						%>
-						<div class="bg-base-200 rounded-xl p-6">
-							<div class="flex items-center justify-between mb-4">
-								<div class="flex items-center gap-4">
-									<div class="p-3 bg-secondary/10 rounded-full">
-										<span
-											class="material-symbols-outlined text-secondary text-2xl">apartment</span>
-									</div>
-									<h3 class="font-bold text-lg">Office Address</h3>
-								</div>
-								<form action="${pageContext.request.contextPath}/address/delete"
-									method="POST" class="inline">
-									<input type="hidden" name="officeAddressId"
-										value="<%=officeAddress.getId()%>">
-									<button type="submit"
-										class="btn btn-ghost btn-sm btn-circle text-error">
-										<span class="material-symbols-outlined">delete</span>
-									</button>
-								</form>
-							</div>
-							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div class="form-control">
-									<label class="label"> <span class="label-text">Address</span>
-									</label> <input type="text" name="officeAddress"
-										value="<%=officeAddress.getAddress()%>"
-										class="input input-bordered" required />
-								</div>
-								<div class="form-control">
-									<label class="label"> <span class="label-text">Unit
-											Number</span>
-									</label> <input type="text" name="officeUnit"
-										value="<%=officeAddress.getUnit()%>"
-										class="input input-bordered" required />
-								</div>
-								<div class="form-control">
-									<label class="label"> <span class="label-text">Postal
-											Code</span>
-									</label> <input type="text" name="officePostal"
-										value="<%=officeAddress.getPostalCode()%>"
-										class="input input-bordered" required pattern="[0-9]{6}" />
-								</div>
-							</div>
-						</div>
-						<%
-						}
-						%>
-					</div>
-				</div>
-
-				<!-- Save Button -->
-				<div class="flex justify-end gap-4">
-					<a href="${pageContext.request.contextPath}/profile/edit"
-						class="btn btn-ghost">Cancel</a>
-					<button type="submit" class="btn btn-primary gap-2">
-						<span class="material-symbols-outlined">save</span> Save Changes
-					</button>
-				</div>
-			</div>
-		</form>
-
-		<!-- Add Address Modal using DaisyUI -->
-		<input type="checkbox" id="add-address-modal" class="modal-toggle" />
-		<div class="modal" role="dialog">
-			<div class="modal-box">
-				<h3 class="font-bold text-lg mb-4">Add New Address</h3>
-				<form action="${pageContext.request.contextPath}/address/add"
-					method="POST">
-					<div class="form-control mb-4">
-						<label class="label"> <span class="label-text">Address
-								Type</span>
-						</label> <select name="addressType" class="select select-bordered"
-							required>
-							<option value="" disabled selected>Select address type</option>
-							<%
-							if (homeAddress == null) {
-							%>
-							<option value="HOME">Home</option>
-							<%
-							}
-							if (officeAddress == null) {
-							%>
-							<option value="OFFICE">Office</option>
-							<%
-							}
-							%>
-						</select>
-					</div>
-					<div class="form-control">
-						<label class="label"> <span class="label-text">Address</span>
-						</label> <input type="text" name="address" class="input input-bordered"
-							required />
-					</div>
-					<div class="form-control">
-						<label class="label"> <span class="label-text">Unit
-								Number</span>
-						</label> <input type="text" name="unit" class="input input-bordered"
-							required />
-					</div>
-					<div class="form-control">
-						<label class="label"> <span class="label-text">Postal
-								Code</span>
-						</label> <input type="text" name="postalCode" class="input input-bordered"
-							required pattern="[0-9]{6}" />
-					</div>
-					<div class="modal-action">
-						<label for="add-address-modal" class="btn">Cancel</label>
-						<button type="submit" class="btn btn-primary">Add Address</button>
+					<div class="flex justify-end mt-6">
+						<button type="submit" class="btn btn-primary gap-2">
+							<span class="material-symbols-outlined">save</span> Update
+							Profile
+						</button>
 					</div>
 				</form>
 			</div>
-			<label class="modal-backdrop" for="add-address-modal">Close</label>
 		</div>
+
+		<!-- Addresses Section -->
+		<h2 class="text-2xl font-bold mt-8 mb-4">My Addresses</h2>
+
+		<!-- Home Address -->
+		<%
+		if (homeAddress != null) {
+		%>
+		<div class="card bg-base-100 shadow-xl">
+			<div class="card-body">
+				<form action="${pageContext.request.contextPath}/address/edit"
+					method="POST">
+					<input type="hidden" name="addressId"
+						value="<%=homeAddress.getId()%>"> <input type="hidden"
+						name="addressType" value="HOME">
+
+					<div class="flex items-center gap-4 mb-6">
+						<div class="p-3 bg-primary/10 rounded-full">
+							<span class="material-symbols-outlined text-primary text-2xl">home</span>
+						</div>
+						<h3 class="text-xl font-bold">Home Address</h3>
+					</div>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<div class="form-control">
+							<label class="label"><span class="label-text">Address</span></label>
+							<input type="text" name="address"
+								value="<%=homeAddress.getAddress()%>"
+								class="input input-bordered" required />
+						</div>
+
+						<div class="form-control">
+							<label class="label"><span class="label-text">Unit
+									Number</span></label> <input type="text" name="unit"
+								value="<%=homeAddress.getUnit()%>" class="input input-bordered"
+								required />
+						</div>
+
+						<div class="form-control">
+							<label class="label"><span class="label-text">Postal
+									Code</span></label> <input type="text" name="postalCode"
+								value="<%=homeAddress.getPostalCode()%>"
+								class="input input-bordered" required pattern="[0-9]{6}" />
+						</div>
+					</div>
+
+					<div class="flex justify-end gap-4 mt-6">
+						<button type="submit" class="btn btn-primary gap-2">
+							<span class="material-symbols-outlined">save</span> Update Home
+							Address
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		<%
+		}
+		%>
+
+		<!-- Office Address -->
+		<%
+		if (officeAddress != null) {
+		%>
+		<div class="card bg-base-100 shadow-xl">
+			<div class="card-body">
+				<form action="${pageContext.request.contextPath}/address/edit"
+					method="POST">
+					<input type="hidden" name="addressId"
+						value="<%=officeAddress.getId()%>"> <input type="hidden"
+						name="addressType" value="OFFICE">
+
+					<div class="flex items-center gap-4 mb-6">
+						<div class="p-3 bg-secondary/10 rounded-full">
+							<span class="material-symbols-outlined text-secondary text-2xl">apartment</span>
+						</div>
+						<h3 class="text-xl font-bold">Office Address</h3>
+					</div>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+						<div class="form-control">
+							<label class="label"><span class="label-text">Address</span></label>
+							<input type="text" name="address"
+								value="<%=officeAddress.getAddress()%>"
+								class="input input-bordered" required />
+						</div>
+
+						<div class="form-control">
+							<label class="label"><span class="label-text">Unit
+									Number</span></label> <input type="text" name="unit"
+								value="<%=officeAddress.getUnit()%>"
+								class="input input-bordered" required />
+						</div>
+
+						<div class="form-control">
+							<label class="label"><span class="label-text">Postal
+									Code</span></label> <input type="text" name="postalCode"
+								value="<%=officeAddress.getPostalCode()%>"
+								class="input input-bordered" required pattern="[0-9]{6}" />
+						</div>
+					</div>
+
+					<div class="flex justify-end gap-4 mt-6">
+						<button type="submit" class="btn btn-primary gap-2">
+							<span class="material-symbols-outlined">save</span> Update Office
+							Address
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		<%
+		}
+		%>
+
+		<!-- Add Address Section -->
+		<%
+		if (homeAddress == null || officeAddress == null) {
+		%>
+		<div class="card bg-base-100 shadow-xl text-center">
+			<div class="card-body">
+				<h3 class="text-xl font-bold mb-4">Add New Address</h3>
+				<a href="${pageContext.request.contextPath}/address/add"
+					class="btn btn-primary gap-2 inline-flex items-center justify-center">
+					<span class="material-symbols-outlined">add</span> Add <%=homeAddress == null ? "Home" : "Office"%>
+					Address
+				</a>
+			</div>
+		</div>
+		<%
+		}
+		%>
 	</div>
-	<!-- Footer -->
+
 	<%@ include file="components/footer.jsp"%>
 </body>
 </html>

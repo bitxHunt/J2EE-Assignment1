@@ -15,7 +15,7 @@
 <!-- min-h-screen ensures full height, flex and items-center vertically centers content -->
 <body class="min-h-screen flex items-center justify-center">
 
-	<!-- Toast container for error message -->	
+	<!-- Toast container for error message -->
 	<%
 	String message = (String) session.getAttribute("message");
 	if (message != null) {
@@ -43,6 +43,7 @@
 		</div>
 	</div>
 	<%
+
 	%>
 	<%
 	}
@@ -96,11 +97,11 @@
 							</label>
 						</div>
 
-						<!-- Forgot Password link -->
+						<!-- Home link -->
 						<div class="row mt-4">
-							<a href=""
+							<a href="${pageContext.request.contextPath}/"
 								class="text-blue-500 hover:text-blue-700 font-semibold transition duration-200 p-1">
-								Forgot Password? </a>
+								Back To Home </a>
 						</div>
 
 						<!-- Submit Button -->

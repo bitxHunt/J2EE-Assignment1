@@ -34,6 +34,25 @@ public class AddressDAO {
 		return address;
 	}
 
+	public void createAddressByUserId(Integer userId, Integer addTypeId, String address, Integer postalCode, String unit)
+			throws SQLException {
+		Connection conn = DB.connect();
+		try {
+			String sqlStr = "INSERT INTO address (user_id, type_id, address, postal_code, unit) VALUES (?, ?, ?, ?, ?);";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, userId);
+			pstmt.setInt(2, addTypeId);
+			pstmt.setString(3, address);
+			pstmt.setInt(4, postalCode);
+			pstmt.setString(5, unit);
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+	}
+
 	public void updateAddressById(Integer userId, Integer addressId, String address, Integer postalCode, String unit)
 			throws SQLException {
 		Connection conn = DB.connect();

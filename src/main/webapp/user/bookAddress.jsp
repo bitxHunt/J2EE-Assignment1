@@ -15,7 +15,7 @@
 </head>
 <body class="bg-base-200 min-h-screen">
 	<!-- Header -->
-	>
+
 	<%@ include file="./components/header.jsp"%>
 	<div class="container mx-auto p-4">
 		<div class="card bg-base-100 shadow-xl">
@@ -32,7 +32,6 @@
 				<form action="${pageContext.request.contextPath}/book/services"
 					method="post">
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-						<!-- Left Column - Saved Addresses -->
 						<div>
 							<%
 							Address homeAddress = (Address) request.getAttribute("homeAddress");

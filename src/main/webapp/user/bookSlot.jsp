@@ -16,8 +16,18 @@
 </head>
 <body class="bg-base-200 min-h-screen">
 	<!-- Header -->
-	>
+	<%
+	Integer userId = (Integer) session.getAttribute("userId");
+	if (userId != null) {
+	%>
 	<%@ include file="./components/header.jsp"%>
+	<%
+	} else {
+	%>
+	<%@ include file="../../public/components/header.jsp"%>
+	<%
+	}
+	%>
 	<div class="container mx-auto p-4">
 		<div class="card bg-base-100 shadow-xl">
 			<div class="card-body">

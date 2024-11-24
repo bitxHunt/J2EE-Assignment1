@@ -109,27 +109,37 @@ public class UserDAO {
 
 	public Integer registerUser(String firstName, String lastName, String email, String hashedPassword, String phoneNo)
 			throws SQLException {
-		Connection conn = DB.connect();
-		Integer rowsAffected = 0;
-		try {
-			String sqlStr = "INSERT INTO users (first_name, last_name, email, password, phone_number, image_url) VALUES (?, ?, ?, ?, ?, ?);";
-			String defaultImageUrl = "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732446530/bizbynfxadhthnoymbdo.webp";
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Integer userId = null;
 
-			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+		try {
+			conn = DB.connect();
+			conn.setAutoCommit(false);
+
+			String sqlStr = "SELECT register_user_with_addresses(?, ?, ?, ?, ?)";
+			pstmt = conn.prepareStatement(sqlStr);
+
 			pstmt.setString(1, firstName);
 			pstmt.setString(2, lastName);
 			pstmt.setString(3, email);
 			pstmt.setString(4, hashedPassword);
 			pstmt.setString(5, phoneNo);
-			pstmt.setString(6, defaultImageUrl);
-			rowsAffected = pstmt.executeUpdate();
+
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				userId = rs.getInt(1);
+				conn.commit();
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			conn.close();
 		}
-		return rowsAffected;
+		return userId;
 	}
 
 	public void updateUserProfile(int userId, String firstName, String lastName, Part imagePart, String phoneNo)
