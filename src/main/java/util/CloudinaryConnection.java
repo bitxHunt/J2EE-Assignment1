@@ -1,3 +1,8 @@
+/***********************************************************
+ * Name: Soe Zaw Aung, Scott
+ * Class: DIT/FT/2B/01
+ * Admin No: P2340474
+ ************************************************************/
 package util;
 
 import com.cloudinary.Cloudinary;
@@ -15,6 +20,7 @@ import java.util.Properties;
 import java.util.HashMap;
 
 public class CloudinaryConnection {
+	// Initialize and configure Cloudinary connection using properties file
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Cloudinary getCloudinary() {
 		Properties properties = new Properties();
@@ -41,6 +47,7 @@ public class CloudinaryConnection {
 		return cloudinary;
 	}
 
+	// Upload image file to Cloudinary and return secure URL
 	public static String uploadImageToCloudinary(Cloudinary cloudinary, Part imageFile) {
 		try {
 			// Get the file name and extension from the Part
@@ -71,8 +78,9 @@ public class CloudinaryConnection {
 		return null;
 	}
 
-
+	// Delete image from Cloudinary using its URL
 	public static void deleteFromCloudinary(Cloudinary cloudinary, String url) throws IOException {
+		// Extract image ID from URL for deletion
 		String id = "";
 		int lastSlashIndex = url.lastIndexOf('/');
 		int lastDotIndex = url.lastIndexOf('.');

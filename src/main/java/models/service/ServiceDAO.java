@@ -1,3 +1,9 @@
+/***********************************************************
+ * Name: Soe Zaw Aung, Scott
+ * Class: DIT/FT/2B/01
+ * Admin No: P2340474
+ * Description: Model class to store database operations related to service
+ ************************************************************/
 package models.service;
 
 import util.DB;
@@ -17,6 +23,7 @@ import jakarta.servlet.http.Part;
 public class ServiceDAO {
 	private Cloudinary cloudinary;
 
+	//retrieves all services
 	public ArrayList<Service> getAllServices() throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();
@@ -45,6 +52,7 @@ public class ServiceDAO {
 		return services;
 	}
 
+	//retrieves all active services
 	public ArrayList<Service> getAllActiveServices() throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();
@@ -73,6 +81,7 @@ public class ServiceDAO {
 		return services;
 	}
 
+	//retrieve service by specific id
 	public Service getServiceById(int serviceId) throws SQLException {
 		Connection conn = DB.connect();
 		Service service = null;
@@ -99,6 +108,7 @@ public class ServiceDAO {
 		return service;
 	}
 
+	//insert new service with optional image
 	public boolean createService(Service service, Part imagePart) throws SQLException {
 		Connection conn = DB.connect();
 		boolean success = false;
@@ -130,6 +140,7 @@ public class ServiceDAO {
 		return success;
 	}
 
+	//update service field
 	public boolean updateService(Service service, Part imagePart) throws SQLException {
 		Connection conn = DB.connect();
 		boolean success = false;
@@ -149,6 +160,7 @@ public class ServiceDAO {
 				newImageUrl = CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart);
 
 				// If upload successful and no default image, delete old image and update SQL
+				//check to not to delete old image
 				if (newImageUrl != null && currentImageUrl != null
 						&& currentImageUrl != "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg") {
 					// Delete old image from Cloudinary
@@ -187,6 +199,7 @@ public class ServiceDAO {
 	}
 
 
+	//delete service and Cloudinary image
 	public boolean deleteService(int serviceId) throws SQLException {
 	    Connection conn = DB.connect();
 	    this.cloudinary = CloudinaryConnection.getCloudinary();
@@ -202,7 +215,7 @@ public class ServiceDAO {
 	        int rowsAffected = pstmt.executeUpdate();
 	        success = rowsAffected > 0;
 	        
-	        // If successful and image is not default, delete from Cloudinary
+	        // If successful and image is not default, delete from Cloudinary but check to not be default image
 	        if (success) {
 	            if (service != null && service.getImageUrl() != null && !service.getImageUrl().equals(
 	                "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg")) {
@@ -219,6 +232,7 @@ public class ServiceDAO {
 	    return success;
 	}
 
+	//retrieve services filtered by category
 	public ArrayList<Service> getServicesByCategory(int categoryId) throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();

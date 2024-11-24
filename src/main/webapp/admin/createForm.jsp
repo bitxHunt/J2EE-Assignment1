@@ -1,3 +1,8 @@
+<%-- 
+    Name: Soe Zaw Aung, Scott
+    Class: DIT/FT/2B/01
+    Admin No: p2340474
+--%>
 <%@page import="java.util.Map"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
@@ -82,7 +87,7 @@
         function switchTab(tab, element) {
             // Update URL without reloading the page
             const url = new URL(window.location);
-            url.searchParams.set('tab', tab.replace('Form', '')); // Remove 'Form' suffix for cleaner URL
+            url.searchParams.set('tab', tab.replace('Form', '')); 
             window.history.pushState({}, '', url);
             
             // Switch the tab UI
@@ -118,7 +123,7 @@
             }
         }
 
-        // Call this function when page loads
+        // Call the initTab function when page loads
         document.addEventListener('DOMContentLoaded', setInitialTab);
         
     </script>

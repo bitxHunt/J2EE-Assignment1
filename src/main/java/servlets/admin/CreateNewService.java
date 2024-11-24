@@ -1,3 +1,8 @@
+/***********************************************************
+ * Name: Soe Zaw Aung, Scott
+ * Class: DIT/FT/2B/01
+ * Admin No: P2340474
+ ************************************************************/
 package servlets.admin;
 
 import jakarta.servlet.*;
@@ -39,12 +44,12 @@ public class CreateNewService extends HttpServlet {
 		// Validate service name
 		if (serviceName == null || serviceName.trim().isEmpty()) {
 			errors.put("serviceName", "Service name is required");
-		} else if (serviceName.length() > 100) { // Adjust max length as needed
+		} else if (serviceName.length() > 100) { 
 			errors.put("serviceName", "Service name must be less than 100 characters");
 		}
 
 		// Validate description
-		if (description != null && description.length() > 255) { // Adjust max length as needed
+		if (description != null && description.length() > 255) { 
 			errors.put("description", "Description must be less than 500 characters");
 		}
 
@@ -72,7 +77,7 @@ public class CreateNewService extends HttpServlet {
 				price = Float.parseFloat(priceStr);
 				if (price < 0) {
 					errors.put("price", "Price cannot be negative");
-				} else if (price > 99999) { // Add reasonable maximum price
+				} else if (price > 99999) { 
 					errors.put("price", "Price exceeds maximum allowed value of 99999");
 				}
 			} catch (NumberFormatException e) {

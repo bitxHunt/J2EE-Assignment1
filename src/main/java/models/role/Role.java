@@ -1,16 +1,23 @@
+/***********************************************************
+* Name: Soe Zaw Aung, Scott
+* Class: DIT/FT/2B/01
+* Admin No: P2340474
+* Description: Model class to store category information
+************************************************************/
 package models.role;
 
 public class Role {
 	private int roleId;
 	private String roleName;
 
-	// Constructors
+	//Default Constructors
 	public Role() {
 		this.roleId = 0;
 		this.roleName = "";
 
 	}
 
+	//Explicit Constructors
 	public Role(int roleId, String roleName) {
 		this.roleId = roleId;
 		this.roleName = roleName;

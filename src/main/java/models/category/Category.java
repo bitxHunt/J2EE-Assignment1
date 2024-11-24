@@ -1,3 +1,9 @@
+/***********************************************************
+* Name: Soe Zaw Aung, Scott
+* Class: DIT/FT/2B/01
+* Admin No: P2340474
+* Description: Model class to store category information
+************************************************************/
 package models.category;
 
 import java.util.ArrayList;

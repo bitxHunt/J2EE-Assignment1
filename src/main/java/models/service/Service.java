@@ -1,3 +1,9 @@
+/***********************************************************
+* Name: Soe Zaw Aung, Scott
+* Class: DIT/FT/2B/01
+* Admin No: P2340474
+* Description: Model class to store service information
+************************************************************/
 package models.service;
 
 public class Service {
@@ -22,7 +28,7 @@ public class Service {
 		this.isActive = true;
 	}
 
-	// Explicit Constructor with all fields with default categoryName
+	// Explicit Constructors
 	public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price) {
 		this.serviceId = serviceId;
 		this.serviceName = serviceName;
@@ -32,7 +38,6 @@ public class Service {
 		this.categoryName = "";
 	}
 
-	// Explicit Constructor with all fields
 	public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price,
 			String categoryName, String imageUrl, Boolean isActive) {
 		this.serviceId = serviceId;
@@ -45,7 +50,6 @@ public class Service {
 		this.isActive = isActive;
 	}
 	
-	// Explicit Constructor with all fields
 	public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price,
 			String categoryName, String imageUrl, boolean isActive) {
 		this.serviceId = serviceId;

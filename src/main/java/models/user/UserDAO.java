@@ -1,3 +1,16 @@
+/***********************************************************
+ * Author-1
+ * Name: Thiha Swan Htet, Harry
+ * Class: DIT/FT/2B/01
+ * Admin No: 
+ *
+ * Author-2
+ * Name: Soe Zaw Aung, Scott
+ * Class: DIT/FT/2B/01
+ * Admin No: P2340474
+ * 
+ * Description: Model class to store database operations related to user
+ ************************************************************/
 package models.user;
 
 import util.DB;
@@ -158,7 +171,7 @@ public class UserDAO {
 				pstmt.setInt(4, userId);
 				pstmt.executeUpdate();
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -167,6 +180,7 @@ public class UserDAO {
 	}
 
 	// Author : Soe Zaw Aung
+	// Retrieve users with pagination support
 	public ArrayList<User> getUsersWithPagination(int page, int pageSize) throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<User> users = new ArrayList<>();
@@ -195,6 +209,7 @@ public class UserDAO {
 		return users;
 	}
 
+	// Get total count of users in database
 	public int getTotalUserCount() throws SQLException {
 		Connection conn = DB.connect();
 		try {
@@ -212,6 +227,7 @@ public class UserDAO {
 		return 0;
 	}
 
+	// Register new user with specified role including admin
 	public Integer registerUserWithRole(String firstName, String lastName, String email, String hashedPassword,
 			String phoneNo, int roleId) throws SQLException {
 		Connection conn = DB.connect();
@@ -242,6 +258,7 @@ public class UserDAO {
 		return rowsAffected;
 	}
 
+	// Update user's role by user ID
 	public boolean updateUserRole(int userId, int roleId) throws SQLException {
 		Connection conn = DB.connect();
 		try {
@@ -256,6 +273,7 @@ public class UserDAO {
 		}
 	}
 
+	// Delete user by user ID
 	public boolean deleteUser(int userId) throws SQLException {
 		Connection conn = DB.connect();
 		int rowsAffected = 0;
