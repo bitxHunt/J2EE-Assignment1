@@ -233,8 +233,8 @@ public class UserBookSlot extends HttpServlet {
 			// the get request
 			ServiceDAO serviceDB = new ServiceDAO();
 			BundleDAO bundleDB = new BundleDAO();
-			ArrayList<Service> services = serviceDB.getAllServices();
-			ArrayList<Bundle> bundles = bundleDB.getAllBundlesWithServices();
+			ArrayList<Service> services = serviceDB.getAllActiveServices();
+			ArrayList<Bundle> bundles = bundleDB.getAllActiveBundlesWithServices();
 
 			// Set attributes to pass to the front end
 			request.setAttribute("services", services);
