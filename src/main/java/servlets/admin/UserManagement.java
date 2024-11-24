@@ -34,6 +34,11 @@ public class UserManagement extends HttpServlet {
 			int totalUsers = userDAO.getTotalUserCount();
 			int totalPages = (int) Math.ceil((double) totalUsers / USERS_PER_PAGE);
 
+			if (page > totalPages) {
+				response.sendRedirect(request.getContextPath() + "/error/404ErrorPage.jsp");
+				return;
+			}
+
 			ArrayList<User> users = userDAO.getUsersWithPagination(page, USERS_PER_PAGE);
 			ArrayList<Role> roles = roleDAO.getAllRoles();
 
@@ -43,6 +48,8 @@ public class UserManagement extends HttpServlet {
 			request.setAttribute("roles", roles);
 
 			request.getRequestDispatcher("userManagement.jsp").forward(request, response);
+		} catch (NumberFormatException e) {
+			response.sendRedirect(request.getContextPath() + "/error/400ErrorPage.jsp");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

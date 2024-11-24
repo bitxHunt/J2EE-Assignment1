@@ -8,6 +8,8 @@
 <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css"
 	rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=vacuum" />
 </head>
 <body>
 	<!-- Top Navigation Bar -->
@@ -16,23 +18,21 @@
 		<div class="flex-1 flex items-center gap-4">
 			<a href="${pageContext.request.contextPath}/admin"
 				class="btn btn-ghost"> <span
-				class="material-symbols-outlined text-blue-500 text-4xl">
-					vacuum </span>
-			</a> <a href="${pageContext.request.contextPath}/admin"
-				class="btn btn-ghost text-xl"> Admin View </a>
+				class="material-symbols-outlined text-blue-500 text-4xl">vacuum</span>
+			</a>
+			<p class="text-xl">Admin View</p>
 		</div>
 
 		<!-- Right side -->
 		<div class="flex items-center gap-4">
-			<a href="${pageContext.request.contextPath}/admin/manage-users"
-				class="btn btn-ghost"> HR Management </a> <a
-				href="${pageContext.request.contextPath}/admin/statistics"
-				class="btn btn-ghost"> Statistics </a>
+			<a href="${pageContext.request.contextPath}/admin"
+				class="btn btn-ghost"> Home </a> <a
+				href="${pageContext.request.contextPath}/admin/manage-users"
+				class="btn btn-ghost"> HR Management </a>
 			<button
 				onclick="window.location='${pageContext.request.contextPath}/admin/createForm'"
 				class="btn btn-primary">Create New</button>
 		</div>
 	</div>
-
 </body>
 </html>

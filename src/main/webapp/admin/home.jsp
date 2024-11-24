@@ -13,8 +13,7 @@
 <title>Home Page</title>
 <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css"
 	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=vacuum" />
+
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-base-100">
