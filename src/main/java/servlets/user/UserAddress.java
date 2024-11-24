@@ -35,18 +35,7 @@ public class UserAddress extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
-
-		HttpSession session = request.getSession();
-		String pathInfo = request.getPathInfo();
-
-		switch (pathInfo == null ? "/" : pathInfo) {
-		case "/":
-			System.out.println("Running GET request for /address");
-			handleGetAddress(request, response, session);
-			break;
-		default:
-			response.sendRedirect(request.getContextPath() + "/address");
-		}
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**
@@ -71,35 +60,6 @@ public class UserAddress extends HttpServlet {
 		default:
 			response.sendRedirect(request.getContextPath() + "/address");
 		}
-	}
-
-	private void handleGetAddress(HttpServletRequest request, HttpServletResponse response, HttpSession session)
-			throws ServletException, IOException {
-		try {
-			Integer userId = (Integer) session.getAttribute("userId");
-			if (userId == null) {
-				throw new IllegalStateException("User not logged in");
-			}
-
-			String strAddId = request.getParameter("address_type");
-			Integer addressId = Integer.parseInt(strAddId);
-
-			AddressDAO addressDB = new AddressDAO();
-			Address address = addressDB.getAddressByUserId(userId, addressId);
-
-			request.setAttribute("address", address);
-			RequestDispatcher rd = request.getRequestDispatcher("/user/booking.jsp");
-			rd.forward(request, response);
-
-		} catch (IllegalStateException e) {
-			System.out.println("Session expired: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("errorMessage", "Please log in to continue booking.");
-			response.sendRedirect(request.getContextPath() + "/login");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	public void handleEditAddress(HttpServletRequest request, HttpServletResponse response, HttpSession session)

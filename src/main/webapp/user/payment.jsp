@@ -19,6 +19,9 @@
 	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body class="bg-base-300 min-h-screen">
+	<!-- Header -->
+	>
+	<%@ include file="./components/header.jsp"%>
 	<div class="container mx-auto p-6 max-w-3xl">
 		<div class="card bg-base-100 shadow-xl">
 			<div class="card-body">
@@ -187,8 +190,7 @@
 							class="material-symbols-outlined">arrow_back</span> Back to
 							Bookings
 						</a>
-						<form
-							action="${pageContext.request.contextPath}/book/payment"
+						<form action="${pageContext.request.contextPath}/book/payment"
 							method="POST" class="inline">
 							<input type="hidden" name="transactionId"
 								value="<%=transaction.getId()%>">
@@ -212,5 +214,7 @@
 			</div>
 		</div>
 	</div>
+	<!-- Footer -->
+	<%@ include file="components/footer.jsp"%>
 </body>
 </html>

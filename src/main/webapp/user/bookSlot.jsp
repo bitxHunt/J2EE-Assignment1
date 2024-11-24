@@ -11,8 +11,13 @@
 <link href="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.css"
 	rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body class="bg-base-200 min-h-screen">
+	<!-- Header -->
+	>
+	<%@ include file="./components/header.jsp"%>
 	<div class="container mx-auto p-4">
 		<div class="card bg-base-100 shadow-xl">
 			<div class="card-body">
@@ -30,7 +35,6 @@
 					method="post">
 					<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
 						<%
-
 						// Get the list of available slots from the servlet backend
 						List<Booking> slots = (List<Booking>) request.getAttribute("timeslots");
 						DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEEE, MMM dd");
@@ -71,5 +75,7 @@
 			</div>
 		</div>
 	</div>
+	<!-- Footer -->
+	<%@ include file="components/footer.jsp"%>
 </body>
 </html>

@@ -22,33 +22,10 @@
 	User user = (User) request.getAttribute("user");
 	Address homeAddress = (Address) request.getAttribute("homeAddress");
 	Address officeAddress = (Address) request.getAttribute("officeAddress");
-	
 	%>
 
 	<!-- Navbar -->
-	<div class="navbar bg-base-100 shadow-xl">
-		<div class="flex-1">
-			<a href="${pageContext.request.contextPath}/"
-				class="btn btn-ghost text-xl">CleanX</a>
-		</div>
-		<div class="flex-none">
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button"
-					class="btn btn-ghost btn-circle avatar">
-					<div
-						class="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-						<img alt="Profile"
-							src="<%=user.getImageURL()%>" />
-					</div>
-				</div>
-				<ul
-					class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-					<li><a href="${pageContext.request.contextPath}/profile">Profile</a></li>
-					<li><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
-				</ul>
-			</div>
-		</div>
-	</div>
+	<%@ include file="./components/header.jsp"%>
 
 	<div class="container mx-auto p-6 max-w-4xl">
 		<div class="flex items-center gap-4 mb-8">
@@ -61,8 +38,10 @@
 
 		<form action="${pageContext.request.contextPath}/profile/edit"
 			method="POST" enctype="multipart/form-data">
-			<input type="hidden" name="homeAddressId" value="<%=homeAddress != null ? homeAddress.getId() : ""%>">
-			<input type="hidden" name="officeAddressId" value="<%=officeAddress != null ? officeAddress.getId() : ""%>">
+			<input type="hidden" name="homeAddressId"
+				value="<%=homeAddress != null ? homeAddress.getId() : ""%>">
+			<input type="hidden" name="officeAddressId"
+				value="<%=officeAddress != null ? officeAddress.getId() : ""%>">
 			<div class="grid grid-cols-1 gap-6">
 				<!-- Personal Information Card -->
 				<div class="card bg-base-100 shadow-xl">
@@ -74,8 +53,7 @@
 							<div class="avatar">
 								<div
 									class="w-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-									<img src="<%=user.getImageURL()%>"
-										alt="Profile" />
+									<img src="<%=user.getImageURL()%>" alt="Profile" />
 								</div>
 							</div>
 							<div class="form-control w-full max-w-xs">
@@ -172,7 +150,7 @@
 										class="input input-bordered" required />
 								</div>
 								<div class="form-control">
-									<label class="label"> <span class="label-text">Unit	
+									<label class="label"> <span class="label-text">Unit
 											Number</span>
 									</label> <input type="text" name="homeUnit"
 										value="<%=homeAddress.getUnit()%>"
@@ -307,5 +285,7 @@
 			<label class="modal-backdrop" for="add-address-modal">Close</label>
 		</div>
 	</div>
+	<!-- Footer -->
+	<%@ include file="components/footer.jsp"%>
 </body>
 </html>

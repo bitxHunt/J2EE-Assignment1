@@ -18,8 +18,19 @@
 	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
-	<!-- Header -->
+	<%
+	Integer userId = (Integer) session.getAttribute("userId");
+	if (userId != null) {
+	%>
+	<%@ include file="../user/components/header.jsp"%>
+	<%
+	} else {
+	%>
 	<%@ include file="components/header.jsp"%>
+	<%
+	}
+	%>
+
 	<!-- Hero Section -->
 	<div class="hero min-h-screen"
 		style="background-image: url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?ixlib=rb-4.0.3');">

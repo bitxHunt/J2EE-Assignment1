@@ -37,8 +37,7 @@ public class Login extends HttpServlet {
 		// TODO Auto-generated method stub
 		HttpSession session = request.getSession(false);
 		if (session != null && session.getAttribute("userId") != null && session.getAttribute("role") != null) {
-			RequestDispatcher rd = request.getRequestDispatcher("/user/index.jsp");
-			rd.forward(request, response);
+			response.sendRedirect(request.getContextPath() + "/profile");
 		} else {
 			RequestDispatcher rd = request.getRequestDispatcher("/user/login.jsp");
 			rd.forward(request, response);
@@ -68,6 +67,10 @@ public class Login extends HttpServlet {
 				System.out.println("Login Successful");
 				session.setAttribute("userId", user.getId());
 				session.setAttribute("role", user.getRole());
+				session.setAttribute("profileImg", user.getImageURL());
+				
+				String imageUrl = (String) session.getAttribute("profileImg");
+				System.out.println("Profile" + imageUrl);
 				
 				if (user.getRole() == 1) {
 					response.sendRedirect(request.getContextPath() + "/admin");

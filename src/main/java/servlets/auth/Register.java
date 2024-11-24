@@ -37,9 +37,8 @@ public class Register extends HttpServlet {
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		HttpSession session = request.getSession(false);
-		if (session != null && session.getAttribute("userID") != null && session.getAttribute("role") != null) {
-			RequestDispatcher rd = request.getRequestDispatcher("/user/index.jsp");
-			rd.forward(request, response);
+		if (session != null && session.getAttribute("userId") != null && session.getAttribute("role") != null) {
+			response.sendRedirect(request.getContextPath() + "/profile");
 		} else {
 			RequestDispatcher rd = request.getRequestDispatcher("/user/register.jsp");
 			rd.forward(request, response);

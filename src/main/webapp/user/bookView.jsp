@@ -21,30 +21,9 @@
 	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body class="bg-base-300 min-h-screen">
-	<!-- Navbar -->
-	<div class="navbar bg-base-100 shadow-xl">
-		<div class="flex-1">
-			<a href="${pageContext.request.contextPath}/"
-				class="btn btn-ghost text-xl">CleanX</a>
-		</div>
-		<div class="flex-none">
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button"
-					class="btn btn-ghost btn-circle avatar">
-					<div
-						class="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-						<img alt="Profile"
-							src="${pageContext.request.contextPath}/assets/avatar.jpg" />
-					</div>
-				</div>
-				<ul
-					class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-					<li><a href="${pageContext.request.contextPath}/profile">Profile</a></li>
-					<li><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
-				</ul>
-			</div>
-		</div>
-	</div>
+	<!-- Header -->
+	>
+	<%@ include file="./components/header.jsp"%>
 
 	<div class="container mx-auto p-6 max-w-5xl">
 		<!-- Header Section -->
@@ -265,5 +244,7 @@
 			%>
 		</div>
 	</div>
+	<!-- Footer -->
+	<%@ include file="components/footer.jsp"%>
 </body>
 </html>

@@ -30,27 +30,7 @@
 	%>
 
 	<!-- Navbar -->
-	<div class="navbar bg-base-100 shadow-xl">
-		<div class="flex-1">
-			<a class="btn btn-ghost text-xl">CleanX</a>
-		</div>
-		<div class="flex-none">
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button"
-					class="btn btn-ghost btn-circle avatar">
-					<div
-						class="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-						<img alt="Profile" src="<%=user.getImageURL()%>" />
-					</div>
-				</div>
-				<ul
-					class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-					<li><a href="${pageContext.request.contextPath}/profile">Profile</a></li>
-					<li><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
-				</ul>
-			</div>
-		</div>
-	</div>
+	<%@ include file="./components/header.jsp"%>
 
 	<div class="container mx-auto p-6 max-w-7xl">
 		<div
@@ -130,9 +110,6 @@
 				<div class="card-body">
 					<div class="flex justify-between items-center mb-6">
 						<h2 class="card-title text-2xl">My Addresses</h2>
-						<button class="btn btn-ghost btn-sm btn-circle">
-							<span class="material-symbols-outlined">add</span>
-						</button>
 					</div>
 
 					<!-- Home Address Card -->
@@ -185,32 +162,24 @@
 			<div class="space-y-6">
 				<div class="flex justify-between items-center">
 					<h2 class="text-2xl font-bold">Recent Bookings</h2>
+					<%
+					if (transactions != null && !transactions.isEmpty()) {
+					%>
 					<a href="${pageContext.request.contextPath}/book/view"
 						class="btn btn-ghost btn-sm"> View All <span
 						class="material-symbols-outlined">chevron_right</span>
 					</a>
+					<%
+					}
+					%>
 				</div>
 
 				<%
-				if (transactions != null) {
+				if (transactions != null && !transactions.isEmpty()) {
 				%>
 				<div
 					class="card bg-base-200 shadow-xl transition-all hover:shadow-2xl">
 					<div class="flex flex-col md:flex-row">
-						<!-- Image with status overlay -->
-						<figure class="w-full md:w-48 relative">
-							<img
-								src="<%=transactions.get(0).getBundle_img() == null ? transactions.get(0).getServices().get(0).getImageUrl()
-		: transactions.get(0).getBundleName()%>"
-								alt="Service Image" class="h-48 md:h-full w-full object-cover" />
-							<div class="absolute top-2 right-2">
-								<div class="badge badge-success gap-2">
-									<span class="material-symbols-outlined">check_circle</span>
-									<%=transactions.get(0).getStatus()%>
-								</div>
-							</div>
-						</figure>
-
 						<div class="card-body">
 							<div class="flex flex-col gap-4">
 								<!-- Service Info -->
@@ -254,47 +223,37 @@
 											<%=transactions.get(0).getAddress().getPostalCode()%></span>
 									</div>
 								</div>
-
-								<!-- Action Button -->
-								<div class="card-actions justify-end">
-									<a
-										href="${pageContext.request.contextPath}/transaction/details?id=<%=transactions.get(0).getId()%>"
-										class="btn btn-primary gap-2"> <span
-										class="material-symbols-outlined">visibility</span> View
-										Details
-									</a>
-								</div>
 							</div>
 						</div>
 					</div>
 				</div>
+
 				<%
 				} else {
 				%>
 				<!-- Empty State Card -->
-				<div class="card bg-base-200 shadow-xl text-center p-8">
-					<div class="flex flex-col items-center gap-4">
-						<div class="p-4 bg-base-100 rounded-full">
-							<span class="material-symbols-outlined text-4xl opacity-50">calendar_month</span>
-						</div>
-						<div>
-							<h3 class="font-bold text-lg">No Recent Bookings</h3>
-							<p class="text-base-content/70 mb-4">Start your cleaning
-								journey today!</p>
-							<a href="${pageContext.request.contextPath}/book"
-								class="btn btn-primary gap-2"> <span
-								class="material-symbols-outlined">add</span> Book a Service
-							</a>
-						</div>
+				<div class="card bg-base-200 shadow-xl">
+					<div class="card-body items-center text-center py-12">
+						<span
+							class="material-symbols-outlined text-6xl text-base-content/30 mb-4">history</span>
+						<h3 class="text-xl font-bold mb-2">No Bookings Yet</h3>
+						<p class="text-base-content/60 mb-6">Start your cleaning
+							journey today with our professional services!</p>
+						<a href="${pageContext.request.contextPath}/book"
+							class="btn btn-primary gap-2"> <span
+							class="material-symbols-outlined">add</span> Book Your First
+							Service
+						</a>
 					</div>
 				</div>
 				<%
 				}
 				%>
 			</div>
+
 		</div>
 	</div>
-	</div>
-	</div>
+	<!-- Footer -->
+	<%@ include file="components/footer.jsp"%>
 </body>
 </html>

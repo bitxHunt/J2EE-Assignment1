@@ -84,6 +84,7 @@ public class UserDAO {
 				user.setEmail(rs.getString("email"));
 				user.setPassword(rs.getString("password"));
 				user.setRole(rs.getInt("role_id"));
+				user.setImageURL(rs.getString("image_url"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -15,7 +15,18 @@
 </head>
 <body class="min-h-screen bg-base-100">
 	<!-- Header -->
+	<%
+	Integer userId = (Integer) session.getAttribute("userId");
+	if (userId != null) {
+	%>
+	<%@ include file="../../user/components/header.jsp"%>
+	<%
+	} else {
+	%>
 	<%@ include file="header.jsp"%>
+	<%
+	}
+	%>
 	<div class="container mx-auto px-4 py-8">
 
 		<div class="text-center mb-16">
@@ -27,7 +38,6 @@
 		<!-- Back button -->
 		<div class="mb-8">
 			<%
-			Object userId = session.getAttribute("userId");
 			String backRoute = (userId != null) ? "/profile" : "/";
 			%>
 			<a href="<%=request.getContextPath() + backRoute%>"

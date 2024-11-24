@@ -15,7 +15,18 @@
 </head>
 <body>
 	<!-- Header -->
-	<%@ include file="components/header.jsp"%>
+	<%
+	Integer userId = (Integer) session.getAttribute("userId");
+	if (userId != null) {
+	%>
+	<%@ include file="../user/components/header.jsp"%>
+	<%
+	} else {
+	%>
+	<%@ include file="./components/header.jsp"%>
+	<%
+	}
+	%>
 	<!-- Hero Section -->
 	<div class="hero min-h-[60vh] bg-base-200">
 		<div class="hero-content text-center">
