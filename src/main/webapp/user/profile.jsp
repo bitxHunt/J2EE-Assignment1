@@ -200,7 +200,7 @@
 					<div class="flex flex-col md:flex-row">
 						<!-- Image with status overlay -->
 						<figure class="w-full md:w-48 relative">
-							<img src="<%=transactions.get(0).getBundle_img()%>"
+							<img src="<%=transactions.get(0).getBundle_img() == null ? transactions.get(0).getServices().get(0).getImageUrl() : transactions.get(0).getBundleName()%>"
 								alt="Service Image" class="h-48 md:h-full w-full object-cover" />
 							<div class="absolute top-2 right-2">
 								<div class="badge badge-success gap-2">
