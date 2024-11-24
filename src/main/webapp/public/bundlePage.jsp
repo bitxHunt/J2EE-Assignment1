@@ -12,6 +12,8 @@
 <title>Bundle Page</title>
 </head>
 <body>
+	<!-- Header -->
+	<%@ include file="components/header.jsp"%>
 	<%@ include file="./components/displayBundles.jsp"%>
 </body>
 </html>

@@ -19,7 +19,8 @@
 	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body class="min-h-screen bg-base-100">
-
+	<!-- Header -->
+	<%@ include file="header.jsp"%>
 	<div class="container mx-auto px-4 py-8">
 
 		<div class="text-center mb-16">
