@@ -53,7 +53,7 @@ public class UserProfile extends HttpServlet {
 				User user = userDB.getUserById(userId);
 				Address homeAddress = addDB.getAddressByUserId(userId, 1);
 				Address officeAddress = addDB.getAddressByUserId(userId, 2);
-				ArrayList<Transaction> transactions = transDB.getLatestTransactionsByUserId(userId);
+				ArrayList<Transaction> transactions = transDB.getActiveBookingsByUserID(userId);
 
 				for (Transaction transaction : transactions) {
 					double subTotal = transaction.getSubTotal();

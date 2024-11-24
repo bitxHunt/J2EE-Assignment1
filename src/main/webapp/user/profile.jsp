@@ -205,7 +205,7 @@
 							<div class="absolute top-2 right-2">
 								<div class="badge badge-success gap-2">
 									<span class="material-symbols-outlined">check_circle</span>
-									IN_PROGRESS
+									<%=transactions.get(0).getStatus()%>
 								</div>
 							</div>
 						</figure>
