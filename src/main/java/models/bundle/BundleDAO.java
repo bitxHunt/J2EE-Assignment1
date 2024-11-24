@@ -257,7 +257,7 @@ public class BundleDAO {
 				String newImageUrl = CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart);
 
 				if (newImageUrl != null && currentImageUrl != null && !currentImageUrl.equals(
-						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_bundle_image.webp")) {
+						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg")) {
 					// Delete old image
 					try {
 						CloudinaryConnection.deleteFromCloudinary(cloudinary, currentImageUrl);
@@ -309,7 +309,7 @@ public class BundleDAO {
 			// if successful, delete image inside Cloudinary
 			if (success) {
 				if (bundle != null && bundle.getImageUrl() != null && !bundle.getImageUrl().equals(
-						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_bundle_image.webp")) {
+						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg")) {
 					try {
 						CloudinaryConnection.deleteFromCloudinary(cloudinary, bundle.getImageUrl());
 					} catch (IOException e) {

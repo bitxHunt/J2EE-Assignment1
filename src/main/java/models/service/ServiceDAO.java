@@ -150,7 +150,7 @@ public class ServiceDAO {
 
 				// If upload successful and no default image, delete old image and update SQL
 				if (newImageUrl != null && currentImageUrl != null
-						&& currentImageUrl != "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_cleaning_image_fz3izs.webp") {
+						&& currentImageUrl != "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg") {
 					// Delete old image from Cloudinary
 					try {
 						CloudinaryConnection.deleteFromCloudinary(cloudinary, currentImageUrl);
@@ -186,19 +186,37 @@ public class ServiceDAO {
 		return success;
 	}
 
+
 	public boolean deleteService(int serviceId) throws SQLException {
-		Connection conn = DB.connect();
-		boolean success = false;
-		try {
-			String sqlStr = "DELETE FROM service WHERE service_id = ?";
-			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-			pstmt.setInt(1, serviceId);
-			int rowsAffected = pstmt.executeUpdate();
-			success = rowsAffected > 0;
-		} finally {
-			conn.close();
-		}
-		return success;
+	    Connection conn = DB.connect();
+	    this.cloudinary = CloudinaryConnection.getCloudinary();
+	    boolean success = false;
+	    try {
+	        // Get service info first for image deletion
+	        Service service = getServiceById(serviceId);
+	        
+	        // Delete the service from database
+	        String sqlStr = "DELETE FROM service WHERE service_id = ?";
+	        PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+	        pstmt.setInt(1, serviceId);
+	        int rowsAffected = pstmt.executeUpdate();
+	        success = rowsAffected > 0;
+	        
+	        // If successful and image is not default, delete from Cloudinary
+	        if (success) {
+	            if (service != null && service.getImageUrl() != null && !service.getImageUrl().equals(
+	                "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg")) {
+	                try {
+	                    CloudinaryConnection.deleteFromCloudinary(cloudinary, service.getImageUrl());
+	                } catch (IOException e) {
+	                    System.out.println("Error deleting service image: " + e.getMessage());
+	                }
+	            }
+	        }
+	    } finally {
+	        conn.close();
+	    }
+	    return success;
 	}
 
 	public ArrayList<Service> getServicesByCategory(int categoryId) throws SQLException {
