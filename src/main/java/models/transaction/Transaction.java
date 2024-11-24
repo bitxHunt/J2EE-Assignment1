@@ -20,6 +20,7 @@ public class Transaction {
 	private Integer discount = 0;
 	private Double subTotal = 0.0;
 	private LocalDateTime paidDate = LocalDateTime.now();
+	private String status = "";
 
 	// Implicit Constructor
 	public Transaction() {
@@ -35,12 +36,13 @@ public class Transaction {
 		this.discount = 0;
 		this.subTotal = 0.0;
 		this.paidDate = LocalDateTime.now();
+		this.status = "";
 	}
 
 	// Explicit Constructor
 	public Transaction(Integer id, Integer userId, Address address, Integer slotId, LocalDate startDate,
 			ArrayList<Service> services, String bundleName, String bundle_img, ArrayList<Service> bundleServices,
-			Integer discount, Double subTotal, LocalDateTime paidDate) {
+			Integer discount, Double subTotal, LocalDateTime paidDate, String status) {
 
 		// Booting Up
 		this.id = id;
@@ -55,6 +57,7 @@ public class Transaction {
 		this.discount = discount;
 		this.subTotal = subTotal;
 		this.paidDate = paidDate;
+		this.status = status;
 	}
 
 	public Integer getId() {
@@ -151,5 +154,13 @@ public class Transaction {
 
 	public void setPaidDate(LocalDateTime paidDate) {
 		this.paidDate = paidDate;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }

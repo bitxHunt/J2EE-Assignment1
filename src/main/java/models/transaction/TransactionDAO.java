@@ -12,16 +12,110 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import models.service.Service;
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
-import jakarta.json.JsonValue;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonValue;
 import models.address.Address;
 
 public class TransactionDAO {
 
-	public ArrayList<Transaction> getLatestTransactionsByUserId(Integer userId) throws SQLException {
+	public ArrayList<Transaction> getAllBookingsByUserID(Integer userId) throws SQLException {
+		Connection conn = DB.connect();
+		ArrayList<Transaction> transactions = new ArrayList<>();
+
+		try {
+			String sqlStr = """
+					    SELECT t.*, ts.start_time, t.start_date as booking_date,
+					           t.status as transaction_status
+					    FROM transaction t
+					    JOIN time_slot ts ON t.slot_id = ts.slot_id
+					    WHERE t.user_id = ?
+					    ORDER BY t.created_at DESC;
+					""";
+
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, userId);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				Transaction transaction = new Transaction();
+				transaction.setId(rs.getInt("trans_id"));
+				transaction.setUserId(rs.getInt("user_id"));
+
+				// Create Address object
+				Address address = new Address();
+				address.setAddress(rs.getString("address"));
+				address.setPostalCode(rs.getInt("postal_code"));
+				address.setUnit(rs.getString("unit"));
+				transaction.setAddress(address);
+
+				transaction.setSlotId(rs.getInt("slot_id"));
+				transaction.setStartDate(rs.getTimestamp("booking_date").toLocalDateTime().toLocalDate());
+
+				// Parse services JSON if exists
+				String servicesJson = rs.getString("services");
+				if (servicesJson != null) {
+					JsonReader jsonReader = Json.createReader(new StringReader(servicesJson));
+					JsonArray servicesArray = jsonReader.readArray();
+					ArrayList<Service> services = new ArrayList<>();
+
+					for (JsonValue serviceValue : servicesArray) {
+						JsonObject serviceObj = (JsonObject) serviceValue;
+						Service service = new Service();
+						service.setServiceName(serviceObj.getString("service"));
+						service.setPrice(Float.parseFloat(serviceObj.get("price").toString()));
+						service.setImageUrl(serviceObj.getString("img_url"));
+						services.add(service);
+					}
+					transaction.setServices(services);
+				}
+
+				// Set bundle info if exists
+				transaction.setBundleName(rs.getString("bundle_name"));
+				transaction.setBundle_img(rs.getString("bundle_img"));
+
+				// Parse bundle services JSON if exists
+				String bundleServicesJson = rs.getString("bundle_service");
+				if (bundleServicesJson != null) {
+					JsonReader jsonReader = Json.createReader(new StringReader(bundleServicesJson));
+					JsonArray bundleServicesArray = jsonReader.readArray();
+					ArrayList<Service> bundleServices = new ArrayList<>();
+
+					for (JsonValue serviceValue : bundleServicesArray) {
+						JsonObject serviceObj = (JsonObject) serviceValue;
+						Service service = new Service();
+						service.setServiceName(serviceObj.getString("service"));
+						service.setPrice(Float.parseFloat(serviceObj.get("price").toString()));
+						service.setImageUrl(serviceObj.getString("img_url"));
+						bundleServices.add(service);
+					}
+					transaction.setBundleServices(bundleServices);
+				}
+
+				transaction.setDiscount(rs.getInt("discount_percent"));
+				transaction.setSubTotal(rs.getDouble("subtotal"));
+				transaction.setStatus(rs.getString("transaction_status"));
+
+				// Get timestamp and convert to LocalDateTime
+				Timestamp paidAt = rs.getTimestamp("paid_at");
+				if (paidAt != null) {
+					transaction.setPaidDate(paidAt.toLocalDateTime());
+				}
+
+				transactions.add(transaction);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			conn.close();
+		}
+
+		return transactions;
+	}
+
+	public ArrayList<Transaction> getActiveBookingsByUserID(Integer userId) throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Transaction> transactions = new ArrayList<>();
 
@@ -98,6 +192,102 @@ public class TransactionDAO {
 
 				transaction.setDiscount(rs.getInt("discount_percent"));
 				transaction.setSubTotal(rs.getDouble("subtotal"));
+				transaction.setStatus(rs.getString("transaction_status"));
+
+				// Get timestamp and convert to LocalDateTime
+				Timestamp paidAt = rs.getTimestamp("paid_at");
+				if (paidAt != null) {
+					transaction.setPaidDate(paidAt.toLocalDateTime());
+				}
+
+				transactions.add(transaction);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			conn.close();
+		}
+
+		return transactions;
+	}
+
+	public ArrayList<Transaction> getCartsByUserID(Integer userId) throws SQLException {
+		Connection conn = DB.connect();
+		ArrayList<Transaction> transactions = new ArrayList<>();
+
+		try {
+			String sqlStr = """
+					    SELECT t.*, ts.start_time, t.start_date as booking_date,
+					           t.status as transaction_status
+					    FROM transaction t
+					    JOIN time_slot ts ON t.slot_id = ts.slot_id
+					    WHERE t.user_id = ?
+					    AND t.status = 'PENDING'
+					    ORDER BY t.created_at DESC;
+					""";
+
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, userId);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				Transaction transaction = new Transaction();
+				transaction.setId(rs.getInt("trans_id"));
+				transaction.setUserId(rs.getInt("user_id"));
+
+				// Create Address object
+				Address address = new Address();
+				address.setAddress(rs.getString("address"));
+				address.setPostalCode(rs.getInt("postal_code"));
+				address.setUnit(rs.getString("unit"));
+				transaction.setAddress(address);
+
+				transaction.setSlotId(rs.getInt("slot_id"));
+				transaction.setStartDate(rs.getTimestamp("booking_date").toLocalDateTime().toLocalDate());
+
+				// Parse services JSON if exists
+				String servicesJson = rs.getString("services");
+				if (servicesJson != null) {
+					JsonReader jsonReader = Json.createReader(new StringReader(servicesJson));
+					JsonArray servicesArray = jsonReader.readArray();
+					ArrayList<Service> services = new ArrayList<>();
+
+					for (JsonValue serviceValue : servicesArray) {
+						JsonObject serviceObj = (JsonObject) serviceValue;
+						Service service = new Service();
+						service.setServiceName(serviceObj.getString("service"));
+						service.setPrice(Float.parseFloat(serviceObj.get("price").toString()));
+						service.setImageUrl(serviceObj.getString("img_url"));
+						services.add(service);
+					}
+					transaction.setServices(services);
+				}
+
+				// Set bundle info if exists
+				transaction.setBundleName(rs.getString("bundle_name"));
+				transaction.setBundle_img(rs.getString("bundle_img"));
+
+				// Parse bundle services JSON if exists
+				String bundleServicesJson = rs.getString("bundle_service");
+				if (bundleServicesJson != null) {
+					JsonReader jsonReader = Json.createReader(new StringReader(bundleServicesJson));
+					JsonArray bundleServicesArray = jsonReader.readArray();
+					ArrayList<Service> bundleServices = new ArrayList<>();
+
+					for (JsonValue serviceValue : bundleServicesArray) {
+						JsonObject serviceObj = (JsonObject) serviceValue;
+						Service service = new Service();
+						service.setServiceName(serviceObj.getString("service"));
+						service.setPrice(Float.parseFloat(serviceObj.get("price").toString()));
+						service.setImageUrl(serviceObj.getString("img_url"));
+						bundleServices.add(service);
+					}
+					transaction.setBundleServices(bundleServices);
+				}
+
+				transaction.setDiscount(rs.getInt("discount_percent"));
+				transaction.setSubTotal(rs.getDouble("subtotal"));
+				transaction.setStatus(rs.getString("transaction_status"));
 
 				// Get timestamp and convert to LocalDateTime
 				Timestamp paidAt = rs.getTimestamp("paid_at");
