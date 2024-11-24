@@ -25,10 +25,10 @@
 
 		<!-- Right side -->
 		<div class="flex items-center gap-4">
-			<a href="${pageContext.request.contextPath}/admin/manage-users"
-				class="btn btn-ghost"> HR Management </a> <a
-				href="${pageContext.request.contextPath}/admin/statistics"
-				class="btn btn-ghost"> Statistics </a>
+			<a href="${pageContext.request.contextPath}/admin"
+				class="btn btn-ghost"> Home </a> <a
+				href="${pageContext.request.contextPath}/admin/manage-users"
+				class="btn btn-ghost"> HR Management </a>
 			<button
 				onclick="window.location='${pageContext.request.contextPath}/admin/createForm'"
 				class="btn btn-primary">Create New</button>

@@ -200,4 +200,39 @@ public class ServiceDAO {
 		}
 		return success;
 	}
+
+	public ArrayList<Service> getServicesByCategory(int categoryId) throws SQLException {
+		Connection conn = DB.connect();
+		ArrayList<Service> services = new ArrayList<Service>();
+
+		try {
+			String sqlStr = """
+					    SELECT s.*, c.category_name
+					    FROM service s
+					    LEFT JOIN category c ON s.category_id = c.category_id
+					    WHERE s.category_id = ? AND s.is_active = true
+					    ORDER BY s.service_id
+					""";
+
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, categoryId);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				Service service = new Service();
+				service.setServiceId(rs.getInt("service_id"));
+				service.setServiceName(rs.getString("service_name"));
+				service.setServiceDescription(rs.getString("service_description"));
+				service.setCategoryId(rs.getInt("category_id"));
+				service.setCategoryName(rs.getString("category_name"));
+				service.setPrice(rs.getFloat("price"));
+				service.setImageUrl(rs.getString("image_url"));
+				service.setIsActive(rs.getBoolean("is_active"));
+				services.add(service);
+			}
+		} finally {
+			conn.close();
+		}
+		return services;
+	}
 }

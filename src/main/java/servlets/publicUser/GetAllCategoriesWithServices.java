@@ -15,10 +15,10 @@ import models.service.Service;
 import models.service.ServiceDAO;
 
 @WebServlet("/categories")
-public class getAllCategoriesWithServices extends HttpServlet {
+public class GetAllCategoriesWithServices extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	public getAllCategoriesWithServices() {
+	public GetAllCategoriesWithServices() {
 
 		super();
 	}
@@ -36,8 +36,8 @@ public class getAllCategoriesWithServices extends HttpServlet {
 			request.getRequestDispatcher("/public/components/displayCategories.jsp").forward(request, response);
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			request.setAttribute("errorMessage", e.getMessage());
+			request.getRequestDispatcher("/error/500ErrorPage.jsp").forward(request, response);
 		}
 	}
 }
