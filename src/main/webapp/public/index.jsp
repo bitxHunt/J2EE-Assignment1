@@ -1,3 +1,9 @@
+<%-- 
+    Name: Thiha Swan Htet
+    Class: DIT/FT/2B/01
+    Admin No: p2336671
+--%>
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="models.bundle.Bundle"%>
@@ -9,7 +15,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CleanX - Professional Cleaning Services</title>
+<title>CleanX</title>
 <link
 	href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css"
 	rel="stylesheet" type="text/css" />

@@ -1,3 +1,9 @@
+<%-- 
+    Name: Thiha Swan Htet
+    Class: DIT/FT/2B/01
+    Admin No: p2336671
+--%>
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page
@@ -105,7 +111,7 @@
 						%>
 					</div>
 
-					<div class="divider"></div>
+					<div class="divider">OR</div>
 
 					<!-- Price Summary -->
 					<div class="flex justify-between items-center text-lg">
@@ -131,7 +137,9 @@
 					<div class="space-y-4">
 						<%
 						double total = 0;
-						total += selectedBundle.getDiscountedPrice();
+						if (selectedBundle != null) {
+							total += selectedBundle.getDiscountedPrice();
+						}
 						for (Service service : selectedServices) {
 							total += service.getPrice();
 						%>

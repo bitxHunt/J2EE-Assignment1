@@ -1,3 +1,9 @@
+/*
+    Name: Thiha Swan Htet
+    Class: DIT/FT/2B/01
+    Admin No: p2336671
+*/
+
 package models.booking;
 
 import java.util.ArrayList;

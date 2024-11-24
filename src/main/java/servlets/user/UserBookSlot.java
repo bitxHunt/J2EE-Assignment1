@@ -1,3 +1,9 @@
+/*
+    Name: Thiha Swan Htet
+    Class: DIT/FT/2B/01
+    Admin No: p2336671
+*/
+
 package servlets.user;
 
 import models.booking.Booking;
@@ -280,7 +286,6 @@ public class UserBookSlot extends HttpServlet {
 	private void handleReview(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws ServletException, IOException {
 		try {
-
 			// Check session exists for user
 			Integer userId = (Integer) session.getAttribute("userId");
 			if (userId == null) {
@@ -289,59 +294,90 @@ public class UserBookSlot extends HttpServlet {
 
 			LocalDate selectedDate = (LocalDate) session.getAttribute("selectedDate");
 			LocalTime selectedTime = (LocalTime) session.getAttribute("selectedTime");
-
 			Address selectedAddress = (Address) session.getAttribute("selectedAddress");
 			Integer selectedAddressId = (Integer) session.getAttribute("selectedAddressId");
 
-			System.out.println("Selected date: " + selectedDate);
-			System.out.println("Selected time: " + selectedTime);
-			System.out.println("Selected address id: " + selectedAddressId);
-			System.out.println("Selected address: " + selectedAddress.getUnit());
+			// Basic validation for required booking information
+			if (selectedDate == null || selectedTime == null || selectedAddressId == null) {
+				throw new NullPointerException("Required booking information missing");
+			}
 
 			ArrayList<Service> selectedServices = new ArrayList<Service>();
-			Service selectedService = new Service();
-			Bundle selectedBundle = new Bundle();
+			Bundle selectedBundle = null;
 
+			// Get selected bundle and services
 			String strBundleId = request.getParameter("selected_bundle");
 			String[] serviceIds = request.getParameterValues("selected_services");
 
-			if (selectedDate == null || selectedTime == null || selectedAddressId == null
-					|| strBundleId == null && serviceIds == null) {
-				throw new NullPointerException("No services selected");
+			// Validate that at least one option is selected
+			if ((strBundleId == null || strBundleId.equals("0")) && (serviceIds == null || serviceIds.length == 0)) {
+				throw new IllegalArgumentException("Please select at least one service or bundle");
 			}
 
-			// Get the selected services and bundle from the database
-			if (serviceIds != null) {
-				for (String serviceId : serviceIds) {
-					ServiceDAO serviceDB = new ServiceDAO();
-					selectedService = serviceDB.getServiceById(Integer.parseInt(serviceId));
-					System.out.println("Selected service: " + selectedService.getServiceName());
-					selectedServices.add(selectedService);
+			System.out.println("Selected bundle ID: " + strBundleId);
+
+			// Handle bundle selection if exists
+			if (strBundleId != null && !strBundleId.trim().isEmpty() && !strBundleId.equals("0")) {
+				try {
+					BundleDAO bundleDB = new BundleDAO();
+					selectedBundle = bundleDB.getBundleById(Integer.parseInt(strBundleId));
+					if (selectedBundle != null) {
+						System.out.println("Selected bundle: " + selectedBundle.getBundleName());
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid bundle ID: " + strBundleId);
 				}
-				request.setAttribute("selectedServices", selectedServices);
 			}
 
-			if (strBundleId != null && !strBundleId.isEmpty() && !strBundleId.equals("0")) {
-				BundleDAO bundleDB = new BundleDAO();
-				selectedBundle = bundleDB.getBundleById(Integer.parseInt(strBundleId));
-
-				request.setAttribute("selectedBundle", selectedBundle);
-				System.out.println("Selected bundle: " + selectedBundle.getBundleName());
+			// Handle individual services if selected
+			if (serviceIds != null && serviceIds.length > 0) {
+				ServiceDAO serviceDB = new ServiceDAO();
+				for (String serviceId : serviceIds) {
+					try {
+						Service service = serviceDB.getServiceById(Integer.parseInt(serviceId));
+						if (service != null) {
+							System.out.println("Selected service: " + service.getServiceName());
+							selectedServices.add(service);
+						}
+					} catch (NumberFormatException e) {
+						System.out.println("Invalid service ID: " + serviceId);
+					}
+				}
 			}
 
+			// Calculate total price
+			double totalPrice = 0.0;
+
+			// Add bundle price if selected
+			if (selectedBundle != null) {
+				totalPrice += selectedBundle.getDiscountedPrice();
+			}
+
+			// Add individual services price
+			for (Service service : selectedServices) {
+				totalPrice += service.getPrice();
+			}
+
+			// Set all attributes for the review page
+			request.setAttribute("selectedBundle", selectedBundle);
+			request.setAttribute("selectedServices", selectedServices);
 			request.setAttribute("selectedDate", selectedDate);
 			request.setAttribute("selectedTime", selectedTime);
-
 			request.setAttribute("selectedAddress", selectedAddress);
+			request.setAttribute("totalPrice", totalPrice);
+
 			request.getRequestDispatcher("/user/bookReview.jsp").forward(request, response);
+
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
-			e.printStackTrace();
 			request.setAttribute("err", "Please log in to continue booking.");
 			response.sendRedirect(request.getContextPath() + "/login");
+		} catch (IllegalArgumentException e) {
+			System.out.println("No services selected: " + e.getMessage());
+			request.setAttribute("err", e.getMessage());
+			response.sendRedirect(request.getContextPath() + "/book/services");
 		} catch (NullPointerException e) {
 			System.out.println("Incomplete booking data: " + e.getMessage());
-			e.printStackTrace();
 			request.setAttribute("err", "Please complete all booking steps.");
 			response.sendRedirect(request.getContextPath() + "/book/slots");
 		} catch (Exception e) {
@@ -456,6 +492,11 @@ public class UserBookSlot extends HttpServlet {
 			e.printStackTrace();
 			request.setAttribute("err", "Please log in to continue booking.");
 			response.sendRedirect(request.getContextPath() + "/login");
+		} catch (NullPointerException e) {
+			System.out.println("Invalid Data: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("err", "Please try again booking.");
+			response.sendRedirect(request.getContextPath() + "/slots");
 		} catch (Exception e) {
 			System.out.println("Error handling booking: " + e.getMessage());
 			e.printStackTrace();

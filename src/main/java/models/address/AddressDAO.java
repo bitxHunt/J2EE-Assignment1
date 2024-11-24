@@ -1,3 +1,9 @@
+/*
+    Name: Thiha Swan Htet
+    Class: DIT/FT/2B/01
+    Admin No: p2336671
+*/
+
 package models.address;
 
 import util.*;
@@ -11,7 +17,7 @@ public class AddressDAO {
 		Connection conn = DB.connect();
 		Address address = new Address();
 		try {
-			String sqlStr = "SELECT at.address_type, a.address_id, a.user_id, a.address, a.postal_code, a.unit, a.is_active FROM address a INNER JOIN address_type at ON a.type_id = at.type_id WHERE a.user_id = ? AND a.type_id = ?;";
+			String sqlStr = "SELECT at.address_type, a.address_id, a.user_id, a.address, a.postal_code, a.unit FROM address a INNER JOIN address_type at ON a.type_id = at.type_id WHERE a.user_id = ? AND a.type_id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, userId);
 			pstmt.setInt(2, addTypeId);
@@ -24,7 +30,6 @@ public class AddressDAO {
 				address.setAddress(rs.getString("address"));
 				address.setPostalCode(rs.getInt("postal_code"));
 				address.setUnit(rs.getString("unit"));
-				address.setIsActive(rs.getBoolean("is_active"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

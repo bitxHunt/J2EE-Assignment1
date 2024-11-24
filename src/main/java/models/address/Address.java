@@ -1,3 +1,9 @@
+/*
+    Name: Thiha Swan Htet
+    Class: DIT/FT/2B/01
+    Admin No: p2336671
+*/
+
 package models.address;
 
 public class Address {
@@ -7,7 +13,6 @@ public class Address {
 	private String address = "";
 	private Integer postalCode = 0;
 	private String unit = "";
-	private Boolean isActive = false;
 
 	// Implicit Constructor
 	public Address() {
@@ -17,7 +22,6 @@ public class Address {
 		this.address = "";
 		this.postalCode = 0;
 		this.unit = "";
-		this.isActive = false;
 	}
 
 		// Explicit Constructor
@@ -31,7 +35,6 @@ public class Address {
 		this.address = address;
 		this.postalCode = postalCode;
 		this.unit = unit;
-		this.isActive = isActive;
 	}
 
 	public Integer getId() {
@@ -80,13 +83,5 @@ public class Address {
 
 	public void setUnit(String unit) {
 		this.unit = unit;
-	}
-
-	public Boolean getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
 	}
 }

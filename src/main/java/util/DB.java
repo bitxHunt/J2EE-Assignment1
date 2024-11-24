@@ -1,8 +1,8 @@
-/**
-	Author: Thiha Swan Htet (p2336671)
-	Date: 8/11/24
-	Description: ST0510/JAD Week4 Submission
-**/
+/*
+    Name: Thiha Swan Htet
+    Class: DIT/FT/2B/01
+    Admin No: p2336671
+*/
 
 package util;
 
