@@ -99,7 +99,7 @@ public class UserDAO {
 		Integer rowsAffected = 0;
 		try {
 			String sqlStr = "INSERT INTO users (first_name, last_name, email, password, phone_number, image_url) VALUES (?, ?, ?, ?, ?, ?);";
-			String defaultImageUrl = "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_bundle_image.webp";
+			String defaultImageUrl = "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732446530/bizbynfxadhthnoymbdo.webp";
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setString(1, firstName);
