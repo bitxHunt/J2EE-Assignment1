@@ -31,12 +31,14 @@
 		<!-- Right side -->
 		<div class="flex items-center gap-4">
 			<a href="${pageContext.request.contextPath}/admin"
-				class="btn btn-ghost"> Home </a> <a
+				class="btn btn-ghost">Home</a> <a
 				href="${pageContext.request.contextPath}/admin/manage-users"
-				class="btn btn-ghost"> HR Management </a>
+				class="btn btn-ghost">HR Management</a>
 			<button
 				onclick="window.location='${pageContext.request.contextPath}/admin/createForm'"
 				class="btn btn-primary">Create New</button>
+			<a href="${pageContext.request.contextPath}/admin/log-out"
+				class="btn btn-error">Logout</a>
 		</div>
 	</div>
 </body>

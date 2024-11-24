@@ -33,7 +33,7 @@
 			<div class="card-body">
 				<div class="flex justify-between items-start">
 					<h2 class="card-title"><%=service.getServiceName()%></h2>
-					<div class="badge badge-primary"><%=service.getCategoryName()%></div>
+					<div class="badge badge-primary badge-lg whitespace-nowrap px-4"><%=service.getCategoryName()%></div>
 				</div>
 				<p class="text-sm opacity-70"><%=(service.getServiceDescription() == null || service.getServiceDescription() == "") ? "No description available"
 				: service.getServiceDescription()%></p>
