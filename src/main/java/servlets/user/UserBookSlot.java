@@ -288,29 +288,34 @@ public class UserBookSlot extends HttpServlet {
 			String strBundleId = request.getParameter("selected_bundle");
 			String[] serviceIds = request.getParameterValues("selected_services");
 
-			if (selectedDate == null || selectedTime == null || selectedAddressId == null || strBundleId == null
-					|| serviceIds == null) {
+			if (selectedDate == null || selectedTime == null || selectedAddressId == null
+					|| strBundleId == null && serviceIds == null) {
 				throw new NullPointerException("No services selected");
 			}
 
-			for (String serviceId : serviceIds) {
-				ServiceDAO serviceDB = new ServiceDAO();
-				selectedService = serviceDB.getServiceById(Integer.parseInt(serviceId));
-				System.out.println("Selected service: " + selectedService.getServiceName());
-				selectedServices.add(selectedService);
+			// Get the selected services and bundle from the database
+			if (serviceIds != null) {
+				for (String serviceId : serviceIds) {
+					ServiceDAO serviceDB = new ServiceDAO();
+					selectedService = serviceDB.getServiceById(Integer.parseInt(serviceId));
+					System.out.println("Selected service: " + selectedService.getServiceName());
+					selectedServices.add(selectedService);
+				}
+				request.setAttribute("selectedServices", selectedServices);
 			}
 
-			BundleDAO bundleDB = new BundleDAO();
-			selectedBundle = bundleDB.getBundleById(Integer.parseInt(strBundleId));
-			System.out.println("Selected bundle: " + selectedBundle.getBundleName());
+			if (strBundleId != null && !strBundleId.isEmpty() && !strBundleId.equals("0")) {
+				BundleDAO bundleDB = new BundleDAO();
+				selectedBundle = bundleDB.getBundleById(Integer.parseInt(strBundleId));
+
+				request.setAttribute("selectedBundle", selectedBundle);
+				System.out.println("Selected bundle: " + selectedBundle.getBundleName());
+			}
 
 			request.setAttribute("selectedDate", selectedDate);
 			request.setAttribute("selectedTime", selectedTime);
 
 			request.setAttribute("selectedAddress", selectedAddress);
-
-			request.setAttribute("selectedServices", selectedServices);
-			request.setAttribute("selectedBundle", selectedBundle);
 			request.getRequestDispatcher("/user/bookReview.jsp").forward(request, response);
 		} catch (IllegalStateException e) {
 			System.out.println("Incomplete booking data: " + e.getMessage());
@@ -353,7 +358,8 @@ public class UserBookSlot extends HttpServlet {
 			selectedAddress = (Address) session.getAttribute("selectedAddress");
 
 			LocalDate selectedDate = (LocalDate) session.getAttribute("selectedDate");
-			Integer selectedSlotId = timeSlotDB.getTimeSlotByTime((LocalTime) session.getAttribute("selectedTime")).getId();
+			Integer selectedSlotId = timeSlotDB.getTimeSlotByTime((LocalTime) session.getAttribute("selectedTime"))
+					.getId();
 
 			// Handle services and bundles
 			String bundleIdStr = request.getParameter("bundleId");
@@ -381,7 +387,7 @@ public class UserBookSlot extends HttpServlet {
 					JsonArrayBuilder bundleServiceArray = Json.createArrayBuilder();
 
 					for (Service service : bundle.getServices()) {
-						
+
 						System.out.println("Service Image for Review: " + service.getImageUrl());
 						JsonObjectBuilder serviceObj = Json.createObjectBuilder()
 								.add("service", service.getServiceName()).add("price", service.getPrice())
@@ -401,10 +407,10 @@ public class UserBookSlot extends HttpServlet {
 				subtotal = 0.0;
 
 				for (String serviceId : serviceIds) {
-					
+
 					Service service = serviceDB.getServiceById(Integer.parseInt(serviceId));
 					if (service != null) {
-						
+
 						System.out.println("Service Image for Review: " + service.getImageUrl());
 						JsonObjectBuilder serviceObj = Json.createObjectBuilder()
 								.add("service", service.getServiceName()).add("price", service.getPrice())
