@@ -41,7 +41,7 @@ public class TransactionDAO {
 
 			while (rs.next()) {
 				Transaction transaction = new Transaction();
-				transaction.setId(rs.getInt("trans_id"));
+				transaction.setId(rs.getInt("trans_id"));	
 				transaction.setUserId(rs.getInt("user_id"));
 
 				// Create Address object
@@ -51,7 +51,7 @@ public class TransactionDAO {
 				address.setUnit(rs.getString("unit"));
 				transaction.setAddress(address);
 
-				transaction.setSlotId(rs.getInt("slot_id"));
+				transaction.setTimeSlot(rs.getTime("start_time").toLocalTime());
 				transaction.setStartDate(rs.getTimestamp("booking_date").toLocalDateTime().toLocalDate());
 
 				// Parse services JSON if exists
@@ -115,6 +115,96 @@ public class TransactionDAO {
 		return transactions;
 	}
 
+	public Transaction getTransactionById(Integer transId) throws SQLException {
+		Connection conn = DB.connect();
+		Transaction transaction = new Transaction();
+
+		try {
+			String sqlStr = """
+					    SELECT t.*, ts.start_time, t.start_date as booking_date,
+					           t.status as transaction_status
+					    FROM transaction t
+					    JOIN time_slot ts ON t.slot_id = ts.slot_id
+					    WHERE t.trans_id = ?;
+					""";
+
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, transId);
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				transaction.setId(rs.getInt("trans_id"));
+				transaction.setUserId(rs.getInt("user_id"));
+
+				// Create Address object
+				Address address = new Address();
+				address.setAddress(rs.getString("address"));
+				address.setPostalCode(rs.getInt("postal_code"));
+				address.setUnit(rs.getString("unit"));
+				transaction.setAddress(address);
+
+				transaction.setTimeSlot(rs.getTime("start_time").toLocalTime());
+				transaction.setStartDate(rs.getTimestamp("booking_date").toLocalDateTime().toLocalDate());
+
+				// Parse services JSON if exists
+				String servicesJson = rs.getString("services");
+				if (servicesJson != null) {
+					JsonReader jsonReader = Json.createReader(new StringReader(servicesJson));
+					JsonArray servicesArray = jsonReader.readArray();
+					ArrayList<Service> services = new ArrayList<>();
+
+					for (JsonValue serviceValue : servicesArray) {
+						JsonObject serviceObj = (JsonObject) serviceValue;
+						Service service = new Service();
+						service.setServiceName(serviceObj.getString("service"));
+						service.setPrice(Float.parseFloat(serviceObj.get("price").toString()));
+						service.setImageUrl(serviceObj.getString("img_url"));
+						services.add(service);
+					}
+					transaction.setServices(services);
+				}
+
+				// Set bundle info if exists
+				transaction.setBundleName(rs.getString("bundle_name"));
+				transaction.setBundle_img(rs.getString("bundle_img"));
+
+				// Parse bundle services JSON if exists
+				String bundleServicesJson = rs.getString("bundle_service");
+				if (bundleServicesJson != null) {
+					JsonReader jsonReader = Json.createReader(new StringReader(bundleServicesJson));
+					JsonArray bundleServicesArray = jsonReader.readArray();
+					ArrayList<Service> bundleServices = new ArrayList<>();
+
+					for (JsonValue serviceValue : bundleServicesArray) {
+						JsonObject serviceObj = (JsonObject) serviceValue;
+						Service service = new Service();
+						service.setServiceName(serviceObj.getString("service"));
+						service.setPrice(Float.parseFloat(serviceObj.get("price").toString()));
+						service.setImageUrl(serviceObj.getString("img_url"));
+						bundleServices.add(service);
+					}
+					transaction.setBundleServices(bundleServices);
+				}
+
+				transaction.setDiscount(rs.getInt("discount_percent"));
+				transaction.setSubTotal(rs.getDouble("subtotal"));
+				transaction.setStatus(rs.getString("transaction_status"));
+
+				// Get timestamp and convert to LocalDateTime
+				Timestamp paidAt = rs.getTimestamp("paid_at");
+				if (paidAt != null) {
+					transaction.setPaidDate(paidAt.toLocalDateTime());
+				}
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			conn.close();
+		}
+
+		return transaction;
+	}
+
 	public ArrayList<Transaction> getActiveBookingsByUserID(Integer userId) throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Transaction> transactions = new ArrayList<>();
@@ -147,7 +237,7 @@ public class TransactionDAO {
 				address.setUnit(rs.getString("unit"));
 				transaction.setAddress(address);
 
-				transaction.setSlotId(rs.getInt("slot_id"));
+				transaction.setTimeSlot(rs.getTime("start_time").toLocalTime());
 				transaction.setStartDate(rs.getTimestamp("booking_date").toLocalDateTime().toLocalDate());
 
 				// Parse services JSON if exists
@@ -242,7 +332,7 @@ public class TransactionDAO {
 				address.setUnit(rs.getString("unit"));
 				transaction.setAddress(address);
 
-				transaction.setSlotId(rs.getInt("slot_id"));
+				transaction.setTimeSlot(rs.getTime("start_time").toLocalTime());
 				transaction.setStartDate(rs.getTimestamp("booking_date").toLocalDateTime().toLocalDate());
 
 				// Parse services JSON if exists
@@ -343,6 +433,30 @@ public class TransactionDAO {
 
 			pstmt.executeUpdate();
 
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			conn.close();
+		}
+	}
+
+	public int updateTransactionStatus(Integer transactionId, String status) throws SQLException {
+		Connection conn = DB.connect();
+		int rowsAffected = 0;
+		try {
+			String sqlStr = """
+					UPDATE transaction
+					SET status = ?::transaction_status
+					WHERE
+					trans_id = ?;
+					""";
+
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setString(1, status);
+			pstmt.setInt(2, transactionId);
+
+			rowsAffected = pstmt.executeUpdate();
+			return rowsAffected;
 		} catch (SQLException e) {
 			throw e;
 		} finally {

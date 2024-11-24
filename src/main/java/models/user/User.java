@@ -4,6 +4,7 @@ public class User {
 	private Integer id = 0;
 	private String firstName = "";
 	private String lastName = "";
+	private String imageURL = "";
 	private String email = "";
 	private String password = "";
 	private Integer role = 0;
@@ -14,6 +15,7 @@ public class User {
 		this.id = 0;
 		this.firstName = "";
 		this.lastName = "";
+		this.imageURL = "";
 		this.email = "";
 		this.password = "";
 		this.role = 0;
@@ -21,12 +23,13 @@ public class User {
 	}
 
 	// Explicit Constructor
-	public User(Integer id, String firstName, String lastName, String email, String password, Integer role, String phoneNo) {
+	public User(Integer id, String firstName, String lastName, String imageURL, String email, String password, Integer role, String phoneNo) {
 
 		// Booting Up
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.imageURL = imageURL;
 		this.email = email;
 		this.password = password;
 		this.role = role;
@@ -57,6 +60,14 @@ public class User {
 		this.lastName = lastName;
 	}
 
+	public String getImageURL() {
+		return imageURL;
+	}
+
+	public void setImageURL(String imageURL) {
+		this.imageURL = imageURL;
+	}
+	
 	public String getEmail() {
 		return email;
 	}

@@ -40,8 +40,7 @@
 					class="btn btn-ghost btn-circle avatar">
 					<div
 						class="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-						<img alt="Profile"
-							src="${pageContext.request.contextPath}/assets/avatar.jpg" />
+						<img alt="Profile" src="<%=user.getImageURL()%>" />
 					</div>
 				</div>
 				<ul
@@ -61,7 +60,7 @@
 				<div class="absolute inset-0 bg-primary/10 pattern-grid"></div>
 			</div>
 
-			<a href="${pageContext.request.contextPath}/editProfile"
+			<a href="${pageContext.request.contextPath}/profile/edit"
 				class="btn btn-primary btn-sm absolute top-4 right-4 gap-2"> <span
 				class="material-symbols-outlined">edit</span> Edit Profile
 			</a>
@@ -70,8 +69,8 @@
 				<div class="avatar">
 					<div
 						class="w-40 lg:w-48 rounded-full ring ring-primary ring-offset-base-200 ring-offset-4">
-						<img src="${pageContext.request.contextPath}/assets/avatar.jpg"
-							alt="Profile" class="mask mask-circle" />
+						<img src="<%=user.getImageURL()%>" alt="Profile"
+							class="mask mask-circle" />
 					</div>
 				</div>
 				<div class="text-center lg:text-left">
@@ -98,7 +97,7 @@
 					<span class="material-symbols-outlined text-4xl">calendar_month</span>
 				</div>
 				<div class="stat-title">Total Bookings</div>
-				<div class="stat-value text-primary"><%=transactions.size() %></div>
+				<div class="stat-value text-primary"><%=transactions.size()%></div>
 				<div class="stat-desc">↗︎ All time record</div>
 			</div>
 
@@ -186,7 +185,7 @@
 			<div class="space-y-6">
 				<div class="flex justify-between items-center">
 					<h2 class="text-2xl font-bold">Recent Bookings</h2>
-					<a href="${pageContext.request.contextPath}/transactions"
+					<a href="${pageContext.request.contextPath}/book/view"
 						class="btn btn-ghost btn-sm"> View All <span
 						class="material-symbols-outlined">chevron_right</span>
 					</a>
@@ -200,7 +199,9 @@
 					<div class="flex flex-col md:flex-row">
 						<!-- Image with status overlay -->
 						<figure class="w-full md:w-48 relative">
-							<img src="<%=transactions.get(0).getBundle_img() == null ? transactions.get(0).getServices().get(0).getImageUrl() : transactions.get(0).getBundleName()%>"
+							<img
+								src="<%=transactions.get(0).getBundle_img() == null ? transactions.get(0).getServices().get(0).getImageUrl()
+		: transactions.get(0).getBundleName()%>"
 								alt="Service Image" class="h-48 md:h-full w-full object-cover" />
 							<div class="absolute top-2 right-2">
 								<div class="badge badge-success gap-2">

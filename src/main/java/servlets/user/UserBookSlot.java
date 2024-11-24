@@ -70,6 +70,14 @@ public class UserBookSlot extends HttpServlet {
 			System.out.println("Running POST request for /review");
 			handleReview(request, response, session);
 			break;
+		case "/view":
+			System.out.println("Running GET request for /view");
+			handleView(request, response, session);
+			break;
+		case "/payment":
+			System.out.println("Running GET request for /payment");
+			handleGetPayment(request, response, session);
+			break;
 		default:
 			response.sendRedirect(request.getContextPath() + "/book/slots");
 		}
@@ -101,6 +109,14 @@ public class UserBookSlot extends HttpServlet {
 		case "/confirm":
 			System.out.println("Running POST request for /confirm");
 			handleBooking(request, response, session);
+			break;
+		case "/cancel":
+			System.out.println("Running POST request for /cancel");
+			handleCancel(request, response, session);
+			break;
+		case "/payment":
+			System.out.println("Running GET request for /payment");
+			handlePostPayment(request, response, session);
 			break;
 		default:
 			doGet(request, response);
@@ -404,7 +420,6 @@ public class UserBookSlot extends HttpServlet {
 			// Handle individual services
 			if (serviceIds != null && serviceIds.length > 0) {
 				JsonArrayBuilder servicesArray = Json.createArrayBuilder();
-				subtotal = 0.0;
 
 				for (String serviceId : serviceIds) {
 
@@ -436,6 +451,131 @@ public class UserBookSlot extends HttpServlet {
 			e.printStackTrace();
 			request.setAttribute("errorMessage", "Unable to process booking confirmation. Please try again.");
 			request.getRequestDispatcher("/error.jsp").forward(request, response);
+		}
+	}
+
+	private void handleView(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws ServletException, IOException {
+		try {
+			// Check if user is logged in
+			// Check session exists for user
+			Integer userId = (Integer) session.getAttribute("userId");
+			if (userId == null) {
+				throw new IllegalStateException("User not logged in");
+			}
+
+			TransactionDAO bookingDAO = new TransactionDAO();
+
+			ArrayList<Transaction> transactions = bookingDAO.getAllBookingsByUserID(userId);
+			request.setAttribute("transactions", transactions);
+
+			request.getRequestDispatcher("/user/bookView.jsp").forward(request, response);
+
+		} catch (IllegalStateException e) {
+			System.out.println("Session expired: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("errorMessage", "Please log in to continue.");
+			response.sendRedirect(request.getContextPath() + "/login");
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendRedirect(request.getContextPath() + "/error");
+		}
+	}
+
+	private void handleCancel(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws ServletException, IOException {
+		try {
+			// Check if user is logged in
+			// Check session exists for user
+			Integer userId = (Integer) session.getAttribute("userId");
+			if (userId == null) {
+				throw new IllegalStateException("User not logged in");
+			}
+
+			Integer transId = Integer.parseInt(request.getParameter("id"));
+			String status = "CANCELLED";
+			TransactionDAO transDAO = new TransactionDAO();
+
+			int rowsAffected = transDAO.updateTransactionStatus(transId, status);
+			if (rowsAffected < 0) {
+				request.setAttribute("errorMessage", "Error Cancelling Booking");
+			}
+
+			response.sendRedirect(request.getContextPath() + "/book/view");
+
+		} catch (IllegalStateException e) {
+			System.out.println("Session expired: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("errorMessage", "Please log in to continue.");
+			response.sendRedirect(request.getContextPath() + "/login");
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendRedirect(request.getContextPath() + "/error");
+		}
+	}
+
+	private void handleGetPayment(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws ServletException, IOException {
+		try {
+			// Check if user is logged in
+			// Check session exists for user
+			Integer userId = (Integer) session.getAttribute("userId");
+			if (userId == null) {
+				throw new IllegalStateException("User not logged in");
+			}
+
+			Integer transId = Integer.parseInt(request.getParameter("id"));
+
+			System.out.println("Transaction ID: " + transId);
+			TransactionDAO transDAO = new TransactionDAO();
+
+			Transaction transaction = transDAO.getTransactionById(transId);
+
+			request.setAttribute("transaction", transaction);
+			request.getRequestDispatcher("/user/payment.jsp").forward(request, response);
+		} catch (IllegalStateException e) {
+			System.out.println("Session expired: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("errorMessage", "Please log in to continue.");
+			response.sendRedirect(request.getContextPath() + "/login");
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendRedirect(request.getContextPath() + "/error");
+		}
+	}
+
+	private void handlePostPayment(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws ServletException, IOException {
+		try {
+			// Check if user is logged in
+			// Check session exists for user
+			Integer userId = (Integer) session.getAttribute("userId");
+			if (userId == null) {
+				throw new IllegalStateException("User not logged in");
+			}
+
+			Integer transId = Integer.parseInt(request.getParameter("transactionId"));
+
+			System.out.println("Transaction ID: " + transId);
+			String status = "IN_PROGRESS";
+			TransactionDAO transDAO = new TransactionDAO();
+
+			int rowsAffected = transDAO.updateTransactionStatus(transId, status);
+			if (rowsAffected < 0) {
+				request.setAttribute("errorMessage", "Error Making Payment");
+				request.getRequestDispatcher("/error.jsp").forward(request, response);
+			}
+
+			response.sendRedirect(request.getContextPath() + "/profile");
+
+		} catch (IllegalStateException e) {
+			System.out.println("Session expired: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("errorMessage", "Please log in to continue.");
+			response.sendRedirect(request.getContextPath() + "/login");
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendRedirect(request.getContextPath() + "/error");
 		}
 	}
 }

@@ -32,6 +32,7 @@
 				LocalDate selectedDate = (LocalDate) request.getAttribute("selectedDate");
 				LocalTime selectedTime = (LocalTime) request.getAttribute("selectedTime");
 				Address address = (Address) request.getAttribute("selectedAddress");
+				String formattedTotal = "";
 				%>
 
 				<div class="bg-base-200 p-4 rounded-lg mb-6">
@@ -115,6 +116,7 @@
 					<div class="space-y-4">
 						<%
 						double total = 0;
+						total += selectedBundle.getDiscountedPrice();
 						for (Service service : selectedServices) {
 							total += service.getPrice();
 						%>
@@ -133,7 +135,8 @@
 						</div>
 						<%
 						}
-						String formattedTotal = String.format("%.2f", total);
+
+						formattedTotal = String.format("%.2f", total);
 						%>
 					</div>
 
@@ -158,7 +161,8 @@
 							type="hidden" name="timeSlot"
 							value="<%=request.getAttribute("timeSlot")%>"> <input
 							type="hidden" name="address"
-							value="<%=request.getAttribute("address")%>">
+							value="<%=request.getAttribute("address")%>"> <input
+							type="hidden" name="subTotal" value="<%=formattedTotal%>">
 						<%
 						if (selectedBundle != null) {
 						%>
@@ -177,8 +181,8 @@
 						}
 						}
 						%>
-						<button type="submit" class="btn btn-outline w-full md:w-auto" name="btnSubmit" value="1">Add
-							to Cart</button>
+						<button type="submit" class="btn btn-outline w-full md:w-auto"
+							name="btnSubmit" value="1">Add to Cart</button>
 					</form>
 
 					<form action="${pageContext.request.contextPath}/book/confirm"
@@ -188,7 +192,8 @@
 							type="hidden" name="timeSlot"
 							value="<%=request.getAttribute("timeSlot")%>"> <input
 							type="hidden" name="address"
-							value="<%=request.getAttribute("address")%>">
+							value="<%=request.getAttribute("address")%>"> <input
+							type="hidden" name="subTotal" value="<%=formattedTotal%>">
 						<%
 						if (selectedBundle != null) {
 						%>
@@ -207,8 +212,8 @@
 						}
 						}
 						%>
-						<button type="submit" class="btn btn-primary w-full md:w-auto" name="btnSubmit" value="2">Proceed
-							to Payment</button>
+						<button type="submit" class="btn btn-primary w-full md:w-auto"
+							name="btnSubmit" value="2">Proceed to Payment</button>
 					</form>
 				</div>
 			</div>

@@ -4,6 +4,7 @@ import models.service.Service;
 import models.address.Address;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -11,7 +12,7 @@ public class Transaction {
 	private Integer id = 0;
 	private Integer userId = 0;
 	private Address address = new Address();
-	private Integer slotId = 0;
+	private LocalTime timeSlot = LocalTime.now();
 	private LocalDate startDate = LocalDate.now();
 	private ArrayList<Service> services = new ArrayList<Service>();
 	private String bundleName = "";
@@ -27,7 +28,7 @@ public class Transaction {
 		this.id = 0;
 		this.userId = 0;
 		this.address = new Address();
-		this.slotId = 0;
+		this.timeSlot = LocalTime.now();
 		this.startDate = LocalDate.now();
 		this.services = new ArrayList<Service>();
 		this.bundleName = "";
@@ -40,7 +41,7 @@ public class Transaction {
 	}
 
 	// Explicit Constructor
-	public Transaction(Integer id, Integer userId, Address address, Integer slotId, LocalDate startDate,
+	public Transaction(Integer id, Integer userId, Address address, LocalTime timeSlot, LocalDate startDate,
 			ArrayList<Service> services, String bundleName, String bundle_img, ArrayList<Service> bundleServices,
 			Integer discount, Double subTotal, LocalDateTime paidDate, String status) {
 
@@ -48,7 +49,7 @@ public class Transaction {
 		this.id = id;
 		this.userId = userId;
 		this.address = address;
-		this.slotId = slotId;
+		this.timeSlot = timeSlot;
 		this.startDate = startDate;
 		this.services = services;
 		this.bundleName = bundleName;
@@ -84,12 +85,12 @@ public class Transaction {
 		this.address = address;
 	}
 
-	public Integer getSlotId() {
-		return slotId;
+	public LocalTime getTimeSlot() {
+		return timeSlot;
 	}
 
-	public void setSlotId(Integer slotId) {
-		this.slotId = slotId;
+	public void setTimeSlot(LocalTime timeSlot) {
+		this.timeSlot = timeSlot;
 	}
 
 	public LocalDate getStartDate() {

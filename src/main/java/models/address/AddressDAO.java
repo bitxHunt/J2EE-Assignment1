@@ -7,8 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AddressDAO {
-	public Address getAddressByUserId(Integer userId, Integer addTypeId)
-			throws SQLException {
+	public Address getAddressByUserId(Integer userId, Integer addTypeId) throws SQLException {
 		Connection conn = DB.connect();
 		Address address = new Address();
 		try {
@@ -33,5 +32,39 @@ public class AddressDAO {
 			conn.close();
 		}
 		return address;
+	}
+
+	public void updateAddressById(Integer userId, Integer addressId, String address, Integer postalCode, String unit)
+			throws SQLException {
+		Connection conn = DB.connect();
+		try {
+			String sqlStr = "UPDATE address SET address = ?, postal_code = ?, unit = ? WHERE address_id = ? AND user_id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setString(1, address);
+			pstmt.setInt(2, postalCode);
+			pstmt.setString(3, unit);
+			pstmt.setInt(4, addressId);
+			pstmt.setInt(5, userId);
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+	}
+
+	public void deleteAddressById(Integer userId, Integer addressId) throws SQLException {
+		Connection conn = DB.connect();
+		try {
+			String sqlStr = "DELETE FROM address WHERE address_id = ? AND user_id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, addressId);
+			pstmt.setInt(2, userId);
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
 	}
 }

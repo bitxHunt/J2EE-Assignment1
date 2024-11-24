@@ -1,13 +1,20 @@
 package models.user;
 
 import util.DB;
+import com.cloudinary.Cloudinary;
+import util.CloudinaryConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import jakarta.servlet.http.Part;
+
 public class UserDAO {
+	private Cloudinary cloudinary;
+
 	public ArrayList<User> getAllUsers() throws SQLException {
 
 		Connection conn = DB.connect();
@@ -41,7 +48,7 @@ public class UserDAO {
 		Connection conn = DB.connect();
 		User user = new User();
 		try {
-			String sqlStr = "SELECT first_name, last_name, email, phone_number FROM users WHERE user_id = ?;";
+			String sqlStr = "SELECT first_name, last_name, email, image_url, phone_number FROM users WHERE user_id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, userId);
 			ResultSet rs = pstmt.executeQuery();
@@ -51,6 +58,7 @@ public class UserDAO {
 				user.setLastName(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));
 				user.setPhoneNo(rs.getString("phone_number"));
+				user.setImageURL(rs.getString("image_url"));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -90,7 +98,8 @@ public class UserDAO {
 		Connection conn = DB.connect();
 		Integer rowsAffected = 0;
 		try {
-			String sqlStr = "INSERT INTO users (first_name, last_name, email, password, phone_number) VALUES (?, ?, ?, ?, ?);";
+			String sqlStr = "INSERT INTO users (first_name, last_name, email, password, phone_number, image_url) VALUES (?, ?, ?, ?, ?, ?);";
+			String defaultImageUrl = "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_bundle_image.webp";
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setString(1, firstName);
@@ -98,6 +107,7 @@ public class UserDAO {
 			pstmt.setString(3, email);
 			pstmt.setString(4, hashedPassword);
 			pstmt.setString(5, phoneNo);
+			pstmt.setString(6, defaultImageUrl);
 			rowsAffected = pstmt.executeUpdate();
 
 		} catch (Exception e) {
@@ -106,6 +116,54 @@ public class UserDAO {
 			conn.close();
 		}
 		return rowsAffected;
+	}
+
+	public void updateUserProfile(int userId, String firstName, String lastName, Part imagePart, String phoneNo)
+			throws SQLException {
+		Connection conn = DB.connect();
+		this.cloudinary = CloudinaryConnection.getCloudinary();
+		try {
+			if (imagePart.getSize() > 0) {
+				// Get current image URL for deletion
+				User user = getUserById(userId);
+				String currentImageUrl = user.getImageURL();
+
+				// Upload new image
+				String newImageUrl = CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart);
+
+				if (newImageUrl != null && currentImageUrl != null && !currentImageUrl.equals(
+						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732446530/bizbynfxadhthnoymbdo.webp")) {
+					// Delete old image
+					try {
+						CloudinaryConnection.deleteFromCloudinary(cloudinary, currentImageUrl);
+					} catch (Exception e) {
+						System.out.println("Error deleting old image: " + e.getMessage());
+					}
+				}
+
+				String sqlStr = "UPDATE users SET first_name = ?, last_name = ?, phone_number = ?, image_url = ? WHERE user_id = ?;";
+				PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+				pstmt.setString(1, firstName);
+				pstmt.setString(2, lastName);
+				pstmt.setString(3, phoneNo);
+				pstmt.setString(4, newImageUrl);
+				pstmt.setInt(5, userId);
+				pstmt.executeUpdate();
+			} else {
+				String sqlStr = "UPDATE users SET first_name = ?, last_name = ?, phone_number = ? WHERE user_id = ?;";
+				PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+				pstmt.setString(1, firstName);
+				pstmt.setString(2, lastName);
+				pstmt.setString(3, phoneNo);
+				pstmt.setInt(4, userId);
+				pstmt.executeUpdate();
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
 	}
 
 	// Author : Soe Zaw Aung
@@ -211,6 +269,6 @@ public class UserDAO {
 		} finally {
 			conn.close();
 		}
-		return rowsAffected==1;
+		return rowsAffected == 1;
 	}
 }
