@@ -85,12 +85,42 @@
 				class="card bg-base-200 shadow-xl transition-all hover:shadow-2xl">
 				<div class="flex flex-col md:flex-row">
 					<!-- Image Section -->
+					<!-- Image Section -->
 					<figure class="w-full md:w-48 relative">
 						<img
 							src="<%=transaction.getBundle_img() != null ? transaction.getBundle_img()
 		: (services != null && !services.isEmpty() ? services.get(0).getImageUrl() : "")%>"
 							alt="Service Image" class="h-48 md:h-full w-full object-cover" />
-						<!-- [Previous status badge section remains the same] -->
+						<!-- Add this status badge -->
+						<div class="absolute top-2 right-2">
+							<%
+							String status = transaction.getStatus();
+							String badgeClass = "";
+							String badgeText = status;
+
+							switch (status) {
+							case "PENDING":
+								badgeClass = "badge badge-warning";
+								break;
+							case "PAID":
+								badgeClass = "badge badge-info";
+								break;
+							case "IN_PROGRESS":
+								badgeClass = "badge badge-primary";
+								badgeText = "In Progress";
+								break;
+							case "COMPLETED":
+								badgeClass = "badge badge-success";
+								break;
+							case "CANCELLED":
+								badgeClass = "badge badge-error";
+								break;
+							default:
+								badgeClass = "badge";
+							}
+							%>
+							<span class="<%=badgeClass%>"><%=badgeText%></span>
+						</div>
 					</figure>
 
 					<!-- Content Section -->
@@ -101,7 +131,25 @@
 								<h2 class="card-title text-primary">
 									<%=transaction.getBundleName() != null ? transaction.getBundleName() : "Custom Services"%>
 								</h2>
-								<!-- [Previous date and time section remains the same] -->
+								<!-- Add date and time section -->
+								<div class="flex flex-wrap gap-4 mt-2">
+									<div class="flex items-center gap-2 text-sm opacity-75">
+										<span class="material-symbols-outlined">calendar_today</span>
+										<span><%=transaction.getStartDate().format(dateFormatter)%></span>
+									</div>
+									<div class="flex items-center gap-2 text-sm opacity-75">
+										<span class="material-symbols-outlined">schedule</span> <span><%=transaction.getTimeSlot().format(timeFormatter)%></span>
+									</div>
+									<div class="flex items-center gap-2">
+										<span
+											class="badge <%=transaction.getStatus().equals("CANCELLED") ? "badge-error"
+		: transaction.getStatus().equals("COMPLETED") ? "badge-success"
+				: transaction.getStatus().equals("IN_PROGRESS") ? "badge-primary"
+						: transaction.getStatus().equals("PENDING") ? "badge-warning" : "badge-info"%>">
+											<%=transaction.getStatus()%>
+										</span>
+									</div>
+								</div>
 							</div>
 
 							<!-- Services List -->

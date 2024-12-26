@@ -111,7 +111,7 @@
 						%>
 					</div>
 
-					<div class="divider">OR</div>
+					<div class="divider"></div>
 
 					<!-- Price Summary -->
 					<div class="flex justify-between items-center text-lg">

@@ -26,6 +26,7 @@
 	}
 	%>
 	<%@ include file="./components/displayBundles.jsp"%>
+	
 	<%@ include file="./components/displayServicesByCategory.jsp"%>
 </body>
 </html>
