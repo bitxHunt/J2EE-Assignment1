@@ -10,14 +10,14 @@ public class Role {
 	private int roleId;
 	private String roleName;
 
-	//Default Constructors
+	// Default Constructors
 	public Role() {
 		this.roleId = 0;
 		this.roleName = "";
 
 	}
 
-	//Explicit Constructors
+	// Explicit Constructors
 	public Role(int roleId, String roleName) {
 		this.roleId = roleId;
 		this.roleName = roleName;

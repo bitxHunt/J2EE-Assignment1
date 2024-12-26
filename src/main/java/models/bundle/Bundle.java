@@ -58,7 +58,7 @@ public class Bundle {
 		this.isActive = isActive;
 
 	}
-	
+
 	// Getters and Setters
 
 	public int getBundleId() {

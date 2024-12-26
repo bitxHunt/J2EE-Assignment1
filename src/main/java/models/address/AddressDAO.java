@@ -39,8 +39,8 @@ public class AddressDAO {
 		return address;
 	}
 
-	public void createAddressByUserId(Integer userId, Integer addTypeId, String address, Integer postalCode, String unit)
-			throws SQLException {
+	public void createAddressByUserId(Integer userId, Integer addTypeId, String address, Integer postalCode,
+			String unit) throws SQLException {
 		Connection conn = DB.connect();
 		try {
 			String sqlStr = "INSERT INTO address (user_id, type_id, address, postal_code, unit) VALUES (?, ?, ?, ?, ?);";

@@ -8,6 +8,7 @@ import com.stripe.model.Price;
 import com.stripe.model.Product;
 import com.stripe.param.PriceCreateParams;
 import com.stripe.param.ProductCreateParams;
+
 import com.stripe.Stripe;
 
 public class StripeConnection {
@@ -18,23 +19,25 @@ public class StripeConnection {
 	}
 
 	// Create a product in stripe dashboard by the stripe API
-	public void createProduct() {
+	public void createProduct(String name, String description, boolean isActive, Integer price, String imageUrl) {
 		String systemMessage = "Running Stripe Product Creation Function";
 		String errMessage = "";
 
 		try {
 			// Log the current running function
 			System.out.println(systemMessage);
+			System.out.println("Api Key: " + StripeConfig.getStripeApiKey());
 
 			// Call stripe api to create product
-			ProductCreateParams params = ProductCreateParams
-					.builder().setName("Basic Dashboard").setDefaultPriceData(ProductCreateParams.DefaultPriceData
-							.builder().setUnitAmount(1000L).setCurrency("sgd").build())
-					.addExpand("default_price").build();
+			ProductCreateParams params = ProductCreateParams.builder().setName(name).setDescription(description)
+					.setActive(isActive).setDefaultPriceData(ProductCreateParams.DefaultPriceData.builder()
+							.setUnitAmount(price.longValue()).setCurrency("sgd").build())
+					.addExpand("default_price").addImage(imageUrl).build();
 
 			// Log out the result
 			Product product = Product.create(params);
-			System.out.println("Product created successfully: " + product.getId());
+			System.out.println("Product created successfully: " + product.toJson());
+			System.out.println("Product ID: " + product.getId());
 
 			// Error Handling
 		} catch (AuthenticationException e) {

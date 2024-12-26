@@ -91,7 +91,7 @@ public class CreateNewBundle extends HttpServlet {
 			List<Integer> serviceIds = Arrays.stream(selectedServices).map(Integer::parseInt)
 					.collect(Collectors.toList());
 
-			boolean success = bundleDAO.createBundle(newBundle, serviceIds,imagePart);
+			boolean success = bundleDAO.createBundle(newBundle, serviceIds, imagePart);
 			if (success) {
 				// Clear any existing session data
 				HttpSession session = request.getSession();

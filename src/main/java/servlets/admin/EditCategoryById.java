@@ -44,10 +44,9 @@ public class EditCategoryById extends HttpServlet {
 			} else {
 				response.sendRedirect(request.getContextPath() + "/error/404ErrorPage.jsp");
 			}
-		}catch(NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			response.sendRedirect(request.getContextPath() + "/error/400ErrorPage.jsp");
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			request.setAttribute("err", "Database error: " + e.getMessage());
 			request.getRequestDispatcher("/error/500").forward(request, response);
 		}

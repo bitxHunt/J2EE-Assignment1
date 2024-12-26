@@ -76,7 +76,7 @@ public class GetIndex extends HttpServlet {
 			ArrayList<Category> categories = categoryDAO.getAllCategoriesWithServiceCount();
 			request.setAttribute("categories", categories);
 			request.getRequestDispatcher("public/index.jsp").forward(request, response);
-		} catch(NullPointerException e){
+		} catch (NullPointerException e) {
 			System.out.println("Invalid Page: " + e.getMessage());
 			e.printStackTrace();
 			request.setAttribute("err", "Invalid Page. Please try again.");

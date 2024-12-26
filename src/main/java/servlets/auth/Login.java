@@ -74,10 +74,10 @@ public class Login extends HttpServlet {
 				session.setAttribute("userId", user.getId());
 				session.setAttribute("role", user.getRole());
 				session.setAttribute("profileImg", user.getImageURL());
-				
+
 				String imageUrl = (String) session.getAttribute("profileImg");
 				System.out.println("Profile" + imageUrl);
-				
+
 				if (user.getRole() == 1) {
 					response.sendRedirect(request.getContextPath() + "/admin");
 				} else {

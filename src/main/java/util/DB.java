@@ -19,16 +19,16 @@ public class DB {
 			String user = DatabaseConfig.getDbUsername();
 			String password = DatabaseConfig.getDbPassword();
 			String dbClass = DatabaseConfig.getDbClass();
-
+			
 			try {
 
 				Class.forName(dbClass);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+
 			System.out.println("Connecting to database...");
-			
+
 			// Open a connection
 			return DriverManager.getConnection(jdbcUrl, user, password);
 

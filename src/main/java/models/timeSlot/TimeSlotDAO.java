@@ -22,11 +22,11 @@ public class TimeSlotDAO {
 		try {
 			String sqlStr = "SELECT slot_id FROM time_slot WHERE start_time = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-            pstmt.setTime(1, Time.valueOf(time));
+			pstmt.setTime(1, Time.valueOf(time));
 			ResultSet rs = pstmt.executeQuery();
 
 			if (rs.next()) {
-                timeSlot.setId(rs.getInt("slot_id"));
+				timeSlot.setId(rs.getInt("slot_id"));
 			}
 
 		} catch (Exception e) {

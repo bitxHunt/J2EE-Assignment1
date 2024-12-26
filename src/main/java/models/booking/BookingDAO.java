@@ -37,11 +37,11 @@ public class BookingDAO {
 				if (timeArray != null) {
 					Time[] times = (Time[]) timeArray.getArray();
 					List<LocalTime> slots = new ArrayList<>();
-                    for (Time time : times) {
-                        // Convert java.sql.Time to LocalTime
-                    	slots.add(time.toLocalTime());
-                    }
-                    booking.setSlots(slots);
+					for (Time time : times) {
+						// Convert java.sql.Time to LocalTime
+						slots.add(time.toLocalTime());
+					}
+					booking.setSlots(slots);
 				}
 				availableSlots.add(booking);
 			}

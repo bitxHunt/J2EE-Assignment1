@@ -23,7 +23,7 @@ import jakarta.servlet.http.Part;
 public class ServiceDAO {
 	private Cloudinary cloudinary;
 
-	//retrieves all services
+	// retrieves all services
 	public ArrayList<Service> getAllServices() throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();
@@ -52,7 +52,7 @@ public class ServiceDAO {
 		return services;
 	}
 
-	//retrieves all active services
+	// retrieves all active services
 	public ArrayList<Service> getAllActiveServices() throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();
@@ -81,7 +81,7 @@ public class ServiceDAO {
 		return services;
 	}
 
-	//retrieve service by specific id
+	// retrieve service by specific id
 	public Service getServiceById(int serviceId) throws SQLException {
 		Connection conn = DB.connect();
 		Service service = null;
@@ -108,7 +108,7 @@ public class ServiceDAO {
 		return service;
 	}
 
-	//insert new service with optional image
+	// insert new service with optional image
 	public boolean createService(Service service, Part imagePart) throws SQLException {
 		Connection conn = DB.connect();
 		boolean success = false;
@@ -140,7 +140,7 @@ public class ServiceDAO {
 		return success;
 	}
 
-	//update service field
+	// update service field
 	public boolean updateService(Service service, Part imagePart) throws SQLException {
 		Connection conn = DB.connect();
 		boolean success = false;
@@ -160,7 +160,7 @@ public class ServiceDAO {
 				newImageUrl = CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart);
 
 				// If upload successful and no default image, delete old image and update SQL
-				//check to not to delete old image
+				// check to not to delete old image
 				if (newImageUrl != null && currentImageUrl != null
 						&& currentImageUrl != "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg") {
 					// Delete old image from Cloudinary
@@ -198,41 +198,41 @@ public class ServiceDAO {
 		return success;
 	}
 
-
-	//delete service and Cloudinary image
+	// delete service and Cloudinary image
 	public boolean deleteService(int serviceId) throws SQLException {
-	    Connection conn = DB.connect();
-	    this.cloudinary = CloudinaryConnection.getCloudinary();
-	    boolean success = false;
-	    try {
-	        // Get service info first for image deletion
-	        Service service = getServiceById(serviceId);
-	        
-	        // Delete the service from database
-	        String sqlStr = "DELETE FROM service WHERE service_id = ?";
-	        PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-	        pstmt.setInt(1, serviceId);
-	        int rowsAffected = pstmt.executeUpdate();
-	        success = rowsAffected > 0;
-	        
-	        // If successful and image is not default, delete from Cloudinary but check to not be default image
-	        if (success) {
-	            if (service != null && service.getImageUrl() != null && !service.getImageUrl().equals(
-	                "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg")) {
-	                try {
-	                    CloudinaryConnection.deleteFromCloudinary(cloudinary, service.getImageUrl());
-	                } catch (IOException e) {
-	                    System.out.println("Error deleting service image: " + e.getMessage());
-	                }
-	            }
-	        }
-	    } finally {
-	        conn.close();
-	    }
-	    return success;
+		Connection conn = DB.connect();
+		this.cloudinary = CloudinaryConnection.getCloudinary();
+		boolean success = false;
+		try {
+			// Get service info first for image deletion
+			Service service = getServiceById(serviceId);
+
+			// Delete the service from database
+			String sqlStr = "DELETE FROM service WHERE service_id = ?";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, serviceId);
+			int rowsAffected = pstmt.executeUpdate();
+			success = rowsAffected > 0;
+
+			// If successful and image is not default, delete from Cloudinary but check to
+			// not be default image
+			if (success) {
+				if (service != null && service.getImageUrl() != null && !service.getImageUrl().equals(
+						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg")) {
+					try {
+						CloudinaryConnection.deleteFromCloudinary(cloudinary, service.getImageUrl());
+					} catch (IOException e) {
+						System.out.println("Error deleting service image: " + e.getMessage());
+					}
+				}
+			}
+		} finally {
+			conn.close();
+		}
+		return success;
 	}
 
-	//retrieve services filtered by category
+	// retrieve services filtered by category
 	public ArrayList<Service> getServicesByCategory(int categoryId) throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();

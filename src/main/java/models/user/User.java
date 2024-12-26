@@ -29,7 +29,8 @@ public class User {
 	}
 
 	// Explicit Constructor
-	public User(Integer id, String firstName, String lastName, String imageURL, String email, String password, Integer role, String phoneNo) {
+	public User(Integer id, String firstName, String lastName, String imageURL, String email, String password,
+			Integer role, String phoneNo) {
 
 		// Booting Up
 		this.id = id;
@@ -73,7 +74,7 @@ public class User {
 	public void setImageURL(String imageURL) {
 		this.imageURL = imageURL;
 	}
-	
+
 	public String getEmail() {
 		return email;
 	}

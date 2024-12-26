@@ -19,12 +19,11 @@ public class GetExistingServiceAndCategory extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private ServiceDAO serviceDAO;
 	private CategoryDAO categoryDAO;
-	
 
 	public GetExistingServiceAndCategory() {
 		super();
-		this.serviceDAO= new ServiceDAO();
-		this.categoryDAO= new CategoryDAO();
+		this.serviceDAO = new ServiceDAO();
+		this.categoryDAO = new CategoryDAO();
 	}
 
 	@Override

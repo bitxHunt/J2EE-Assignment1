@@ -24,7 +24,7 @@ public class Address {
 		this.unit = "";
 	}
 
-		// Explicit Constructor
+	// Explicit Constructor
 	public Address(Integer id, Integer userId, String addType, String address, Integer postalCode, String unit,
 			Boolean isActive) {
 

@@ -45,4 +45,4 @@ public class GetAllCategoriesWithServices extends HttpServlet {
 			request.getRequestDispatcher("/error/500ErrorPage.jsp").forward(request, response);
 		}
 	}
-}	
+}
