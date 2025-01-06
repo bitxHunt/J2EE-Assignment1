@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-import util.StripeConfig;
+import util.SecretsConfig;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
@@ -67,7 +67,7 @@ public class UserPayment extends HttpServlet {
 	public void handleCheckout(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws IOException {
 		try {
-			Stripe.apiKey = StripeConfig.getStripeApiKey();
+			Stripe.apiKey = SecretsConfig.getStripeApiKey();
 
 			SessionCreateParams params = SessionCreateParams.builder().setMode(SessionCreateParams.Mode.PAYMENT)
 					.setSuccessUrl(request.getContextPath() + "/success.html")

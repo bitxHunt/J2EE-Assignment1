@@ -15,7 +15,7 @@ public class StripeConnection {
 
 	// Set the stripe API Key in the constructor
 	public StripeConnection() {
-		Stripe.apiKey = StripeConfig.getStripeApiKey();
+		Stripe.apiKey = SecretsConfig.getStripeApiKey();
 	}
 
 	// Create a product in stripe dashboard by the stripe API
@@ -26,7 +26,7 @@ public class StripeConnection {
 		try {
 			// Log the current running function
 			System.out.println(systemMessage);
-			System.out.println("Api Key: " + StripeConfig.getStripeApiKey());
+			System.out.println("Api Key: " + SecretsConfig.getStripeApiKey());
 
 			// Call stripe api to create product
 			ProductCreateParams params = ProductCreateParams.builder().setName(name).setDescription(description)

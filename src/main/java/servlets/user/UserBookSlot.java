@@ -34,7 +34,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.ArrayList;
 
-import util.StripeConfig;
+import util.SecretsConfig;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
@@ -516,7 +516,7 @@ public class UserBookSlot extends HttpServlet {
 		// }
 
 		try {
-			Stripe.apiKey = StripeConfig.getStripeApiKey();
+			Stripe.apiKey = SecretsConfig.getStripeApiKey();
 
 			// Build the complete URLs
 			String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
@@ -526,6 +526,8 @@ public class UserBookSlot extends HttpServlet {
 			SessionCreateParams params = SessionCreateParams.builder().setMode(SessionCreateParams.Mode.PAYMENT)
 					.setSuccessUrl(successUrl) // Complete URL like "http://localhost:8080/yourapp/profile"
 					.setCancelUrl(cancelUrl) // Complete URL like "http://localhost:8080/yourapp/book"
+					.addLineItem(SessionCreateParams.LineItem.builder().setQuantity(1L)
+							.setPrice("price_1QZ4muRpRtGdj3Co0gvNeWrq").build())
 					.addLineItem(SessionCreateParams.LineItem.builder().setQuantity(1L)
 							.setPrice("price_1QZ4muRpRtGdj3Co0gvNeWrq").build())
 					.build();

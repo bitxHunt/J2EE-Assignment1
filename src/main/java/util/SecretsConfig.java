@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class DatabaseConfig {
+public class SecretsConfig {
 	private static final Properties properties = new Properties();
 
 	static {
-		try (InputStream input = DatabaseConfig.class.getClassLoader().getResourceAsStream("db.properties")) {
+		try (InputStream input = SecretsConfig.class.getClassLoader().getResourceAsStream("config.properties")) {
 			if (input == null) {
-				System.out.println("Sorry, unable to find db.properties");
+				System.out.println("Sorry, unable to find config.properties");
 				System.exit(1);
 			}
 
@@ -28,7 +28,6 @@ public class DatabaseConfig {
 	}
 
 	public static String getDbUrl() {
-
 		return properties.getProperty("db.url");
 	}
 
@@ -42,5 +41,9 @@ public class DatabaseConfig {
 
 	public static String getDbClass() {
 		return properties.getProperty("db.class");
+	}
+
+	public static String getStripeApiKey() {
+		return properties.getProperty("stripe.apikey");
 	}
 }
