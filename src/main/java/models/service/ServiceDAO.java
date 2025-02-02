@@ -267,4 +267,27 @@ public class ServiceDAO {
 		}
 		return services;
 	}
+
+	// Seed the overall data from the csv file
+	public void seedData(Service service) throws SQLException {
+		Connection conn = DB.connect();
+		try {
+			String sqlStr = "CALL seed_service(?, ?, ?, ?, ?);";
+			CallableStatement stmt = conn.prepareCall(sqlStr);
+
+			stmt.setString(1, service.getServiceName());
+			stmt.setString(2, service.getServiceDescription());
+			stmt.setFloat(3, service.getPrice());
+			stmt.setString(4, service.getImageUrl());
+			stmt.setInt(5, service.getCategoryId());
+
+			stmt.execute();
+
+		} catch (Exception e) {
+			System.out.println("Error Seeding Service Data.");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+	}
 }

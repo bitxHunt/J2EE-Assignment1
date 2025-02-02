@@ -183,4 +183,25 @@ public class CategoryDAO {
 
 		return success;
 	}
+
+	// Seed the overall data from the csv file
+	public void seedData(Category category) throws SQLException {
+		Connection conn = DB.connect();
+
+		try {
+			String sqlStr = "CALL seed_category(?, ?);";
+			CallableStatement stmt = conn.prepareCall(sqlStr);
+
+			stmt.setString(1, category.getCategoryName());
+			stmt.setString(2, category.getCategoryDescription());
+			
+			stmt.execute();
+			
+		} catch (Exception e) {
+			System.out.println("Error Seeding Category Data.");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+	}
 }

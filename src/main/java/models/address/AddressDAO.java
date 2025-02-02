@@ -7,6 +7,8 @@
 package models.address;
 
 import util.*;
+
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -86,6 +88,25 @@ public class AddressDAO {
 			pstmt.setInt(2, userId);
 			pstmt.executeUpdate();
 		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+	}	
+	
+	public void createAddressType(AddressType addressType) throws SQLException {
+		Connection conn = DB.connect();
+
+		try {
+			String sqlStr = "CALL seed_address_type(?);";
+			CallableStatement stmt = conn.prepareCall(sqlStr);
+
+			stmt.setString(1, addressType.getName());
+
+			stmt.execute();
+
+		} catch (Exception e) {
+			System.out.println("Error Seeding Address Type Data.");
 			e.printStackTrace();
 		} finally {
 			conn.close();

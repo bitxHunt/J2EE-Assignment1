@@ -16,7 +16,6 @@ import com.cloudinary.Cloudinary;
 
 import jakarta.servlet.http.Part;
 import models.service.*;
-import util.CloudinaryConnection;
 import util.*;
 
 public class BundleDAO {
@@ -335,6 +334,29 @@ public class BundleDAO {
 			conn.close();
 		}
 		return success;
+	}
+
+	// Seed the overall data from the csv file
+	public void seedData(Bundle bundle) throws SQLException {
+		Connection conn = DB.connect();
+
+		try {
+			String sqlStr = "CALL seed_bundle(?, ?, ?, ?);";
+			CallableStatement stmt = conn.prepareCall(sqlStr);
+
+			stmt.setString(1, bundle.getBundleName());
+			stmt.setString(2, bundle.getBundleDescription());
+			stmt.setInt(3, bundle.getDiscountPercent());
+			stmt.setString(4, bundle.getImageUrl());
+
+			stmt.execute();
+
+		} catch (Exception e) {
+			System.out.println("Error Seeding Bundle Data.");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
 	}
 
 }

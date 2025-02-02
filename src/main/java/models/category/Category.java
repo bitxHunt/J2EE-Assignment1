@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class Category {
 	private int categoryId;
 	private String categoryName;
+	private String categoryDescription;
 	private ArrayList<String> services;
 	private int serviceCount;
 
@@ -18,21 +19,25 @@ public class Category {
 	public Category() {
 		this.categoryId = 0;
 		this.categoryName = "";
+		this.categoryDescription = "";
 		this.services = null;
 		this.serviceCount = 0;
 	}
 
 	// Explicit Constructors
-	public Category(int categoryId, String categoryName) {
+	public Category(int categoryId, String categoryName, String categoryDescription) {
 		this.categoryId = categoryId;
 		this.categoryName = categoryName;
+		this.categoryDescription = categoryDescription;
 		this.services = null;
 		this.serviceCount = 0;
 	}
 
-	public Category(int categoryId, String categoryName, ArrayList<String> Services, int serviceCount) {
+	public Category(int categoryId, String categoryName, String categoryDescription, ArrayList<String> Services,
+			int serviceCount) {
 		this.categoryId = categoryId;
 		this.categoryName = categoryName;
+		this.categoryDescription = categoryDescription;
 		this.services = services;
 		this.serviceCount = serviceCount;
 	}
@@ -52,6 +57,14 @@ public class Category {
 
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
+	}
+
+	public String getCategoryDescription() {
+		return categoryDescription;
+	}
+
+	public void setCategoryDescription(String categoryDescription) {
+		this.categoryDescription = categoryDescription;
 	}
 
 	public ArrayList<String> getServices() {
