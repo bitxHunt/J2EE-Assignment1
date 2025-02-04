@@ -7,48 +7,59 @@
 package models.user;
 
 public class User {
-	private Integer id = 0;
+	private int id = 0;
+	private String customerId = "";
 	private String firstName = "";
 	private String lastName = "";
 	private String imageURL = "";
 	private String email = "";
 	private String password = "";
-	private Integer role = 0;
 	private String phoneNo = "";
+	private Integer role = 0;
 
 	// Implicit Constructor
 	public User() {
 		this.id = 0;
+		this.customerId = "";
 		this.firstName = "";
 		this.lastName = "";
 		this.imageURL = "";
 		this.email = "";
 		this.password = "";
-		this.role = 0;
 		this.phoneNo = "";
+		this.role = 0;
 	}
 
 	// Explicit Constructor
-	public User(Integer id, String firstName, String lastName, String imageURL, String email, String password,
-			Integer role, String phoneNo) {
+	public User(int id, String customer_id, String firstName, String lastName, String imageURL, String email, String password,
+			String phoneNo, Integer role) {
 
 		// Booting Up
 		this.id = id;
+		this.customerId = customer_id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.imageURL = imageURL;
 		this.email = email;
 		this.password = password;
-		this.role = role;
 		this.phoneNo = phoneNo;
+		this.role = role;
 	}
 
-	public Integer getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
 	}
 
 	public String getFirstName() {
@@ -91,19 +102,19 @@ public class User {
 		this.password = password;
 	}
 
-	public Integer getRole() {
-		return role;
-	}
-
-	public void setRole(Integer role) {
-		this.role = role;
-	}
-
 	public String getPhoneNo() {
 		return phoneNo;
 	}
 
 	public void setPhoneNo(String phoneNo) {
 		this.phoneNo = phoneNo;
+	}
+
+	public Integer getRole() {
+		return role;
+	}
+
+	public void setRole(Integer role) {
+		this.role = role;
 	}
 }

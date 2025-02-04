@@ -17,10 +17,14 @@ import util.DB;
 import com.cloudinary.Cloudinary;
 import util.CloudinaryConnection;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import jakarta.servlet.http.Part;
@@ -299,5 +303,85 @@ public class UserDAO {
 			conn.close();
 		}
 		return rowsAffected == 1;
+	}
+
+	// Get Total Number of staffs
+	public int getTotalStaffs() throws SQLException {
+		Connection conn = DB.connect();
+		int totalStaffs = 0;
+
+		try {
+			String sqlStr = "SELECT COUNT(id) AS staffs FROM users WHERE role_id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+
+			// Assign role id 2, which is staff role.
+			pstmt.setInt(1, 2);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				totalStaffs = rs.getInt("staffs");
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error Getting Total Number of Staffs.");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return totalStaffs;
+	}
+
+	// Get Staffs Booked On the Given Date
+	public int bookedStaffForDate(LocalDate chosenDate, int chosenSlot) throws SQLException {
+		Connection conn = DB.connect();
+		int bookedStaff = 0;
+
+		try {
+			String sqlStr = "SELECT COUNT(staff_id) AS staffs FROM staff_booking WHERE date = ? AND slot_id = ?";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+
+			pstmt.setDate(1, Date.valueOf(chosenDate));
+			pstmt.setInt(2, chosenSlot);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				bookedStaff = rs.getInt("staffs");
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error Getting Total Number of Booked Staffs.");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return bookedStaff;
+	}
+
+	// Seed User Data
+	public void seedData(User user) throws SQLException {
+		Connection conn = DB.connect();
+
+		try {
+			String sqlStr = "CALL seed_user(?, ?, ?, ?, ?, ?, ?);";
+			CallableStatement stmt = conn.prepareCall(sqlStr);
+
+			stmt.setString(1, user.getCustomerId());
+			stmt.setString(2, user.getFirstName());
+			stmt.setString(3, user.getLastName());
+			stmt.setString(4, user.getEmail());
+			stmt.setString(5, user.getPassword());
+			stmt.setString(6, user.getPhoneNo());
+			stmt.setInt(7, user.getRole());
+
+			stmt.execute();
+
+		} catch (Exception e) {
+			System.out.println("Error Seeding User Data.");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
 	}
 }

@@ -139,14 +139,37 @@ public class UserBookSlot extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 
-			// Get all available slots from the database
-			BookingDAO bookingDB = new BookingDAO();
-			List<Booking> availableSlots = bookingDB.getAvailableSlots();
-			// Set attribute to pass to the front end
-			request.setAttribute("timeslots", availableSlots);
+//			// Get all available slots from the database
+//			BookingDAO bookingDB = new BookingDAO();
+//			List<Booking> availableSlots = bookingDB.getAvailableSlots();
+//			// Set attribute to pass to the front end
+//			request.setAttribute("timeslots", availableSlots);
+//
+//			// Forward the request to the front end
+//			request.getRequestDispatcher("/user/bookSlot.jsp").forward(request, response);
+			
+			// Initialize the time slot object
+			TimeSlotDAO timeSlotDB = new TimeSlotDAO();
+			
+			// Get All Week Dates
+			ArrayList<LocalDate> weekDates = timeSlotDB.getWeekDates();
+			
+			// Get the chosen date from the frontend
+			LocalDate chosenDate = LocalDate.now();
+			
+			if(request.getParameter("chosen_date") != null) {
+				chosenDate = LocalDate.parse(request.getParameter("chosen_date"));
+			}
 
+			// Display All Timeslots associated with the chosen date
+			ArrayList<TimeSlot> timeSlots = timeSlotDB.getSlotsByDate(chosenDate);
+			
+			request.setAttribute("weekDates", weekDates);
+			request.setAttribute("timeSlots", timeSlots);
+			
 			// Forward the request to the front end
 			request.getRequestDispatcher("/user/bookSlot.jsp").forward(request, response);
+			
 		} catch (Exception e) {
 			System.out.println("Error handling slots: " + e.getMessage());
 			e.printStackTrace();

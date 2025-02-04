@@ -19,14 +19,14 @@ public class CategoryDAO {
 		ArrayList<Category> categories = new ArrayList<Category>();
 
 		try {
-			String sqlStr = "SELECT * FROM category ORDER BY category_id";
+			String sqlStr = "SELECT * FROM category ORDER BY id";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
 				Category category = new Category();
-				category.setCategoryId(rs.getInt("category_id"));
-				category.setCategoryName(rs.getString("category_name"));
+				category.setCategoryId(rs.getInt("id"));
+				category.setCategoryName(rs.getString("name"));
 				categories.add(category);
 			}
 		} catch (Exception e) {
@@ -42,15 +42,15 @@ public class CategoryDAO {
 		Connection conn = DB.connect();
 		Category category = null;
 		try {
-			String sqlStr = "SELECT * FROM category WHERE category_id = ?";
+			String sqlStr = "SELECT * FROM category WHERE id = ?";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, categoryId);
 			ResultSet rs = pstmt.executeQuery();
 
 			if (rs.next()) {
 				category = new Category();
-				category.setCategoryId(rs.getInt("category_id"));
-				category.setCategoryName(rs.getString("category_name"));
+				category.setCategoryId(rs.getInt("id"));
+				category.setCategoryName(rs.getString("name"));
 			}
 		} finally {
 			conn.close();
@@ -64,7 +64,7 @@ public class CategoryDAO {
 		boolean isDeleteable = true;
 
 		try {
-			String checkServiceSql = "SELECT COUNT(*) FROM service WHERE category_id = ?";
+			String checkServiceSql = "SELECT COUNT(*) FROM service WHERE id = ?";
 			PreparedStatement checkServiceStmt = conn.prepareStatement(checkServiceSql);
 			checkServiceStmt.setInt(1, categoryId);
 			ResultSet checkServiceRS = checkServiceStmt.executeQuery();
@@ -87,7 +87,7 @@ public class CategoryDAO {
 		boolean success = false;
 
 		try {
-			String sqlStr = "INSERT INTO category (category_name) VALUES (?)";
+			String sqlStr = "INSERT INTO category (name) VALUES (?)";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setString(1, categoryName);
 
@@ -107,7 +107,7 @@ public class CategoryDAO {
 		boolean success = false;
 
 		try {
-			String sqlStr = "UPDATE category SET category_name = ? WHERE category_id = ?";
+			String sqlStr = "UPDATE category SET name = ? WHERE id = ?";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setString(1, category.getCategoryName());
 			pstmt.setInt(2, category.getCategoryId());
@@ -129,14 +129,14 @@ public class CategoryDAO {
 		try {
 			String sqlStr = """
 					    SELECT
-					        c.category_id,
-					        c.category_name,
-					        COUNT(DISTINCT s.service_id) as service_count,
-					        STRING_AGG(s.service_name, '||') as service_names
+					        c.id,
+					        c.name,
+					        COUNT(DISTINCT s.id) as service_count,
+					        STRING_AGG(s.name, '||') as service_names
 					    FROM category c
-					    LEFT JOIN service s ON c.category_id = s.category_id AND s.is_active = true
-					    GROUP BY c.category_id, c.category_name
-					    ORDER BY c.category_id
+					    LEFT JOIN service s ON c.id = s.category_id AND s.is_active = true
+					    GROUP BY c.id, c.name
+					    ORDER BY c.id
 					""";
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
@@ -144,8 +144,8 @@ public class CategoryDAO {
 
 			while (rs.next()) {
 				Category category = new Category();
-				category.setCategoryId(rs.getInt("category_id"));
-				category.setCategoryName(rs.getString("category_name"));
+				category.setCategoryId(rs.getInt("id"));
+				category.setCategoryName(rs.getString("name"));
 				category.setServiceCount(rs.getInt("service_count"));
 
 				// Handle service names
@@ -171,7 +171,7 @@ public class CategoryDAO {
 		boolean success = false;
 
 		try {
-			String sqlStr = "DELETE FROM category WHERE category_id = ?";
+			String sqlStr = "DELETE FROM category WHERE id = ?";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, categoryId);
 

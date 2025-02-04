@@ -8,9 +8,12 @@ import java.util.ArrayList;
 import models.category.*;
 import models.service.*;
 import models.timeSlot.*;
+import models.user.*;
 import models.address.*;
 import models.bundle.*;
 import models.role.*;
+import models.feature.*;
+import models.status.*;
 
 public class DataSeeding {
 	private static final String categoryData = "src/main/webapp/WEB-INF/data/category.csv";
@@ -19,6 +22,9 @@ public class DataSeeding {
 	private static final String roleData = "src/main/webapp/WEB-INF/data/role.csv";
 	private static final String addressTypeData = "src/main/webapp/WEB-INF/data/address_type.csv";
 	private static final String timeSlotData = "src/main/webapp/WEB-INF/data/time_slot.csv";
+	private static final String userData = "src/main/webapp/WEB-INF/data/user.csv";
+	private static final String featureData = "src/main/webapp/WEB-INF/data/feature.csv";
+	private static final String statusData = "src/main/webapp/WEB-INF/data/status.csv";
 
 	public ArrayList<ArrayList<String>> loadData(String filePath) {
 		File file = new File(filePath);
@@ -145,7 +151,7 @@ public class DataSeeding {
 
 	public void seedTimeSlot() throws SQLException {
 		try {
-			TimeSlot timeSlot= new TimeSlot();
+			TimeSlot timeSlot = new TimeSlot();
 			TimeSlotDAO timeSlotDB = new TimeSlotDAO();
 
 			ArrayList<ArrayList<String>> dataArray = loadData(timeSlotData);
@@ -164,7 +170,7 @@ public class DataSeeding {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void seedAddressType() throws SQLException {
 		try {
 			AddressType addressType = new AddressType();
@@ -182,6 +188,75 @@ public class DataSeeding {
 			}
 		} catch (Exception e) {
 			System.out.println("Error Seeding Address Type Table.");
+			e.printStackTrace();
+		}
+	}
+
+	public void seedUsers() throws SQLException {
+		try {
+			User user = new User();
+			UserDAO userDB = new UserDAO();
+
+			ArrayList<ArrayList<String>> dataArray = loadData(userData);
+
+			for (ArrayList<String> row : dataArray) {
+
+				// Row of data
+				user.setCustomerId(row.get(1));
+				user.setFirstName(row.get(2));
+				user.setLastName(row.get(3));
+				user.setEmail(row.get(4));
+				user.setPassword(row.get(5));
+				user.setPhoneNo(row.get(6));
+				user.setRole(Integer.parseInt(row.get(9)));
+
+				// Pass the model to seed data
+				userDB.seedData(user);
+			}
+		} catch (Exception e) {
+			System.out.println("Error Seeding Users Table.");
+			e.printStackTrace();
+		}
+	}
+	
+	public void seedFeature() throws SQLException {
+		try {
+			Feature feature = new Feature();
+			FeatureDAO featureDB = new FeatureDAO();
+
+			ArrayList<ArrayList<String>> dataArray = loadData(featureData);
+
+			for (ArrayList<String> row : dataArray) {
+
+				// Row of data
+				feature.setName(row.get(1));
+
+				// Pass the model to seed data
+				featureDB.seedData(feature);
+			}
+		} catch (Exception e) {
+			System.out.println("Error Seeding Feature Table.");
+			e.printStackTrace();
+		}
+	}
+	
+	public void seedStatus() throws SQLException {
+		try {
+			Status status = new Status();
+			StatusDAO statusDB = new StatusDAO();
+
+			ArrayList<ArrayList<String>> dataArray = loadData(statusData);
+
+			for (ArrayList<String> row : dataArray) {
+
+				// Row of data
+				status.setName(row.get(1));
+
+				// Pass the model to seed data
+				statusDB.seedData(status);
+			}
+		} catch (Exception e) {
+			System.out.println("Error Seeding Status Table.");
 			e.printStackTrace();
 		}
 	}

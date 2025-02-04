@@ -19,15 +19,19 @@ public class AddressDAO {
 		Connection conn = DB.connect();
 		Address address = new Address();
 		try {
-			String sqlStr = "SELECT at.address_type, a.address_id, a.user_id, a.address, a.postal_code, a.unit FROM address a INNER JOIN address_type at ON a.type_id = at.type_id WHERE a.user_id = ? AND a.type_id = ?;";
+			String sqlStr = "SELECT at.id, at.name, a.address_id, a.user_id, a.address, a.postal_code, a.unit FROM address a INNER JOIN address_type at ON a.type_id = at.type_id WHERE a.user_id = ? AND a.type_id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, userId);
 			pstmt.setInt(2, addTypeId);
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				address.setAddType(rs.getString("address_type"));
+				AddressType addType = new AddressType();
+				addType.setId(rs.getInt("id"));
+				addType.setName(rs.getString("name"));
+				;
 				address.setId(rs.getInt("address_id"));
+				address.setAddType(addType);
 				address.setUserId(rs.getInt("user_id"));
 				address.setAddress(rs.getString("address"));
 				address.setPostalCode(rs.getInt("postal_code"));

@@ -28,19 +28,19 @@ public class ServiceDAO {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();
 		try {
-			String sqlStr = "SELECT s.*, c.category_name FROM service s LEFT JOIN category c ON s.category_id = c.category_id ORDER BY s.service_id";
+			String sqlStr = "SELECT s.*, c.name FROM service s LEFT JOIN category c ON s.category_id = c.id ORDER BY s.id";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
 				Service service = new Service();
-				service.setServiceId(rs.getInt("service_id"));
-				service.setServiceName(rs.getString("service_name"));
-				service.setServiceDescription(rs.getString("service_description"));
-				service.setCategoryId(rs.getInt("category_id"));
-				service.setCategoryName(rs.getString("category_name"));
+				service.setServiceId(rs.getInt("id"));
+				service.setServiceName(rs.getString("name"));
+				service.setServiceDescription(rs.getString("description"));
+				service.setCategoryId(rs.getInt("id"));
+				service.setCategoryName(rs.getString("name"));
 				service.setPrice(rs.getFloat("price"));
-				service.setImageUrl(rs.getString("image_url"));
+				service.setImageUrl(rs.getString("img_url"));
 				service.setIsActive(rs.getBoolean("is_active"));
 				services.add(service);
 			}
@@ -57,19 +57,19 @@ public class ServiceDAO {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();
 		try {
-			String sqlStr = "SELECT s.*, c.category_name FROM service s LEFT JOIN category c ON s.category_id = c.category_id WHERE s.is_active = true ORDER BY s.service_id";
+			String sqlStr = "SELECT s.*, c.name FROM service s LEFT JOIN category c ON s.category_id = c.id WHERE s.is_active = true ORDER BY s.id";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
 				Service service = new Service();
-				service.setServiceId(rs.getInt("service_id"));
-				service.setServiceName(rs.getString("service_name"));
-				service.setServiceDescription(rs.getString("service_description"));
-				service.setCategoryId(rs.getInt("category_id"));
-				service.setCategoryName(rs.getString("category_name"));
+				service.setServiceId(rs.getInt("id"));
+				service.setServiceName(rs.getString("name"));
+				service.setServiceDescription(rs.getString("description"));
+				service.setCategoryId(rs.getInt("id"));
+				service.setCategoryName(rs.getString("name"));
 				service.setPrice(rs.getFloat("price"));
-				service.setImageUrl(rs.getString("image_url"));
+				service.setImageUrl(rs.getString("img_url"));
 				service.setIsActive(rs.getBoolean("is_active"));
 				services.add(service);
 			}
@@ -86,20 +86,20 @@ public class ServiceDAO {
 		Connection conn = DB.connect();
 		Service service = null;
 		try {
-			String sqlStr = "SELECT s.*, c.category_name FROM service s LEFT JOIN category c ON s.category_id = c.category_id WHERE s.service_id = ?";
+			String sqlStr = "SELECT s.*, c.name FROM service s LEFT JOIN category c ON s.category_id = c.id WHERE s.id = ?";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, serviceId);
 			ResultSet rs = pstmt.executeQuery();
 
 			if (rs.next()) {
 				service = new Service();
-				service.setServiceId(rs.getInt("service_id"));
-				service.setServiceName(rs.getString("service_name"));
-				service.setServiceDescription(rs.getString("service_description"));
-				service.setCategoryId(rs.getInt("category_id"));
-				service.setCategoryName(rs.getString("category_name"));
+				service.setServiceId(rs.getInt("id"));
+				service.setServiceName(rs.getString("name"));
+				service.setServiceDescription(rs.getString("description"));
+				service.setCategoryId(rs.getInt("id"));
+				service.setCategoryName(rs.getString("name"));
 				service.setPrice(rs.getFloat("price"));
-				service.setImageUrl(rs.getString("image_url"));
+				service.setImageUrl(rs.getString("img_url"));
 				service.setIsActive(rs.getBoolean("is_active"));
 			}
 		} finally {
@@ -119,8 +119,8 @@ public class ServiceDAO {
 					? CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart)
 					: null;
 			String sqlStr = (imagePart.getSize() > 0)
-					? "INSERT INTO service (service_name, service_description, category_id, price, image_url) VALUES (?, ?, ?, ?, ?)"
-					: "INSERT INTO service (service_name, service_description, category_id, price) VALUES (?, ?, ?, ?)";
+					? "INSERT INTO service (name, description, category_id, price, image_url) VALUES (?, ?, ?, ?, ?)"
+					: "INSERT INTO service (name, description, category_id, price) VALUES (?, ?, ?, ?)";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setString(1, service.getServiceName());
 			pstmt.setString(2, service.getServiceDescription());
@@ -148,7 +148,7 @@ public class ServiceDAO {
 
 		try {
 			StringBuilder sqlStr = new StringBuilder(
-					"UPDATE service SET service_name=?, service_description=?, category_id=?, price=?, is_active=?");
+					"UPDATE service SET name=?, description=?, category_id=?, price=?, is_active=?");
 
 			String newImageUrl = null;
 			// Only handle image if a new one is uploaded
@@ -171,7 +171,7 @@ public class ServiceDAO {
 					}
 
 					// Add image_url to UPDATE statement
-					sqlStr.append(", image_url=?");
+					sqlStr.append(", img_url=?");
 				}
 			}
 
@@ -208,7 +208,7 @@ public class ServiceDAO {
 			Service service = getServiceById(serviceId);
 
 			// Delete the service from database
-			String sqlStr = "DELETE FROM service WHERE service_id = ?";
+			String sqlStr = "DELETE FROM service WHERE id = ?";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, serviceId);
 			int rowsAffected = pstmt.executeUpdate();
@@ -239,11 +239,11 @@ public class ServiceDAO {
 
 		try {
 			String sqlStr = """
-					    SELECT s.*, c.category_name
+					    SELECT s.*, c.name
 					    FROM service s
-					    LEFT JOIN category c ON s.category_id = c.category_id
+					    LEFT JOIN category c ON s.category_id = c.id
 					    WHERE s.category_id = ? AND s.is_active = true
-					    ORDER BY s.service_id
+					    ORDER BY s.id
 					""";
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
@@ -252,13 +252,13 @@ public class ServiceDAO {
 
 			while (rs.next()) {
 				Service service = new Service();
-				service.setServiceId(rs.getInt("service_id"));
-				service.setServiceName(rs.getString("service_name"));
-				service.setServiceDescription(rs.getString("service_description"));
-				service.setCategoryId(rs.getInt("category_id"));
-				service.setCategoryName(rs.getString("category_name"));
+				service.setServiceId(rs.getInt("id"));
+				service.setServiceName(rs.getString("name"));
+				service.setServiceDescription(rs.getString("description"));
+				service.setCategoryId(rs.getInt("id"));
+				service.setCategoryName(rs.getString("name"));
 				service.setPrice(rs.getFloat("price"));
-				service.setImageUrl(rs.getString("image_url"));
+				service.setImageUrl(rs.getString("img_url"));
 				service.setIsActive(rs.getBoolean("is_active"));
 				services.add(service);
 			}

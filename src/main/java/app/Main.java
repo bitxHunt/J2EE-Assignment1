@@ -23,6 +23,9 @@ public class Main {
 			seed.seedRole();
 			seed.seedTimeSlot();
 			seed.seedAddressType();
+			seed.seedStatus();
+			seed.seedFeature();
+			seed.seedUsers();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
