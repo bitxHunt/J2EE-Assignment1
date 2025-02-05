@@ -123,7 +123,7 @@ public class UserDAO {
 			conn = DB.connect();
 			conn.setAutoCommit(false);
 
-			String sqlStrInsertUser = "INSERT INTO users (first_name, last_name, email, password, phone_no) VALUES (?, ?, ?, ?, ?) RETURNING id, email;";
+			String sqlStrInsertUser = "INSERT INTO users (first_name, last_name, email, password, phone_no) VALUES (?, ?, ?, ?, ?) RETURNING id;";
 			pstmt = conn.prepareStatement(sqlStrInsertUser);
 
 			pstmt.setString(1, firstName);
@@ -137,9 +137,14 @@ public class UserDAO {
 			
 			if (rs.next()) {
 				
-				// Store user id and email to pass it to the spring boot email api
+				// Store user object to pass back to the email
 				user.setId(Integer.parseInt(rs.getString("id")));
-				user.setEmail(rs.getString("email"));
+				user.setEmail(email);
+				user.setFirstName(firstName);
+				user.setLastName(lastName);
+				
+				
+				System.out.println("User id: " + user.getId());
 
 				// Execute registering address SQL Query
 				String sqlStrInsertAddress = "INSERT INTO address (street, unit, postal_code, user_id, address_type_id) VALUES (?, ?, ?, ?, ?);";

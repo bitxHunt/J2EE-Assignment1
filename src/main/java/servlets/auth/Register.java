@@ -7,6 +7,7 @@
 package servlets.auth;
 
 import models.user.*;
+import models.request.*;
 import middlewares.JWTMiddleware;
 import util.org.mindrot.jbcrypt.BCrypt;
 
@@ -26,9 +27,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.io.IOException;
-
-import javax.json.Json;
-import javax.json.JsonObject;
 
 /**
  * Servlet implementation class Register
@@ -96,30 +94,33 @@ public class Register extends HttpServlet {
 
 		UserDAO userDB = new UserDAO();
 		JWTMiddleware jwt = new JWTMiddleware();
+		Request requestService = new Request();
 
 		try {
+			
+			// Return the whole user object if the record is inserted
 			User user = userDB.registerUser(firstName, lastName, email, hashedPassword, phoneNo, street, unit,
 					addTypeId, addTypeId);
 
+			// Log out the user id
 			System.out.println("Created User Id: " + user.getId());
 
 			if (user.getId() > 0) {
 				String verifyToken = jwt.createVerifyToken(user.getId());
 
 				try (Client client = ClientBuilder.newClient()) {
-					String emailServiceURL = "http://localhost:8081/api/email/verify";
+					String emailServiceURL = "http://localhost:8081//b2b/api/v1/email/verify";
 					WebTarget target = client.target(emailServiceURL);
 
-					// Create a simple JSON object with email and token
-					JsonObject jsonBody = Json.createObjectBuilder().add("email", email).add("token", verifyToken)
-							.build();
+					requestService.setUser(user);
+					requestService.setToken(verifyToken);
 
 					Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
 					Response res = invocationBuilder
-							.post(Entity.entity(jsonBody.toString(), MediaType.APPLICATION_JSON));
+							.post(Entity.entity(requestService, MediaType.APPLICATION_JSON));
 
 					if (res.getStatus() == Response.Status.OK.getStatusCode()) {
-						response.sendRedirect(request.getContextPath() + "/login?msg=verification-sent");
+						response.sendRedirect(request.getContextPath() + "/sendVerification?email=" + user.getEmail());
 					} else {
 						request.getSession().setAttribute("errMsg", "Failed to send verification email");
 						response.sendRedirect(request.getContextPath() + "/register");

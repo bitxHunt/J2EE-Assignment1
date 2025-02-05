@@ -23,7 +23,7 @@ public class DataSeeding {
 	private static final String addressTypeData = "src/main/webapp/WEB-INF/data/address_type.csv";
 	private static final String timeSlotData = "src/main/webapp/WEB-INF/data/time_slot.csv";
 	private static final String userData = "src/main/webapp/WEB-INF/data/user.csv";
-	private static final String featureData = "src/main/webapp/WEB-INF/data/feature.csv";
+	private static final String emailServiceData = "src/main/webapp/WEB-INF/data/emailService.csv";
 	private static final String statusData = "src/main/webapp/WEB-INF/data/status.csv";
 
 	public ArrayList<ArrayList<String>> loadData(String filePath) {
@@ -224,7 +224,7 @@ public class DataSeeding {
 			EmailService emailService = new EmailService();
 			EmailServiceDAO emailServiceDB = new EmailServiceDAO();
 
-			ArrayList<ArrayList<String>> dataArray = loadData(featureData);
+			ArrayList<ArrayList<String>> dataArray = loadData(emailServiceData);
 
 			for (ArrayList<String> row : dataArray) {
 
