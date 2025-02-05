@@ -6,13 +6,13 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 import models.category.*;
+import models.emailService.*;
 import models.service.*;
 import models.timeSlot.*;
 import models.user.*;
 import models.address.*;
 import models.bundle.*;
 import models.role.*;
-import models.feature.*;
 import models.status.*;
 
 public class DataSeeding {
@@ -219,23 +219,23 @@ public class DataSeeding {
 		}
 	}
 	
-	public void seedFeature() throws SQLException {
+	public void seedEmailService() throws SQLException {
 		try {
-			Feature feature = new Feature();
-			FeatureDAO featureDB = new FeatureDAO();
+			EmailService emailService = new EmailService();
+			EmailServiceDAO emailServiceDB = new EmailServiceDAO();
 
 			ArrayList<ArrayList<String>> dataArray = loadData(featureData);
 
 			for (ArrayList<String> row : dataArray) {
 
 				// Row of data
-				feature.setName(row.get(1));
+				emailService.setName(row.get(1));
 
 				// Pass the model to seed data
-				featureDB.seedData(feature);
+				emailServiceDB.seedData(emailService);
 			}
 		} catch (Exception e) {
-			System.out.println("Error Seeding Feature Table.");
+			System.out.println("Error Seeding Email Service Table.");
 			e.printStackTrace();
 		}
 	}

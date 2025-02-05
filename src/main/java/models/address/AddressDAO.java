@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AddressDAO {
-	public Address getAddressByUserId(Integer userId, Integer addTypeId) throws SQLException {
+	public Address getAddressByUserId(int userId, int addTypeId) throws SQLException {
 		Connection conn = DB.connect();
 		Address address = new Address();
 		try {
@@ -45,24 +45,30 @@ public class AddressDAO {
 		return address;
 	}
 
-	public void createAddressByUserId(Integer userId, Integer addTypeId, String address, Integer postalCode,
-			String unit) throws SQLException {
-		Connection conn = DB.connect();
-		try {
-			String sqlStr = "INSERT INTO address (user_id, type_id, address, postal_code, unit) VALUES (?, ?, ?, ?, ?);";
-			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-			pstmt.setInt(1, userId);
-			pstmt.setInt(2, addTypeId);
-			pstmt.setString(3, address);
-			pstmt.setInt(4, postalCode);
-			pstmt.setString(5, unit);
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			conn.close();
-		}
-	}
+//	public int createAddressByUserId(String street, String unit, int postalCode, int userId, int addTypeId)
+//			throws SQLException {
+//
+//		Connection conn = DB.connect();
+//		int rowsAffected = 0;
+//
+//		try {
+//			String sqlStr = "INSERT INTO address (street, unit, postal_code, user_id, address_type_id) VALUES (?, ?, ?, ?, ?);";
+//			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+//
+//			pstmt.setString(1, street);
+//			pstmt.setString(2, unit);
+//			pstmt.setInt(3, postalCode);
+//			pstmt.setInt(4, userId);
+//			pstmt.setInt(5, addTypeId);
+//
+//			rowsAffected = pstmt.executeUpdate();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			conn.close();
+//		}
+//		return rowsAffected;
+//	}
 
 	public void updateAddressById(Integer userId, Integer addressId, String address, Integer postalCode, String unit)
 			throws SQLException {
@@ -96,8 +102,8 @@ public class AddressDAO {
 		} finally {
 			conn.close();
 		}
-	}	
-	
+	}
+
 	public void createAddressType(AddressType addressType) throws SQLException {
 		Connection conn = DB.connect();
 

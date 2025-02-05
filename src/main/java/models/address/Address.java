@@ -7,8 +7,8 @@
 package models.address;
 
 public class Address {
-	private Integer id = 0;
-	private Integer userId = 0;
+	private int id = 0;
+	private int userId = 0;
 	private AddressType addType = null;
 	private String address = "";
 	private Integer postalCode = 0;

@@ -95,7 +95,7 @@ public class UserDAO {
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				user.setId(rs.getInt("user_id"));
+				user.setId(rs.getInt("id"));
 				user.setFirstName(rs.getString("first_name"));
 				user.setLastName(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));
@@ -111,19 +111,20 @@ public class UserDAO {
 		return user;
 	}
 
-	public Integer registerUser(String firstName, String lastName, String email, String hashedPassword, String phoneNo)
-			throws SQLException {
+	public User registerUser(String firstName, String lastName, String email, String hashedPassword, String phoneNo,
+			String street, String unit, int postalCode, int addTypeId) throws SQLException {
+
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		Integer userId = null;
+		User user = new User();
 
 		try {
 			conn = DB.connect();
 			conn.setAutoCommit(false);
 
-			String sqlStr = "SELECT register_user_with_addresses(?, ?, ?, ?, ?)";
-			pstmt = conn.prepareStatement(sqlStr);
+			String sqlStrInsertUser = "INSERT INTO users (first_name, last_name, email, password, phone_no) VALUES (?, ?, ?, ?, ?) RETURNING id, email;";
+			pstmt = conn.prepareStatement(sqlStrInsertUser);
 
 			pstmt.setString(1, firstName);
 			pstmt.setString(2, lastName);
@@ -131,10 +132,29 @@ public class UserDAO {
 			pstmt.setString(4, hashedPassword);
 			pstmt.setString(5, phoneNo);
 
+			// Execute registering user SQL Query
 			rs = pstmt.executeQuery();
-
+			
 			if (rs.next()) {
-				userId = rs.getInt(1);
+				
+				// Store user id and email to pass it to the spring boot email api
+				user.setId(Integer.parseInt(rs.getString("id")));
+				user.setEmail(rs.getString("email"));
+
+				// Execute registering address SQL Query
+				String sqlStrInsertAddress = "INSERT INTO address (street, unit, postal_code, user_id, address_type_id) VALUES (?, ?, ?, ?, ?);";
+				pstmt = conn.prepareStatement(sqlStrInsertAddress);
+
+				pstmt.setString(1, street);
+				pstmt.setString(2, unit);
+				pstmt.setInt(3, postalCode);
+				pstmt.setInt(4, user.getId());
+				pstmt.setInt(5, addTypeId);
+
+				pstmt.executeUpdate();
+
+				// Only commit the full registration once both the user and the address has been
+				// registered
 				conn.commit();
 			}
 
@@ -143,7 +163,7 @@ public class UserDAO {
 		} finally {
 			conn.close();
 		}
-		return userId;
+		return user;
 	}
 
 	public void updateUserProfile(int userId, String firstName, String lastName, Part imagePart, String phoneNo)

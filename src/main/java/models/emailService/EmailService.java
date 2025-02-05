@@ -1,17 +1,17 @@
-package models.feature;
+package models.emailService;
 
-public class Feature {
+public class EmailService {
 	private int id = 0;
 	private String name = "";
-	
+
 	// Implicit Constructor
-	public Feature() {
+	public EmailService() {
 		this.id = 0;
 		this.name = "";
 	}
-	
+
 	// Explicit Constructor
-	public Feature(int id, String name) {
+	public EmailService(int id, String name) {
 
 		// Booting Up
 		this.id = id;
@@ -33,6 +33,4 @@ public class Feature {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
 }

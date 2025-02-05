@@ -42,6 +42,14 @@ public class SecretsConfig {
 	public static String getDbClass() {
 		return properties.getProperty("db.class");
 	}
+	
+	public static String getJWTVerifySecretKey() {
+		return properties.getProperty("jwt.verify.secret");
+	}
+	
+	public static String getJWTAlgorithm() {
+		return properties.getProperty("jwt.algorithm");
+	}
 
 	public static String getStripeApiKey() {
 		return properties.getProperty("stripe.apikey");

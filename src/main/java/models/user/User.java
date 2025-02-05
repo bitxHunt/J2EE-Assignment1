@@ -15,7 +15,7 @@ public class User {
 	private String email = "";
 	private String password = "";
 	private String phoneNo = "";
-	private Integer role = 0;
+	private int role = 0;
 
 	// Implicit Constructor
 	public User() {
@@ -32,7 +32,7 @@ public class User {
 
 	// Explicit Constructor
 	public User(int id, String customer_id, String firstName, String lastName, String imageURL, String email, String password,
-			String phoneNo, Integer role) {
+			String phoneNo, int role) {
 
 		// Booting Up
 		this.id = id;
@@ -110,11 +110,11 @@ public class User {
 		this.phoneNo = phoneNo;
 	}
 
-	public Integer getRole() {
+	public int getRole() {
 		return role;
 	}
 
-	public void setRole(Integer role) {
+	public void setRole(int role) {
 		this.role = role;
 	}
 }

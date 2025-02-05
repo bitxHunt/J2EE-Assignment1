@@ -24,7 +24,7 @@ public class Main {
 			seed.seedTimeSlot();
 			seed.seedAddressType();
 			seed.seedStatus();
-			seed.seedFeature();
+			seed.seedEmailService();
 			seed.seedUsers();
 		} catch (Exception e) {
 			e.printStackTrace();
