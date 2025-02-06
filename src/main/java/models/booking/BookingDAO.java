@@ -35,4 +35,10 @@ public class BookingDAO {
 //			conn.close();
 //		}
 //	}
+	
+	// Insert bundle into booking
+	public void bookingBundle() throws SQLException {
+		Connection conn = DB.connect();
+		
+	}
 }

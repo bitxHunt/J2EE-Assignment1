@@ -78,6 +78,37 @@ public class AddressDAO {
 		return address;
 	}
 
+	public Address getAddressById(int addId) throws SQLException {
+		Connection conn = DB.connect();
+		Address address = new Address();
+		AddressType addType = new AddressType();
+
+		try {
+			String sqlStr = "SELECT * FROM address WHERE id = ?;";
+
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, addId);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				address.setId(Integer.parseInt(rs.getString("id")));
+				address.setAddress(rs.getString("street"));
+				address.setUnit(rs.getString("unit"));
+				address.setPostalCode(rs.getInt("postal_code"));
+				address.setUserId(Integer.parseInt(rs.getString("user_id")));
+				addType.setId(Integer.parseInt(rs.getString("address_type_id")));
+				address.setAddType(addType);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return address;
+	}
+
 	public int createAddressByUserId(Address address, int userId, int addTypeId) throws SQLException {
 
 		Connection conn = DB.connect();

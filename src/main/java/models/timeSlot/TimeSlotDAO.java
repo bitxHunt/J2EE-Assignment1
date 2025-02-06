@@ -80,19 +80,21 @@ public class TimeSlotDAO {
 		return timeSlots;
 	}
 
-	public TimeSlot getTimeSlotByTime(LocalTime time) throws SQLException {
+	public TimeSlot getTimeSlotById(int timeSlotId) throws SQLException {
 
 		Connection conn = DB.connect();
 		TimeSlot timeSlot = new TimeSlot();
 
 		try {
-			String sqlStr = "SELECT slot_id FROM time_slot WHERE start_time = ?;";
+			String sqlStr = "SELECT * FROM time_slot WHERE id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-			pstmt.setTime(1, Time.valueOf(time));
+			pstmt.setInt(1, timeSlotId);
 			ResultSet rs = pstmt.executeQuery();
 
 			if (rs.next()) {
-				timeSlot.setId(rs.getInt("slot_id"));
+				timeSlot.setId(rs.getInt("id"));
+				timeSlot.setStartTime(rs.getTime("start_time").toLocalTime());
+				timeSlot.setEndTime(rs.getTime("end_time").toLocalTime());
 			}
 
 		} catch (Exception e) {
@@ -102,6 +104,29 @@ public class TimeSlotDAO {
 		}
 		return timeSlot;
 	}
+
+	// public TimeSlot getTimeSlotByTime(LocalTime time) throws SQLException {
+
+	// 	Connection conn = DB.connect();
+	// 	TimeSlot timeSlot = new TimeSlot();
+
+	// 	try {
+	// 		String sqlStr = "SELECT slot_id FROM time_slot WHERE start_time = ?;";
+	// 		PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+	// 		pstmt.setTime(1, Time.valueOf(time));
+	// 		ResultSet rs = pstmt.executeQuery();
+
+	// 		if (rs.next()) {
+	// 			timeSlot.setId(rs.getInt("slot_id"));
+	// 		}
+
+	// 	} catch (Exception e) {
+	// 		e.printStackTrace();
+	// 	} finally {
+	// 		conn.close();
+	// 	}
+	// 	return timeSlot;
+	// }
 
 	// Seed the overall data from the csv file
 	public void seedData(TimeSlot timeSlot) throws SQLException {

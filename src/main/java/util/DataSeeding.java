@@ -27,6 +27,7 @@ public class DataSeeding {
 	private static final String emailServiceData = "src/main/webapp/WEB-INF/data/emailService.csv";
 	private static final String statusData = "src/main/webapp/WEB-INF/data/status.csv";
 	private static final String organizationData = "src/main/webapp/WEB-INF/data/organization.csv";
+	private static final String bundleServiceData = "src/main/webapp/WEB-INF/data/bundle_service.csv";
 
 	public ArrayList<ArrayList<String>> loadData(String filePath) {
 		File file = new File(filePath);
@@ -289,4 +290,29 @@ public class DataSeeding {
 			e.printStackTrace();
 		}
 	}
+	
+	public void seedBundleService() throws SQLException {
+		try {
+			Bundle bundle = new Bundle();
+			BundleDAO bundleDB = new BundleDAO();
+
+			ArrayList<ArrayList<String>> dataArray = loadData(bundleData);
+
+			for (ArrayList<String> row : dataArray) {
+
+				// Row of data
+				bundle.setBundleName(row.get(1));
+				bundle.setBundleDescription(row.get(2));
+				bundle.setDiscountPercent(Integer.parseInt(row.get(3)));
+				bundle.setImageUrl(row.get(4));
+
+				// Pass the model to seed data
+				bundleDB.seedData(bundle);
+			}
+		} catch (Exception e) {
+			System.out.println("Error Seeding Bundle Table.");
+			e.printStackTrace();
+		}
+	}
+
 }

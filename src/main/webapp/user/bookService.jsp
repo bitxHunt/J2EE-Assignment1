@@ -15,26 +15,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Services & Bundles</title>
-<link href="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.css"
-	rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet"
 	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body class="bg-base-200 min-h-screen">
 	<!-- Header -->
-	<%
-	Integer userId = (Integer) session.getAttribute("userId");
-	if (userId != null) {
-	%>
 	<%@ include file="./components/header.jsp"%>
-	<%
-	} else {
-	%>
-	<%@ include file="../../public/components/header.jsp"%>
-	<%
-	}
-	%>
+	
 	<div class="container mx-auto p-4">
 		<div class="card bg-base-100 shadow-xl">
 			<div class="card-body">
@@ -48,7 +37,7 @@
 					<li class="step">Review</li>
 				</ul>
 
-				<form action="${pageContext.request.contextPath}/book/review"
+				<form action="${pageContext.request.contextPath}/book/services"
 					method="post">
 					<!-- Bundles Section -->
 					<div class="mb-8">

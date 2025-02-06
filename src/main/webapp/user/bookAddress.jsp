@@ -9,17 +9,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Select Service Address</title>
-<link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css"
-	rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
 <script src="https://cdn.tailwindcss.com"></script>
-<style>
-.address-radio:checked+.address-label {
-	background-color: rgba(147, 51, 234, 0.1);
-	border-color: rgb(147, 51, 234);
-}
-</style>
+<link rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body class="min-h-screen bg-gradient-to-b from-base-300 to-base-200">
+	<!-- Header -->
 	<%@ include file="./components/header.jsp"%>
 
 	<main class="container mx-auto px-4 py-8">
@@ -49,8 +45,6 @@
 				ArrayList<Address> addresses = (ArrayList<Address>) request.getAttribute("addresses");
 				Address homeAddress = addresses != null && !addresses.isEmpty() ? addresses.get(0) : null;
 				Address officeAddress = addresses != null && addresses.size() > 1 ? addresses.get(1) : null;
-				
-				System.out.println("Home Address: " + homeAddress.getId());
 				%>
 
 				<!-- Saved Addresses Section -->
@@ -167,8 +161,7 @@
 							<div class="form-control">
 								<label class="label"> <span class="label-text">Address</span>
 								</label>
-								<textarea name="street"
-									class="textarea textarea-bordered h-24"
+								<textarea name="street" class="textarea textarea-bordered h-24"
 									placeholder="Enter your street address"></textarea>
 							</div>
 
@@ -176,15 +169,15 @@
 								<div class="form-control">
 									<label class="label"> <span class="label-text">Unit
 											Number</span>
-									</label> <input type="text" name="unit"
-										class="input input-bordered" placeholder="e.g. #12-34">
+									</label> <input type="text" name="unit" class="input input-bordered"
+										placeholder="e.g. #12-34">
 								</div>
 
 								<div class="form-control">
 									<label class="label"> <span class="label-text">Postal
 											Code</span>
-									</label> <input type="text" name="postal"
-										class="input input-bordered" placeholder="e.g. 123456">
+									</label> <input type="text" name="postal" class="input input-bordered"
+										placeholder="e.g. 123456">
 								</div>
 							</div>
 						</div>

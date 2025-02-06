@@ -23,18 +23,8 @@
 </head>
 <body class="bg-base-200 min-h-screen">
 	<!-- Header -->
-	<%
-	Integer userId = (Integer) session.getAttribute("userId");
-	if (userId != null) {
-	%>
 	<%@ include file="./components/header.jsp"%>
-	<%
-	} else {
-	%>
-	<%@ include file="../../public/components/header.jsp"%>
-	<%
-	}
-	%>
+
 	<div class="container mx-auto p-4">
 		<div class="card bg-base-100 shadow-xl">
 			<div class="card-body">
@@ -51,7 +41,7 @@
 				<!-- Booking Details -->
 				<%
 				LocalDate selectedDate = (LocalDate) request.getAttribute("selectedDate");
-				LocalTime selectedTime = (LocalTime) request.getAttribute("selectedTime");
+				LocalTime selectedSlot = (LocalTime) request.getAttribute("selectedSlot");
 				Address address = (Address) request.getAttribute("selectedAddress");
 				String formattedTotal = "";
 				%>
@@ -63,7 +53,7 @@
 							<p class="text-sm font-semibold">Date & Time:</p>
 							<p class="text-base-content"><%=selectedDate%>
 								at
-								<%=selectedTime%></p>
+								<%=selectedSlot%></p>
 						</div>
 						<div>
 							<p class="text-sm font-semibold">Service Location:</p>

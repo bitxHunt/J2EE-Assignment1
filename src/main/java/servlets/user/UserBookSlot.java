@@ -78,10 +78,10 @@ public class UserBookSlot extends HttpServlet {
 			System.out.println("Running GET request for /services");
 			getBundleService(request, response, session);
 			break;
-//		case "/review":
-//			System.out.println("Running POST request for /review");
-//			handleReview(request, response, session);
-//			break;
+		case "/review":
+			System.out.println("Running GET request for /review");
+			getReview(request, response, session);
+			break;
 //		case "/view":
 //			System.out.println("Running GET request for /view");
 //			handleView(request, response, session);
@@ -114,13 +114,13 @@ public class UserBookSlot extends HttpServlet {
 			System.out.println("Running POST request for /address");
 			postAddress(request, response, session);
 			break;
-//		case "/services":
-//			System.out.println("Running POST request for /services");
-//			handleServices(request, response, session);
-//			break;
+		case "/services":
+			System.out.println("Running POST request for /services");
+			postBundleService(request, response, session);
+			break;
 //		case "/review":
 //			System.out.println("Running POST request for /review");
-//			handleReview(request, response, session);
+//			postReview(request, response, session);
 //			break;
 //		case "/confirm":
 //			System.out.println("Running POST request for /confirm");
@@ -212,14 +212,10 @@ public class UserBookSlot extends HttpServlet {
 
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Please log in to continue booking.");
 			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (NullPointerException e) {
 			System.out.println("No slot selected: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Please select a time slot to continue booking.");
-			request.getRequestDispatcher("/bookSlot.jsp").forward(request, response);
+			response.sendRedirect(request.getContextPath() + "/book");
 		} catch (Exception e) {
 			System.out.println("Error handling time slots: " + e.getMessage());
 			response.sendRedirect(request.getContextPath() + "/error/500");
@@ -253,12 +249,9 @@ public class UserBookSlot extends HttpServlet {
 			request.getRequestDispatcher("/user/bookAddress.jsp").forward(request, response);
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Please log in to continue booking.");
 			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (Exception e) {
 			System.out.println("Error handling address: " + e.getMessage());
-			e.printStackTrace();
 			response.sendRedirect(request.getContextPath() + "/error/500");
 		}
 	}
@@ -311,17 +304,12 @@ public class UserBookSlot extends HttpServlet {
 			}
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Please log in to continue booking.");
 			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (NumberFormatException e) {
 			System.out.println("Invalid address type: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Invalid address type. Please try again.");
 			response.sendRedirect(request.getContextPath() + "/book/address");
 		} catch (Exception e) {
 			System.out.println("Error handling address: " + e.getMessage());
-			e.printStackTrace();
 			response.sendRedirect(request.getContextPath() + "/error/500");
 		}
 	}
@@ -356,13 +344,103 @@ public class UserBookSlot extends HttpServlet {
 			// Forward the request to the front end
 			request.getRequestDispatcher("/user/bookService.jsp").forward(request, response);
 
+		} catch (IllegalStateException e) {
+			System.out.println("Session expired: " + e.getMessage());
+			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (Exception e) {
 			System.out.println("Error handling slots: " + e.getMessage());
 			response.sendRedirect(request.getContextPath() + "/error/500");
 		}
 	}
 
-	private void handleReview(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+	// POST request for submission of chosen services and bundles
+	private void postBundleService(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws ServletException, IOException {
+		try {
+			String selectedBundle = request.getParameter("selected_bundle");
+			String[] selectedServices = request.getParameterValues("selected_services");
+
+			// Check user selects either one of the two services
+			if ((selectedBundle == null || selectedBundle.isEmpty())
+					&& (selectedServices == null || selectedServices.length == 0)) {
+				throw new NullPointerException("Please Select At Least One Service.");
+			}
+
+			// Store bundle to session if user selects bundle
+			if (selectedBundle != null) {
+				int bundleId = Integer.parseInt(selectedBundle);
+				session.setAttribute("selectedBundle", bundleId);
+			}
+
+			if (selectedServices != null) {
+				// Create an int[] of the same size
+				int[] serviceIds = new int[selectedServices.length];
+
+				// Convert each string to an integer
+				for (int i = 0; i < selectedServices.length; i++) {
+					serviceIds[i] = Integer.parseInt(selectedServices[i]);
+				}
+
+				// If user selects both service and bundle
+				if (selectedBundle != null) {
+
+					int bundleId = Integer.parseInt(selectedBundle);
+
+					// Initialise BundleDAO to get all services inside the bundle
+					BundleDAO bundleDB = new BundleDAO();
+
+					// Call checkBundleService to get service IDs from the database
+					ArrayList<Integer> bundleServiceIds = bundleDB.checkBundleService(bundleId);
+
+					// Call isServiceIdInSelection to check if there's a match
+					boolean matchFound = isServiceIdInSelection(bundleServiceIds, serviceIds);
+
+					// Check if service selection is already inside the bundle.
+					if (matchFound) {
+						System.out.println("Selected Services Belong to the Selected Bundle");
+						session.removeAttribute("selectedBundle");
+						response.sendRedirect(request.getContextPath() + "/book/services");
+						return;
+					}
+					session.setAttribute("selectedServices", serviceIds);
+				}
+			}
+
+			response.sendRedirect(request.getContextPath() + "/book/review");
+
+		} catch (NullPointerException e) {
+			System.out.println("Error handling services: " + e.getMessage());
+			response.sendRedirect(request.getContextPath() + "/book/services");
+		} catch (NumberFormatException e) {
+			System.out.println("Error converting string to integer: " + e.getMessage());
+			response.sendRedirect(request.getContextPath() + "/error/500");
+		} catch (Exception e) {
+			System.out.println("Error handling services: " + e.getMessage());
+			response.sendRedirect(request.getContextPath() + "/error/500");
+		}
+	}
+
+	// Helper Function to check if services belong to the chosen bundle
+	public boolean isServiceIdInSelection(ArrayList<Integer> serviceIds, int[] selectedServices) {
+		// Iterate through each service ID from the database
+		for (int serviceId : serviceIds) {
+			// Check if it matches any ID in the selectedServices array
+			for (int selectedId : selectedServices) {
+				if (serviceId == selectedId) {
+					return true; // Match found
+				}
+			}
+		}
+		return false; // No match found
+	}
+
+	// =========================================================================================================
+	// Add to Cart (GET/POST)
+	// =========================================================================================================
+
+	// GET Request for a preview of selected services and booking details
+
+	private void getReview(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws ServletException, IOException {
 		try {
 			// Check session exists for user
@@ -371,101 +449,173 @@ public class UserBookSlot extends HttpServlet {
 				throw new IllegalStateException("User not logged in");
 			}
 
+			// Get all session attributes
 			LocalDate selectedDate = (LocalDate) session.getAttribute("selectedDate");
-			LocalTime selectedTime = (LocalTime) session.getAttribute("selectedTime");
-			Address selectedAddress = (Address) session.getAttribute("selectedAddress");
-			Integer selectedAddressId = (Integer) session.getAttribute("selectedAddressId");
+			Integer selectedSlotId = (Integer) session.getAttribute("selectedSlot");
+			Integer selectedAddressId = (Integer) session.getAttribute("selectedAddress");
+			Integer selectedBundleId = (Integer) session.getAttribute("selectedBundle");
+			int[] selectedServiceIds = (int[]) session.getAttribute("selectedServices");
 
-			// Basic validation for required booking information
-			if (selectedDate == null || selectedTime == null || selectedAddressId == null) {
-				throw new NullPointerException("Required booking information missing");
+			// Validate required booking information
+			if (selectedDate == null || selectedSlotId == null || selectedAddressId == null) {
+				throw new IllegalStateException("Required booking information missing");
 			}
 
-			ArrayList<Service> selectedServices = new ArrayList<Service>();
-			Bundle selectedBundle = null;
+			// Initialize DAOs
+			TimeSlotDAO timeSlotDB = new TimeSlotDAO();
+			AddressDAO addressDB = new AddressDAO();
+			BundleDAO bundleDB = new BundleDAO();
+			ServiceDAO serviceDB = new ServiceDAO();
 
-			// Get selected bundle and services
-			String strBundleId = request.getParameter("selected_bundle");
-			String[] serviceIds = request.getParameterValues("selected_services");
+			// Get selected address and time slot
+			Address selectedAddress = addressDB.getAddressById(selectedAddressId);
+			TimeSlot selectedSlot = timeSlotDB.getTimeSlotById(selectedSlotId);
 
-			// Validate that at least one option is selected
-			if ((strBundleId == null || strBundleId.equals("0")) && (serviceIds == null || serviceIds.length == 0)) {
-				throw new IllegalArgumentException("Please select at least one service or bundle");
-			}
-
-			System.out.println("Selected bundle ID: " + strBundleId);
+			// Get services information
+			ArrayList<Service> selectedServices = new ArrayList<>();
 
 			// Handle bundle selection if exists
-			if (strBundleId != null && !strBundleId.trim().isEmpty() && !strBundleId.equals("0")) {
-				try {
-					BundleDAO bundleDB = new BundleDAO();
-					selectedBundle = bundleDB.getBundleById(Integer.parseInt(strBundleId));
-					if (selectedBundle != null) {
-						System.out.println("Selected bundle: " + selectedBundle.getBundleName());
-					}
-				} catch (NumberFormatException e) {
-					System.out.println("Invalid bundle ID: " + strBundleId);
+			if (selectedBundleId != null) {
+				Bundle selectedBundle = bundleDB.getBundleById(selectedBundleId);
+				if (selectedBundle != null) {
+					request.setAttribute("selectedBundle", selectedBundle);
 				}
 			}
 
 			// Handle individual services if selected
-			if (serviceIds != null && serviceIds.length > 0) {
-				ServiceDAO serviceDB = new ServiceDAO();
-				for (String serviceId : serviceIds) {
-					try {
-						Service service = serviceDB.getServiceById(Integer.parseInt(serviceId));
-						if (service != null) {
-							System.out.println("Selected service: " + service.getServiceName());
-							selectedServices.add(service);
-						}
-					} catch (NumberFormatException e) {
-						System.out.println("Invalid service ID: " + serviceId);
+			if (selectedServiceIds != null && selectedServiceIds.length > 0) {
+				for (int serviceId : selectedServiceIds) {
+					Service service = serviceDB.getServiceById(serviceId);
+					if (service != null) {
+						selectedServices.add(service);
 					}
 				}
-			}
-
-			// Calculate total price
-			double totalPrice = 0.0;
-
-			// Add bundle price if selected
-			if (selectedBundle != null) {
-				totalPrice += selectedBundle.getDiscountedPrice();
-			}
-
-			// Add individual services price
-			for (Service service : selectedServices) {
-				totalPrice += service.getPrice();
+				request.setAttribute("selectedServices", selectedServices);
 			}
 
 			// Set all attributes for the review page
-			request.setAttribute("selectedBundle", selectedBundle);
-			request.setAttribute("selectedServices", selectedServices);
 			request.setAttribute("selectedDate", selectedDate);
-			request.setAttribute("selectedTime", selectedTime);
+			request.setAttribute("selectedSlot", selectedSlot.getStartTime());
 			request.setAttribute("selectedAddress", selectedAddress);
-			request.setAttribute("totalPrice", totalPrice);
 
+			// Forward to review page
 			request.getRequestDispatcher("/user/bookReview.jsp").forward(request, response);
 
 		} catch (IllegalStateException e) {
-			System.out.println("Session expired: " + e.getMessage());
-			request.setAttribute("err", "Please log in to continue booking.");
-			response.sendRedirect(request.getContextPath() + "/login");
-		} catch (IllegalArgumentException e) {
-			System.out.println("No services selected: " + e.getMessage());
-			request.setAttribute("err", e.getMessage());
-			response.sendRedirect(request.getContextPath() + "/book/services");
-		} catch (NullPointerException e) {
-			System.out.println("Incomplete booking data: " + e.getMessage());
-			request.setAttribute("err", "Please complete all booking steps.");
-			response.sendRedirect(request.getContextPath() + "/book/slots");
+			System.out.println("Session error: " + e.getMessage());
+			request.setAttribute("error", "Please complete all booking steps first.");
+			response.sendRedirect(request.getContextPath() + "/book");
 		} catch (Exception e) {
-			System.out.println("Error handling confirmation: " + e.getMessage());
+			System.out.println("Error processing review: " + e.getMessage());
 			e.printStackTrace();
-			request.setAttribute("err", "Unable to process booking confirmation. Please try again.");
-			request.getRequestDispatcher("/error/500").forward(request, response);
+			response.sendRedirect(request.getContextPath() + "/error/500");
 		}
 	}
+
+//	private void handleReview(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+//			throws ServletException, IOException {
+//		try {
+//			// Check session exists for user
+//			Integer userId = (Integer) session.getAttribute("userId");
+//			if (userId == null) {
+//				throw new IllegalStateException("User not logged in");
+//			}
+//
+//			LocalDate selectedDate = (LocalDate) session.getAttribute("selectedDate");
+//			LocalTime selectedTime = (LocalTime) session.getAttribute("selectedTime");
+//			Address selectedAddress = (Address) session.getAttribute("selectedAddress");
+//			Integer selectedAddressId = (Integer) session.getAttribute("selectedAddressId");
+//
+//			// Basic validation for required booking information
+//			if (selectedDate == null || selectedTime == null || selectedAddressId == null) {
+//				throw new NullPointerException("Required booking information missing");
+//			}
+//
+//			ArrayList<Service> selectedServices = new ArrayList<Service>();
+//			Bundle selectedBundle = null;
+//
+//			// Get selected bundle and services
+//			String strBundleId = request.getParameter("selected_bundle");
+//			String[] serviceIds = request.getParameterValues("selected_services");
+//
+//			// Validate that at least one option is selected
+//			if ((strBundleId == null || strBundleId.equals("0")) && (serviceIds == null || serviceIds.length == 0)) {
+//				throw new IllegalArgumentException("Please select at least one service or bundle");
+//			}
+//
+//			System.out.println("Selected bundle ID: " + strBundleId);
+//
+//			// Handle bundle selection if exists
+//			if (strBundleId != null && !strBundleId.trim().isEmpty() && !strBundleId.equals("0")) {
+//				try {
+//					BundleDAO bundleDB = new BundleDAO();
+//					selectedBundle = bundleDB.getBundleById(Integer.parseInt(strBundleId));
+//					if (selectedBundle != null) {
+//						System.out.println("Selected bundle: " + selectedBundle.getBundleName());
+//					}
+//				} catch (NumberFormatException e) {
+//					System.out.println("Invalid bundle ID: " + strBundleId);
+//				}
+//			}
+//
+//			// Handle individual services if selected
+//			if (serviceIds != null && serviceIds.length > 0) {
+//				ServiceDAO serviceDB = new ServiceDAO();
+//				for (String serviceId : serviceIds) {
+//					try {
+//						Service service = serviceDB.getServiceById(Integer.parseInt(serviceId));
+//						if (service != null) {
+//							System.out.println("Selected service: " + service.getServiceName());
+//							selectedServices.add(service);
+//						}
+//					} catch (NumberFormatException e) {
+//						System.out.println("Invalid service ID: " + serviceId);
+//					}
+//				}
+//			}
+//
+//			// Calculate total price
+//			double totalPrice = 0.0;
+//
+//			// Add bundle price if selected
+//			if (selectedBundle != null) {
+//				totalPrice += selectedBundle.getDiscountedPrice();
+//			}
+//
+//			// Add individual services price
+//			for (Service service : selectedServices) {
+//				totalPrice += service.getPrice();
+//			}
+//
+//			// Set all attributes for the review page
+//			request.setAttribute("selectedBundle", selectedBundle);
+//			request.setAttribute("selectedServices", selectedServices);
+//			request.setAttribute("selectedDate", selectedDate);
+//			request.setAttribute("selectedTime", selectedTime);
+//			request.setAttribute("selectedAddress", selectedAddress);
+//			request.setAttribute("totalPrice", totalPrice);
+//
+//			request.getRequestDispatcher("/user/bookReview.jsp").forward(request, response);
+//
+//		} catch (IllegalStateException e) {
+//			System.out.println("Session expired: " + e.getMessage());
+//			request.setAttribute("err", "Please log in to continue booking.");
+//			response.sendRedirect(request.getContextPath() + "/login");
+//		} catch (IllegalArgumentException e) {
+//			System.out.println("No services selected: " + e.getMessage());
+//			request.setAttribute("err", e.getMessage());
+//			response.sendRedirect(request.getContextPath() + "/book/services");
+//		} catch (NullPointerException e) {
+//			System.out.println("Incomplete booking data: " + e.getMessage());
+//			request.setAttribute("err", "Please complete all booking steps.");
+//			response.sendRedirect(request.getContextPath() + "/book/slots");
+//		} catch (Exception e) {
+//			System.out.println("Error handling confirmation: " + e.getMessage());
+//			e.printStackTrace();
+//			request.setAttribute("err", "Unable to process booking confirmation. Please try again.");
+//			request.getRequestDispatcher("/error/500").forward(request, response);
+//		}
+//	}
 
 	private void handleBooking(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws ServletException, IOException {

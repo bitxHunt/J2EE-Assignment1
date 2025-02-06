@@ -16,9 +16,10 @@ DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd");
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Book Your Session</title>
-<link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css"
-	rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body class="min-h-screen bg-gradient-to-b from-base-300 to-base-200">
 	<%
