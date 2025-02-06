@@ -3,7 +3,9 @@ package models.organization;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import util.DB;
 import util.KeyPairGenerator;
@@ -58,5 +60,35 @@ public class OrganizationDAO {
         }
         
         return rowsAffected;
+    }
+	
+	public ArrayList<Organization> getOrganizationsByUserId(int userId) throws SQLException {
+        Connection conn = DB.connect();
+        ArrayList<Organization> organizations = new ArrayList<>();
+        
+        try {
+            String sql = "SELECT id, name, access_key, secret_key FROM organization WHERE owner_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Organization organization = new Organization();
+                organization.setId(rs.getInt("id"));
+                organization.setName(rs.getString("name"));
+                organization.setAccessKey(rs.getString("access_key"));
+                organization.setSecretKey(rs.getString("secret_key"));
+                organizations.add(organization);
+            }
+            
+        } catch (SQLException e) {
+            System.out.println("Error retrieving organizations: " + e.getMessage());
+            throw e;
+        } finally {
+            conn.close();
+        }
+        
+        return organizations;
     }
 }

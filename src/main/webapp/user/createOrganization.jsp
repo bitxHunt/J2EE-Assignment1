@@ -14,9 +14,9 @@
 	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body class="bg-base-100">
-	<%@ include file="../components/header.jsp"%>
+	<%@ include file="components/header.jsp"%>
 
-	<div class="min-h-screen flex items-center justify-center px-4">
+	<div class="min-h-screen flex items-center justify-center px-4 py-8">
 		<div class="card w-full max-w-md bg-base-200 shadow-xl">
 			<div class="card-body">
 				<h2 class="card-title text-2xl font-bold text-center mb-6">Create
@@ -31,21 +31,10 @@
 					<span class="material-symbols-outlined">error</span> <span><%=error%></span>
 				</div>
 				<%
+				request.removeAttribute("error");
 				}
 				%>
 
-				<%-- Success Message Display --%>
-				<%
-				String success = (String) session.getAttribute("successMessage");
-				if (success != null && !success.isEmpty()) {
-					session.removeAttribute("successMessage");
-				%>
-				<div class="alert alert-success mb-4">
-					<span class="material-symbols-outlined">check_circle</span> <span><%=success%></span>
-				</div>
-				<%
-				}
-				%>
 
 				<form
 					action="${pageContext.request.contextPath}/register-organization"
@@ -56,8 +45,8 @@
 						</label> <input type="text" name="organizationName"
 							placeholder="Enter organization name"
 							class="input input-bordered w-full" required minlength="2"
-							maxlength="100" value="${param.organizationName}" />
-						<label class="label"> <span
+							maxlength="100" value="${param.organizationName}" /> <label
+							class="label"> <span
 							class="label-text-alt text-base-content/70">2-100
 								characters</span>
 						</label>
@@ -78,6 +67,6 @@
 		</div>
 	</div>
 
-	<%@ include file="../components/footer.jsp"%>
+	<%@ include file="components/footer.jsp"%>
 </body>
 </html>

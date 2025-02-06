@@ -35,6 +35,8 @@
 						class="text-base">Bundles</a></li>
 					<li><a href="${pageContext.request.contextPath}/book"
 						class="text-base">Book Service</a></li>
+					<li><a href="${pageContext.request.contextPath}/organizations"
+						class="text-base">My Organizations</a></li>
 				</ul>
 			</div>
 			<!-- Logo -->
@@ -60,6 +62,10 @@
 						class="material-symbols-outlined">calendar_month</span> Book
 						Service
 				</a></li>
+				<li><a href="${pageContext.request.contextPath}/organizations"
+					class="text-base hover:text-primary transition-colors">
+					<span class="material-symbols-outlined">business</span> My
+					Organizations</a></li>
 			</ul>
 		</div>
 
@@ -69,7 +75,7 @@
 				<label tabindex="0" class="btn btn-ghost btn-circle avatar">
 					<div
 						class="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-						<img alt="Profile" src="<%=profileImage %>"
+						<img alt="Profile" src="<%=profileImage%>"
 							onerror="this.src='https://placehold.co/100x100'" />
 					</div>
 				</label>
