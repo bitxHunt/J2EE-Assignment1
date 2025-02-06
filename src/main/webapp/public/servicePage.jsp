@@ -25,12 +25,7 @@
 	<%
 	}
 	%>
-<<<<<<< HEAD
-	<%-- <%@ include file="./components/displayBundles.jsp"%> --%>
-=======
-	<%@ include file="./components/displayBundles.jsp"%>
-	
->>>>>>> a6963b03eb2831ce3bebb0136e6af89cc8fc740b
+
 	<%@ include file="./components/displayServicesByCategory.jsp"%>
 </body>
 </html>
