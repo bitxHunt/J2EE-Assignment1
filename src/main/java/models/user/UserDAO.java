@@ -147,6 +147,28 @@ public class UserDAO {
 		}
 		return user;
 	}
+	
+	// Update Customer ID for Stripe Integration
+	public int updateCustomerId(int userId, String customerId) throws SQLException {
+		Connection conn = DB.connect();
+		int rowsAffected = 0;
+
+		try {
+			String sqlStr = "UPDATE users SET customer_id = ? WHERE id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+
+			pstmt.setString(1, customerId);
+			pstmt.setInt(2, userId);
+
+			rowsAffected = pstmt.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("Error Updating User Verification Status.");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return rowsAffected;
+	}
 
 	public void updateUserProfile(int userId, String firstName, String lastName, Part imagePart, String phoneNo)
 			throws SQLException {

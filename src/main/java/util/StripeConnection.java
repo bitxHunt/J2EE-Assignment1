@@ -4,18 +4,37 @@ import com.stripe.exception.ApiConnectionException;
 import com.stripe.exception.AuthenticationException;
 import com.stripe.exception.StripeException;
 import com.stripe.exception.ApiException;
+import com.stripe.model.Customer;
 import com.stripe.model.Price;
 import com.stripe.model.Product;
+import com.stripe.model.SetupIntent;
+import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.PriceCreateParams;
 import com.stripe.param.ProductCreateParams;
-
+import com.stripe.param.SetupIntentCreateParams;
 import com.stripe.Stripe;
 
 public class StripeConnection {
 
 	// Set the stripe API Key in the constructor
 	public StripeConnection() {
-		Stripe.apiKey = SecretsConfig.getStripeApiKey();
+		Stripe.apiKey = SecretsConfig.getStripeSecretKey();
+	}
+
+	public String createSetupIntent() throws StripeException {
+		SetupIntentCreateParams params = SetupIntentCreateParams.builder().addPaymentMethodType("card").build();
+
+		SetupIntent setupIntent = SetupIntent.create(params);
+		return setupIntent.getClientSecret();
+	}
+
+	public String createCustomerWithPaymentMethod(String email, String paymentMethodId) throws StripeException {
+		// Create Customer
+		CustomerCreateParams customerParams = CustomerCreateParams.builder().setEmail(email)
+				.setPaymentMethod(paymentMethodId).build();
+
+		Customer customer = Customer.create(customerParams);
+		return customer.getId();
 	}
 
 	// Create a product in stripe dashboard by the stripe API
@@ -26,7 +45,7 @@ public class StripeConnection {
 		try {
 			// Log the current running function
 			System.out.println(systemMessage);
-			System.out.println("Api Key: " + SecretsConfig.getStripeApiKey());
+			System.out.println("Secret Key: " + SecretsConfig.getStripeSecretKey());
 
 			// Call stripe api to create product
 			ProductCreateParams params = ProductCreateParams.builder().setName(name).setDescription(description)

@@ -18,6 +18,9 @@ import models.timeSlot.TimeSlot;
 import models.timeSlot.TimeSlotDAO;
 import models.transaction.Transaction;
 import models.transaction.TransactionDAO;
+import models.user.UserDAO;
+import models.user.User;
+
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
@@ -118,10 +121,10 @@ public class UserBookSlot extends HttpServlet {
 			System.out.println("Running POST request for /services");
 			postBundleService(request, response, session);
 			break;
-//		case "/review":
-//			System.out.println("Running POST request for /review");
-//			postReview(request, response, session);
-//			break;
+		case "/payment":
+			System.out.println("Running POST request for /payment");
+			postPayment(request, response, session);
+			break;
 //		case "/confirm":
 //			System.out.println("Running POST request for /confirm");
 //			handleBooking(request, response, session);
@@ -402,8 +405,8 @@ public class UserBookSlot extends HttpServlet {
 						response.sendRedirect(request.getContextPath() + "/book/services");
 						return;
 					}
-					session.setAttribute("selectedServices", serviceIds);
 				}
+				session.setAttribute("selectedServices", serviceIds);
 			}
 
 			response.sendRedirect(request.getContextPath() + "/book/review");
@@ -486,6 +489,7 @@ public class UserBookSlot extends HttpServlet {
 			if (selectedServiceIds != null && selectedServiceIds.length > 0) {
 				for (int serviceId : selectedServiceIds) {
 					Service service = serviceDB.getServiceById(serviceId);
+					System.out.println("Service Name for Review: " + service.getServiceDescription());
 					if (service != null) {
 						selectedServices.add(service);
 					}
@@ -508,6 +512,41 @@ public class UserBookSlot extends HttpServlet {
 		} catch (Exception e) {
 			System.out.println("Error processing review: " + e.getMessage());
 			e.printStackTrace();
+			response.sendRedirect(request.getContextPath() + "/error/500");
+		}
+	}
+
+	private void postPayment(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws ServletException, IOException {
+		try {
+			// Check if user is logged in
+			Integer userId = (Integer) session.getAttribute("userId");
+			if (userId == null) {
+				throw new IllegalStateException("User not logged in");
+			}
+
+			// Get user info and check customer_id
+			UserDAO userDB = new UserDAO();
+			User user = userDB.getUserById(userId);
+			
+			System.out.println("Customer ID: " + user.getCustomerId());
+
+			if (user.getCustomerId() == null || user.getCustomerId().isEmpty()) {
+				// If no customer_id, redirect to credit card form page
+				response.sendRedirect(request.getContextPath() + "/payment/setup");
+			}
+
+//			else {
+//				// If customer_id exists, create booking and redirect to profile
+//				createBooking(request, session);
+//				response.sendRedirect(request.getContextPath() + "/profile");
+//			}
+
+		} catch (IllegalStateException e) {
+			System.out.println("Session error: " + e.getMessage());
+			response.sendRedirect(request.getContextPath() + "/login");
+		} catch (Exception e) {
+			System.out.println("Error processing review: " + e.getMessage());
 			response.sendRedirect(request.getContextPath() + "/error/500");
 		}
 	}
@@ -617,277 +656,277 @@ public class UserBookSlot extends HttpServlet {
 //		}
 //	}
 
-	private void handleBooking(HttpServletRequest request, HttpServletResponse response, HttpSession session)
-			throws ServletException, IOException {
-		// try {
-		// Address selectedAddress = new Address();
-		// TimeSlotDAO timeSlotDB = new TimeSlotDAO();
-		// BundleDAO bundleDB = new BundleDAO();
-		// ServiceDAO serviceDB = new ServiceDAO();
+//	private void handleBooking(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+//			throws ServletException, IOException {
+	// try {
+	// Address selectedAddress = new Address();
+	// TimeSlotDAO timeSlotDB = new TimeSlotDAO();
+	// BundleDAO bundleDB = new BundleDAO();
+	// ServiceDAO serviceDB = new ServiceDAO();
 
-		// // Check session exists for user
-		// Integer userId = (Integer) session.getAttribute("userId");
-		// if (userId == null) {
-		// throw new IllegalStateException("User not logged in");
-		// }
+	// // Check session exists for user
+	// Integer userId = (Integer) session.getAttribute("userId");
+	// if (userId == null) {
+	// throw new IllegalStateException("User not logged in");
+	// }
 
-		// Integer buttonPressed = Integer.parseInt(request.getParameter("btnSubmit"));
-		// String status = "PENDING";
-		// LocalDateTime paidAt = null;
+	// Integer buttonPressed = Integer.parseInt(request.getParameter("btnSubmit"));
+	// String status = "PENDING";
+	// LocalDateTime paidAt = null;
 
-		// // Set status and paidAt based on button press
-		// if (buttonPressed == 2) {
-		// status = "IN_PROGRESS";
-		// paidAt = LocalDateTime.now();
-		// }
+	// // Set status and paidAt based on button press
+	// if (buttonPressed == 2) {
+	// status = "IN_PROGRESS";
+	// paidAt = LocalDateTime.now();
+	// }
 
-		// selectedAddress = (Address) session.getAttribute("selectedAddress");
+	// selectedAddress = (Address) session.getAttribute("selectedAddress");
 
-		// LocalDate selectedDate = (LocalDate) session.getAttribute("selectedDate");
-		// Integer selectedSlotId = timeSlotDB.getTimeSlotByTime((LocalTime)
-		// session.getAttribute("selectedTime"))
-		// .getId();
+	// LocalDate selectedDate = (LocalDate) session.getAttribute("selectedDate");
+	// Integer selectedSlotId = timeSlotDB.getTimeSlotByTime((LocalTime)
+	// session.getAttribute("selectedTime"))
+	// .getId();
 
-		// // Handle services and bundles
-		// String bundleIdStr = request.getParameter("bundleId");
-		// String[] serviceIds = request.getParameterValues("selectedServices");
+	// // Handle services and bundles
+	// String bundleIdStr = request.getParameter("bundleId");
+	// String[] serviceIds = request.getParameterValues("selectedServices");
 
-		// Double subtotal = 0.0;
-		// String bundleName = null;
-		// String bundleImg = null;
-		// Integer discountPercent = 0;
-		// String servicesJson = null;
-		// String bundleServicesJson = null;
+	// Double subtotal = 0.0;
+	// String bundleName = null;
+	// String bundleImg = null;
+	// Integer discountPercent = 0;
+	// String servicesJson = null;
+	// String bundleServicesJson = null;
 
-		// // Handle bundle selection
-		// if (bundleIdStr != null && !bundleIdStr.isEmpty() &&
-		// !bundleIdStr.equals("0")) {
-		// Integer bundleId = Integer.parseInt(bundleIdStr);
-		// Bundle bundle = bundleDB.getBundleById(bundleId);
+	// // Handle bundle selection
+	// if (bundleIdStr != null && !bundleIdStr.isEmpty() &&
+	// !bundleIdStr.equals("0")) {
+	// Integer bundleId = Integer.parseInt(bundleIdStr);
+	// Bundle bundle = bundleDB.getBundleById(bundleId);
 
-		// if (bundle != null) {
-		// bundleName = bundle.getBundleName();
-		// bundleImg = bundle.getImageUrl();
-		// discountPercent = bundle.getDiscountPercent();
+	// if (bundle != null) {
+	// bundleName = bundle.getBundleName();
+	// bundleImg = bundle.getImageUrl();
+	// discountPercent = bundle.getDiscountPercent();
 
-		// // Calculate total price of services in bundle
-		// double originalPrice = 0.0;
-		// JsonArrayBuilder bundleServiceArray = Json.createArrayBuilder();
+	// // Calculate total price of services in bundle
+	// double originalPrice = 0.0;
+	// JsonArrayBuilder bundleServiceArray = Json.createArrayBuilder();
 
-		// for (Service service : bundle.getServices()) {
+	// for (Service service : bundle.getServices()) {
 
-		// System.out.println("Service Image for Review: " + service.getImageUrl());
-		// JsonObjectBuilder serviceObj = Json.createObjectBuilder()
-		// .add("service", service.getServiceName()).add("price", service.getPrice())
-		// .add("img_url", service.getImageUrl());
-		// bundleServiceArray.add(serviceObj);
-		// originalPrice += service.getPrice();
-		// }
+	// System.out.println("Service Image for Review: " + service.getImageUrl());
+	// JsonObjectBuilder serviceObj = Json.createObjectBuilder()
+	// .add("service", service.getServiceName()).add("price", service.getPrice())
+	// .add("img_url", service.getImageUrl());
+	// bundleServiceArray.add(serviceObj);
+	// originalPrice += service.getPrice();
+	// }
 
-		// // Calculate discounted price
-		// subtotal = originalPrice * (1 - (discountPercent / 100.0));
-		// bundleServicesJson = bundleServiceArray.build().toString();
-		// }
-		// }
-		// // Handle individual services
-		// if (serviceIds != null && serviceIds.length > 0) {
-		// JsonArrayBuilder servicesArray = Json.createArrayBuilder();
+	// // Calculate discounted price
+	// subtotal = originalPrice * (1 - (discountPercent / 100.0));
+	// bundleServicesJson = bundleServiceArray.build().toString();
+	// }
+	// }
+	// // Handle individual services
+	// if (serviceIds != null && serviceIds.length > 0) {
+	// JsonArrayBuilder servicesArray = Json.createArrayBuilder();
 
-		// for (String serviceId : serviceIds) {
+	// for (String serviceId : serviceIds) {
 
-		// Service service = serviceDB.getServiceById(Integer.parseInt(serviceId));
-		// if (service != null) {
+	// Service service = serviceDB.getServiceById(Integer.parseInt(serviceId));
+	// if (service != null) {
 
-		// System.out.println("Service Image for Review: " + service.getImageUrl());
-		// JsonObjectBuilder serviceObj = Json.createObjectBuilder()
-		// .add("service", service.getServiceName()).add("price", service.getPrice())
-		// .add("img_url", service.getImageUrl());
-		// servicesArray.add(serviceObj);
-		// subtotal += service.getPrice();
-		// }
-		// }
-		// servicesJson = servicesArray.build().toString();
-		// }
+	// System.out.println("Service Image for Review: " + service.getImageUrl());
+	// JsonObjectBuilder serviceObj = Json.createObjectBuilder()
+	// .add("service", service.getServiceName()).add("price", service.getPrice())
+	// .add("img_url", service.getImageUrl());
+	// servicesArray.add(serviceObj);
+	// subtotal += service.getPrice();
+	// }
+	// }
+	// servicesJson = servicesArray.build().toString();
+	// }
 
-		// // Insert transaction into database
-		// TransactionDAO transactionDB = new TransactionDAO();
-		// transactionDB.insertTransaction(userId, selectedAddress.getAddress(),
-		// selectedAddress.getPostalCode(),
-		// selectedAddress.getUnit(), selectedSlotId, selectedDate, servicesJson,
-		// bundleName, bundleImg,
-		// bundleServicesJson, discountPercent, status, subtotal, paidAt);
+	// // Insert transaction into database
+	// TransactionDAO transactionDB = new TransactionDAO();
+	// transactionDB.insertTransaction(userId, selectedAddress.getAddress(),
+	// selectedAddress.getPostalCode(),
+	// selectedAddress.getUnit(), selectedSlotId, selectedDate, servicesJson,
+	// bundleName, bundleImg,
+	// bundleServicesJson, discountPercent, status, subtotal, paidAt);
 
-		// // Redirect to user dashboard
-		// response.sendRedirect(request.getContextPath() + "/profile");
+	// // Redirect to user dashboard
+	// response.sendRedirect(request.getContextPath() + "/profile");
 
-		// } catch (IllegalStateException e) {
-		// System.out.println("Session expired: " + e.getMessage());
-		// e.printStackTrace();
-		// request.setAttribute("err", "Please log in to continue booking.");
-		// response.sendRedirect(request.getContextPath() + "/login");
-		// } catch (NullPointerException e) {
-		// System.out.println("Invalid Data: " + e.getMessage());
-		// e.printStackTrace();
-		// request.setAttribute("err", "Please try again booking.");
-		// response.sendRedirect(request.getContextPath() + "/slots");
-		// } catch (Exception e) {
-		// System.out.println("Error handling booking: " + e.getMessage());
-		// e.printStackTrace();
-		// request.setAttribute("err", "Unable to process booking confirmation. Please
-		// try again.");
-		// request.getRequestDispatcher("/error/500").forward(request, response);
-		// }
+	// } catch (IllegalStateException e) {
+	// System.out.println("Session expired: " + e.getMessage());
+	// e.printStackTrace();
+	// request.setAttribute("err", "Please log in to continue booking.");
+	// response.sendRedirect(request.getContextPath() + "/login");
+	// } catch (NullPointerException e) {
+	// System.out.println("Invalid Data: " + e.getMessage());
+	// e.printStackTrace();
+	// request.setAttribute("err", "Please try again booking.");
+	// response.sendRedirect(request.getContextPath() + "/slots");
+	// } catch (Exception e) {
+	// System.out.println("Error handling booking: " + e.getMessage());
+	// e.printStackTrace();
+	// request.setAttribute("err", "Unable to process booking confirmation. Please
+	// try again.");
+	// request.getRequestDispatcher("/error/500").forward(request, response);
+	// }
 
-		try {
-			Stripe.apiKey = SecretsConfig.getStripeApiKey();
+//		try {
+//			Stripe.apiKey = SecretsConfig.getStripeApiKey();
+//
+//			// Build the complete URLs
+//			String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+//			String successUrl = baseUrl + request.getContextPath() + "/profile";
+//			String cancelUrl = baseUrl + request.getContextPath() + "/book";
+//
+//			SessionCreateParams params = SessionCreateParams.builder().setMode(SessionCreateParams.Mode.PAYMENT)
+//					.setSuccessUrl(successUrl) // Complete URL like "http://localhost:8080/yourapp/profile"
+//					.setCancelUrl(cancelUrl) // Complete URL like "http://localhost:8080/yourapp/book"
+//					.addLineItem(SessionCreateParams.LineItem.builder().setQuantity(1L)
+//							.setPrice("price_1QZ4muRpRtGdj3Co0gvNeWrq").build())
+//					.addLineItem(SessionCreateParams.LineItem.builder().setQuantity(1L)
+//							.setPrice("price_1QZ4muRpRtGdj3Co0gvNeWrq").build())
+//					.build();
+//
+//			Session stripeSession = Session.create(params);
+//			System.out.println(stripeSession.getUrl());
+//			response.sendRedirect(stripeSession.getUrl());
+//
+//		} catch (StripeException e) {
+//			e.printStackTrace();
+//			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Payment setup failed");
+//		}
+//	}
 
-			// Build the complete URLs
-			String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-			String successUrl = baseUrl + request.getContextPath() + "/profile";
-			String cancelUrl = baseUrl + request.getContextPath() + "/book";
+//	private void handleView(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+//			throws ServletException, IOException {
+//		try {
+//			// Check if user is logged in
+//			// Check session exists for user
+//			Integer userId = (Integer) session.getAttribute("userId");
+//			if (userId == null) {
+//				throw new IllegalStateException("User not logged in");
+//			}
+//
+//			TransactionDAO bookingDAO = new TransactionDAO();
+//
+//			ArrayList<Transaction> transactions = bookingDAO.getAllBookingsByUserID(userId);
+//			request.setAttribute("transactions", transactions);
+//
+//			request.getRequestDispatcher("/user/bookView.jsp").forward(request, response);
+//
+//		} catch (IllegalStateException e) {
+//			System.out.println("Session expired: " + e.getMessage());
+//			e.printStackTrace();
+//			request.setAttribute("err", "Please log in to continue.");
+//			response.sendRedirect(request.getContextPath() + "/login");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			request.setAttribute("err", "Unable to load the booking history");
+//			response.sendRedirect(request.getContextPath() + "/error");
+//		}
+//	}
 
-			SessionCreateParams params = SessionCreateParams.builder().setMode(SessionCreateParams.Mode.PAYMENT)
-					.setSuccessUrl(successUrl) // Complete URL like "http://localhost:8080/yourapp/profile"
-					.setCancelUrl(cancelUrl) // Complete URL like "http://localhost:8080/yourapp/book"
-					.addLineItem(SessionCreateParams.LineItem.builder().setQuantity(1L)
-							.setPrice("price_1QZ4muRpRtGdj3Co0gvNeWrq").build())
-					.addLineItem(SessionCreateParams.LineItem.builder().setQuantity(1L)
-							.setPrice("price_1QZ4muRpRtGdj3Co0gvNeWrq").build())
-					.build();
+//	private void handleCancel(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+//			throws ServletException, IOException {
+//		try {
+//			// Check if user is logged in
+//			// Check session exists for user
+//			Integer userId = (Integer) session.getAttribute("userId");
+//			if (userId == null) {
+//				throw new IllegalStateException("User not logged in");
+//			}
+//
+//			Integer transId = Integer.parseInt(request.getParameter("id"));
+//			String status = "CANCELLED";
+//			TransactionDAO transDAO = new TransactionDAO();
+//
+//			int rowsAffected = transDAO.updateTransactionStatus(transId, status);
+//			if (rowsAffected < 0) {
+//				request.setAttribute("err", "Error Cancelling Booking");
+//			}
+//
+//			response.sendRedirect(request.getContextPath() + "/book/view");
+//
+//		} catch (IllegalStateException e) {
+//			System.out.println("Session expired: " + e.getMessage());
+//			e.printStackTrace();
+//			request.setAttribute("err", "Please log in to continue.");
+//			response.sendRedirect(request.getContextPath() + "/login");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			response.sendRedirect(request.getContextPath() + "/error");
+//		}
+//	}
 
-			Session stripeSession = Session.create(params);
-			System.out.println(stripeSession.getUrl());
-			response.sendRedirect(stripeSession.getUrl());
+//	private void handleGetPayment(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+//			throws ServletException, IOException {
+//		try {
+//			// Check if user is logged in
+//			// Check session exists for user
+//			Integer userId = (Integer) session.getAttribute("userId");
+//			if (userId == null) {
+//				throw new IllegalStateException("User not logged in");
+//			}
+//
+//			Integer transId = Integer.parseInt(request.getParameter("id"));
+//
+//			System.out.println("Transaction ID: " + transId);
+//			TransactionDAO transDAO = new TransactionDAO();
+//
+//			Transaction transaction = transDAO.getTransactionById(transId);
+//
+//			request.setAttribute("transaction", transaction);
+//			request.getRequestDispatcher("/user/payment.jsp").forward(request, response);
+//		} catch (IllegalStateException e) {
+//			System.out.println("Session expired: " + e.getMessage());
+//			e.printStackTrace();
+//			request.setAttribute("err", "Please log in to continue.");
+//			response.sendRedirect(request.getContextPath() + "/login");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			response.sendRedirect(request.getContextPath() + "/error");
+//		}
+//	}
 
-		} catch (StripeException e) {
-			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Payment setup failed");
-		}
-	}
-
-	private void handleView(HttpServletRequest request, HttpServletResponse response, HttpSession session)
-			throws ServletException, IOException {
-		try {
-			// Check if user is logged in
-			// Check session exists for user
-			Integer userId = (Integer) session.getAttribute("userId");
-			if (userId == null) {
-				throw new IllegalStateException("User not logged in");
-			}
-
-			TransactionDAO bookingDAO = new TransactionDAO();
-
-			ArrayList<Transaction> transactions = bookingDAO.getAllBookingsByUserID(userId);
-			request.setAttribute("transactions", transactions);
-
-			request.getRequestDispatcher("/user/bookView.jsp").forward(request, response);
-
-		} catch (IllegalStateException e) {
-			System.out.println("Session expired: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Please log in to continue.");
-			response.sendRedirect(request.getContextPath() + "/login");
-		} catch (Exception e) {
-			e.printStackTrace();
-			request.setAttribute("err", "Unable to load the booking history");
-			response.sendRedirect(request.getContextPath() + "/error");
-		}
-	}
-
-	private void handleCancel(HttpServletRequest request, HttpServletResponse response, HttpSession session)
-			throws ServletException, IOException {
-		try {
-			// Check if user is logged in
-			// Check session exists for user
-			Integer userId = (Integer) session.getAttribute("userId");
-			if (userId == null) {
-				throw new IllegalStateException("User not logged in");
-			}
-
-			Integer transId = Integer.parseInt(request.getParameter("id"));
-			String status = "CANCELLED";
-			TransactionDAO transDAO = new TransactionDAO();
-
-			int rowsAffected = transDAO.updateTransactionStatus(transId, status);
-			if (rowsAffected < 0) {
-				request.setAttribute("err", "Error Cancelling Booking");
-			}
-
-			response.sendRedirect(request.getContextPath() + "/book/view");
-
-		} catch (IllegalStateException e) {
-			System.out.println("Session expired: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Please log in to continue.");
-			response.sendRedirect(request.getContextPath() + "/login");
-		} catch (Exception e) {
-			e.printStackTrace();
-			response.sendRedirect(request.getContextPath() + "/error");
-		}
-	}
-
-	private void handleGetPayment(HttpServletRequest request, HttpServletResponse response, HttpSession session)
-			throws ServletException, IOException {
-		try {
-			// Check if user is logged in
-			// Check session exists for user
-			Integer userId = (Integer) session.getAttribute("userId");
-			if (userId == null) {
-				throw new IllegalStateException("User not logged in");
-			}
-
-			Integer transId = Integer.parseInt(request.getParameter("id"));
-
-			System.out.println("Transaction ID: " + transId);
-			TransactionDAO transDAO = new TransactionDAO();
-
-			Transaction transaction = transDAO.getTransactionById(transId);
-
-			request.setAttribute("transaction", transaction);
-			request.getRequestDispatcher("/user/payment.jsp").forward(request, response);
-		} catch (IllegalStateException e) {
-			System.out.println("Session expired: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Please log in to continue.");
-			response.sendRedirect(request.getContextPath() + "/login");
-		} catch (Exception e) {
-			e.printStackTrace();
-			response.sendRedirect(request.getContextPath() + "/error");
-		}
-	}
-
-	private void handlePostPayment(HttpServletRequest request, HttpServletResponse response, HttpSession session)
-			throws ServletException, IOException {
-		try {
-			// Check if user is logged in
-			// Check session exists for user
-			Integer userId = (Integer) session.getAttribute("userId");
-			if (userId == null) {
-				throw new IllegalStateException("User not logged in");
-			}
-
-			Integer transId = Integer.parseInt(request.getParameter("transactionId"));
-
-			System.out.println("Transaction ID: " + transId);
-			String status = "IN_PROGRESS";
-			TransactionDAO transDAO = new TransactionDAO();
-
-			int rowsAffected = transDAO.updateTransactionStatus(transId, status);
-			if (rowsAffected < 0) {
-				request.setAttribute("err", "Error Making Payment");
-				request.getRequestDispatcher("/error.jsp").forward(request, response);
-			}
-
-			response.sendRedirect(request.getContextPath() + "/profile");
-
-		} catch (IllegalStateException e) {
-			System.out.println("Session expired: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Please log in to continue.");
-			response.sendRedirect(request.getContextPath() + "/login");
-		} catch (Exception e) {
-			e.printStackTrace();
-			response.sendRedirect(request.getContextPath() + "/error");
-		}
-	}
+//	private void handlePostPayment(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+//			throws ServletException, IOException {
+//		try {
+//			// Check if user is logged in
+//			// Check session exists for user
+//			Integer userId = (Integer) session.getAttribute("userId");
+//			if (userId == null) {
+//				throw new IllegalStateException("User not logged in");
+//			}
+//
+//			Integer transId = Integer.parseInt(request.getParameter("transactionId"));
+//
+//			System.out.println("Transaction ID: " + transId);
+//			String status = "IN_PROGRESS";
+//			TransactionDAO transDAO = new TransactionDAO();
+//
+//			int rowsAffected = transDAO.updateTransactionStatus(transId, status);
+//			if (rowsAffected < 0) {
+//				request.setAttribute("err", "Error Making Payment");
+//				request.getRequestDispatcher("/error.jsp").forward(request, response);
+//			}
+//
+//			response.sendRedirect(request.getContextPath() + "/profile");
+//
+//		} catch (IllegalStateException e) {
+//			System.out.println("Session expired: " + e.getMessage());
+//			e.printStackTrace();
+//			request.setAttribute("err", "Please log in to continue.");
+//			response.sendRedirect(request.getContextPath() + "/login");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			response.sendRedirect(request.getContextPath() + "/error");
+//		}
+//	}
 }

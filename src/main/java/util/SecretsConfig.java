@@ -51,7 +51,11 @@ public class SecretsConfig {
 		return properties.getProperty("jwt.algorithm");
 	}
 
-	public static String getStripeApiKey() {
-		return properties.getProperty("stripe.apikey");
+	public static String getStripeSecretKey() {
+		return properties.getProperty("stripe.secretkey");
+	}
+
+	public static String getStripePublishableKey() {
+		return properties.getProperty("stripe.publishablekey");
 	}
 }

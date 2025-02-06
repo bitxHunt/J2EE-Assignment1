@@ -198,7 +198,7 @@
 							name="btnSubmit" value="1">Add to Cart</button>
 					</form>
 
-					<form action="${pageContext.request.contextPath}/book/confirm"
+					<form action="${pageContext.request.contextPath}/book/payment"
 						method="post" class="flex-1 md:flex-none">
 						<input type="hidden" name="bookingDate"
 							value="<%=request.getAttribute("bookingDate")%>"> <input
