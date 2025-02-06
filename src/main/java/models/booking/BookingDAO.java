@@ -6,51 +6,33 @@
 
 package models.booking;
 
-import util.*;
-
-import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
+
+import util.DB;
 
 public class BookingDAO {
-	public List<Booking> getAvailableSlots() throws SQLException {
-
-		Connection conn = DB.connect();
-		List<Booking> availableSlots = new ArrayList<>();
-		try {
-			String sqlStr = "SELECT * FROM get_available_slots(CURRENT_DATE, 7)";
-			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-			ResultSet rs = pstmt.executeQuery();
-
-			while (rs.next()) {
-				Booking booking = new Booking();
-				booking.setDate(rs.getDate("slot_date"));
-
-				// Convert the PostgreSQL TIME[] to List<LocalTime>
-				Array timeArray = rs.getArray("slot_times");
-				if (timeArray != null) {
-					Time[] times = (Time[]) timeArray.getArray();
-					List<LocalTime> slots = new ArrayList<>();
-                    for (Time time : times) {
-                        // Convert java.sql.Time to LocalTime
-                    	slots.add(time.toLocalTime());
-                    }
-                    booking.setSlots(slots);
-				}
-				availableSlots.add(booking);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			conn.close();
-		}
-		return availableSlots;
-	}
+	// Seed Customer Booking Data
+//	public void seedData(Booking booking) throws SQLException {
+//		Connection conn = DB.connect();
+//
+//		try {
+//			String sqlStr = "CALL seed_customer_booking(?, ?, ?, ?);";
+//			CallableStatement stmt = conn.prepareCall(sqlStr);
+//
+//			stmt.setString(1, booking.getStatus());
+//			stmt.setString(2, booking.get);
+//			stmt.setString(3, organization.getSecretKey());
+//			stmt.setInt(4, organization.getUser().getId());
+//
+//			stmt.execute();
+//
+//		} catch (Exception e) {
+//			System.out.println("Error Seeding User Data.");
+//			e.printStackTrace();
+//		} finally {
+//			conn.close();
+//		}
+//	}
 }

@@ -39,7 +39,7 @@ public class QueryAllServicesBundlesAndCategory extends HttpServlet {
 
 			request.setAttribute("services", services);
 			request.setAttribute("bundles", bundles);
-			request.setAttribute("categories", categories);
+			request.setAttribute("categories", categories); 
 
 			RequestDispatcher rd = request.getRequestDispatcher("/admin/home.jsp");
 			rd.forward(request, response);

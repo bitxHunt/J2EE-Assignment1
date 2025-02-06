@@ -6,8 +6,9 @@
 
 package servlets.auth;
 
-import models.user.User;
-import models.user.UserDAO;
+import models.user.*;
+import models.request.*;
+import middlewares.JWTMiddleware;
 import util.org.mindrot.jbcrypt.BCrypt;
 
 import jakarta.servlet.RequestDispatcher;
@@ -17,6 +18,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import java.io.IOException;
 
@@ -64,12 +72,19 @@ public class Register extends HttpServlet {
 		String password = request.getParameter("password");
 		String phoneNo = request.getParameter("phoneNo");
 
+		String street = request.getParameter("street");
+		String unit = request.getParameter("unit");
+		String postalCode = request.getParameter("postalCode");
+
+		int addTypeId = Integer.parseInt(request.getParameter("addressTypeId"));
+
 		// Validate input fields
 		if (firstName == null || firstName.trim().isEmpty() || lastName == null || lastName.trim().isEmpty()
 				|| email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()
-				|| phoneNo == null || phoneNo.trim().isEmpty()) {
+				|| phoneNo == null || phoneNo.trim().isEmpty() || street == null || street.trim().isEmpty()
+				|| unit == null || unit.trim().isEmpty() || postalCode == null || postalCode.trim().isEmpty()) {
 
-			request.getSession().setAttribute("errMsg", "All fields are required.");
+			request.getSession().setAttribute("errMsg", "Please Enter Values For All The Required Fields.");
 			response.sendRedirect(request.getContextPath() + "/register");
 			return;
 		}
@@ -77,13 +92,47 @@ public class Register extends HttpServlet {
 		// Hash password
 		String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(10));
 
+		// Initialise the objects of user, jwtmiddleware and the request service
 		UserDAO userDB = new UserDAO();
-		try {
-			Integer userId = userDB.registerUser(firstName, lastName, email, hashedPassword, phoneNo);
+		JWTMiddleware jwt = new JWTMiddleware();
+		Request requestService = new Request();
 
-			if (userId != null && userId > 0) {
-				request.getSession().setAttribute("message", "Registration successful. Please log in.");
-				response.sendRedirect(request.getContextPath() + "/login");
+		try {
+			
+			// Return the whole user object if the record is inserted
+			User user = userDB.registerUser(firstName, lastName, email, hashedPassword, phoneNo, street, unit,
+					addTypeId, addTypeId);
+
+			// Log out the user id
+			System.out.println("Created User Id: " + user.getId());
+
+			if (user.getId() > 0) {
+				String verifyToken = jwt.createVerifyToken(user.getId());
+
+				try (Client client = ClientBuilder.newClient()) {
+					String emailServiceURL = "http://localhost:8081/b2b/api/v1/email/verify";
+					WebTarget target = client.target(emailServiceURL);
+
+					requestService.setUser(user);
+					requestService.setToken(verifyToken);
+
+					Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
+					Response res = invocationBuilder
+							.post(Entity.entity(requestService, MediaType.APPLICATION_JSON));
+
+					if (res.getStatus() == Response.Status.OK.getStatusCode()) {
+						response.sendRedirect(request.getContextPath() + "/login");
+					} else {
+						request.getSession().setAttribute("errMsg", "Failed to send verification email");
+						response.sendRedirect(request.getContextPath() + "/register");
+					}
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+					request.getSession().setAttribute("errMsg", "Failed to send verification email: " + e.getMessage());
+					response.sendRedirect(request.getContextPath() + "/register");
+				}
+				
 			} else {
 				request.getSession().setAttribute("errMsg", "Registration failed. Please try again.");
 				response.sendRedirect(request.getContextPath() + "/register");

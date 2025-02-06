@@ -49,7 +49,7 @@ public class Service {
 		this.imageUrl = imageUrl;
 		this.isActive = isActive;
 	}
-	
+
 	public Service(int serviceId, String serviceName, String serviceDescription, int categoryId, float price,
 			String categoryName, String imageUrl, boolean isActive) {
 		this.serviceId = serviceId;
@@ -59,7 +59,7 @@ public class Service {
 		this.price = price;
 		this.categoryName = categoryName;
 		this.imageUrl = imageUrl;
-		this.isActive=isActive;
+		this.isActive = isActive;
 	}
 
 	// Getters and Setters
@@ -118,7 +118,7 @@ public class Service {
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
-	
+
 	public boolean getIsActive() {
 		return isActive;
 	}

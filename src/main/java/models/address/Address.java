@@ -7,9 +7,9 @@
 package models.address;
 
 public class Address {
-	private Integer id = 0;
-	private Integer userId = 0;
-	private String addType = "";
+	private int id = 0;
+	private int userId = 0;
+	private AddressType addType = null;
 	private String address = "";
 	private Integer postalCode = 0;
 	private String unit = "";
@@ -18,14 +18,14 @@ public class Address {
 	public Address() {
 		this.id = 0;
 		this.userId = 0;
-		this.addType = "";
+		this.addType = null;
 		this.address = "";
 		this.postalCode = 0;
 		this.unit = "";
 	}
 
-		// Explicit Constructor
-	public Address(Integer id, Integer userId, String addType, String address, Integer postalCode, String unit,
+	// Explicit Constructor
+	public Address(Integer id, Integer userId, AddressType addType, String address, Integer postalCode, String unit,
 			Boolean isActive) {
 
 		// Booting Up
@@ -53,11 +53,11 @@ public class Address {
 		this.userId = userId;
 	}
 
-	public String getAddType() {
+	public AddressType getAddType() {
 		return addType;
 	}
 
-	public void setAddType(String addType) {
+	public void setAddType(AddressType addType) {
 		this.addType = addType;
 	}
 

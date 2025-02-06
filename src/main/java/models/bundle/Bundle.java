@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class Bundle {
 	private int bundleId;
 	private String bundleName;
+	private String bundleDescription;
 	private int discountPercent;
 	private ArrayList<Service> services;
 	private float originalPrice;
@@ -23,6 +24,7 @@ public class Bundle {
 	public Bundle() {
 		this.bundleId = 0;
 		this.bundleName = "";
+		this.bundleDescription = "";
 		this.discountPercent = 0;
 		this.imageUrl = "";
 		this.isActive = false;
@@ -30,17 +32,19 @@ public class Bundle {
 	}
 
 	// Explicit Constructors
-	public Bundle(int bundleId, String bundleName, int discountPercent) {
+	public Bundle(int bundleId, String bundleName, String bundleDescription, int discountPercent) {
 		this.bundleId = bundleId;
 		this.bundleName = bundleName;
+		this.bundleDescription = bundleDescription;
 		this.discountPercent = discountPercent;
 		this.services = new ArrayList<>();
 	}
 
-	public Bundle(int bundleId, String bundleName, int discountPercent, ArrayList<Service> services, String imageUrl,
-			Boolean isActive) {
+	public Bundle(int bundleId, String bundleName, String bundleDescription, int discountPercent,
+			ArrayList<Service> services, String imageUrl, Boolean isActive) {
 		this.bundleId = bundleId;
 		this.bundleName = bundleName;
+		this.bundleDescription = bundleDescription;
 		this.discountPercent = discountPercent;
 		this.services = services;
 		this.imageUrl = imageUrl;
@@ -48,17 +52,18 @@ public class Bundle {
 
 	}
 
-	public Bundle(int bundleId, String bundleName, int discountPercent, ArrayList<Service> services, String imageUrl,
-			boolean isActive) {
+	public Bundle(int bundleId, String bundleName, String bundleDescription, int discountPercent,
+			ArrayList<Service> services, String imageUrl, boolean isActive) {
 		this.bundleId = bundleId;
 		this.bundleName = bundleName;
+		this.bundleDescription = bundleDescription;
 		this.discountPercent = discountPercent;
 		this.services = services;
 		this.imageUrl = imageUrl;
 		this.isActive = isActive;
 
 	}
-	
+
 	// Getters and Setters
 
 	public int getBundleId() {
@@ -75,6 +80,14 @@ public class Bundle {
 
 	public void setBundleName(String bundleName) {
 		this.bundleName = bundleName;
+	}
+
+	public String getBundleDescription() {
+		return bundleDescription;
+	}
+
+	public void setBundleDescription(String bundleDescription) {
+		this.bundleDescription = bundleDescription;
 	}
 
 	public int getDiscountPercent() {

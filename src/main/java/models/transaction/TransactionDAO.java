@@ -47,7 +47,7 @@ public class TransactionDAO {
 
 			while (rs.next()) {
 				Transaction transaction = new Transaction();
-				transaction.setId(rs.getInt("trans_id"));	
+				transaction.setId(rs.getInt("trans_id"));
 				transaction.setUserId(rs.getInt("user_id"));
 
 				// Create Address object

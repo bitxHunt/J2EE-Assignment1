@@ -34,6 +34,12 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.ArrayList;
 
+import util.SecretsConfig;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.checkout.Session;
+import com.stripe.param.checkout.SessionCreateParams;
+
 /**
  * Servlet implementation class UserBooking
  */
@@ -133,14 +139,37 @@ public class UserBookSlot extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 
-			// Get all available slots from the database
-			BookingDAO bookingDB = new BookingDAO();
-			List<Booking> availableSlots = bookingDB.getAvailableSlots();
-			// Set attribute to pass to the front end
-			request.setAttribute("timeslots", availableSlots);
+//			// Get all available slots from the database
+//			BookingDAO bookingDB = new BookingDAO();
+//			List<Booking> availableSlots = bookingDB.getAvailableSlots();
+//			// Set attribute to pass to the front end
+//			request.setAttribute("timeslots", availableSlots);
+//
+//			// Forward the request to the front end
+//			request.getRequestDispatcher("/user/bookSlot.jsp").forward(request, response);
+			
+			// Initialize the time slot object
+			TimeSlotDAO timeSlotDB = new TimeSlotDAO();
+			
+			// Get All Week Dates
+			ArrayList<LocalDate> weekDates = timeSlotDB.getWeekDates();
+			
+			// Get the chosen date from the frontend
+			LocalDate chosenDate = LocalDate.now();
+			
+			if(request.getParameter("chosen_date") != null) {
+				chosenDate = LocalDate.parse(request.getParameter("chosen_date"));
+			}
 
+			// Display All Timeslots associated with the chosen date
+			ArrayList<TimeSlot> timeSlots = timeSlotDB.getSlotsByDate(chosenDate);
+			
+			request.setAttribute("weekDates", weekDates);
+			request.setAttribute("timeSlots", timeSlots);
+			
 			// Forward the request to the front end
 			request.getRequestDispatcher("/user/bookSlot.jsp").forward(request, response);
+			
 		} catch (Exception e) {
 			System.out.println("Error handling slots: " + e.getMessage());
 			e.printStackTrace();
@@ -390,118 +419,149 @@ public class UserBookSlot extends HttpServlet {
 
 	private void handleBooking(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws ServletException, IOException {
+		// try {
+		// Address selectedAddress = new Address();
+		// TimeSlotDAO timeSlotDB = new TimeSlotDAO();
+		// BundleDAO bundleDB = new BundleDAO();
+		// ServiceDAO serviceDB = new ServiceDAO();
+
+		// // Check session exists for user
+		// Integer userId = (Integer) session.getAttribute("userId");
+		// if (userId == null) {
+		// throw new IllegalStateException("User not logged in");
+		// }
+
+		// Integer buttonPressed = Integer.parseInt(request.getParameter("btnSubmit"));
+		// String status = "PENDING";
+		// LocalDateTime paidAt = null;
+
+		// // Set status and paidAt based on button press
+		// if (buttonPressed == 2) {
+		// status = "IN_PROGRESS";
+		// paidAt = LocalDateTime.now();
+		// }
+
+		// selectedAddress = (Address) session.getAttribute("selectedAddress");
+
+		// LocalDate selectedDate = (LocalDate) session.getAttribute("selectedDate");
+		// Integer selectedSlotId = timeSlotDB.getTimeSlotByTime((LocalTime)
+		// session.getAttribute("selectedTime"))
+		// .getId();
+
+		// // Handle services and bundles
+		// String bundleIdStr = request.getParameter("bundleId");
+		// String[] serviceIds = request.getParameterValues("selectedServices");
+
+		// Double subtotal = 0.0;
+		// String bundleName = null;
+		// String bundleImg = null;
+		// Integer discountPercent = 0;
+		// String servicesJson = null;
+		// String bundleServicesJson = null;
+
+		// // Handle bundle selection
+		// if (bundleIdStr != null && !bundleIdStr.isEmpty() &&
+		// !bundleIdStr.equals("0")) {
+		// Integer bundleId = Integer.parseInt(bundleIdStr);
+		// Bundle bundle = bundleDB.getBundleById(bundleId);
+
+		// if (bundle != null) {
+		// bundleName = bundle.getBundleName();
+		// bundleImg = bundle.getImageUrl();
+		// discountPercent = bundle.getDiscountPercent();
+
+		// // Calculate total price of services in bundle
+		// double originalPrice = 0.0;
+		// JsonArrayBuilder bundleServiceArray = Json.createArrayBuilder();
+
+		// for (Service service : bundle.getServices()) {
+
+		// System.out.println("Service Image for Review: " + service.getImageUrl());
+		// JsonObjectBuilder serviceObj = Json.createObjectBuilder()
+		// .add("service", service.getServiceName()).add("price", service.getPrice())
+		// .add("img_url", service.getImageUrl());
+		// bundleServiceArray.add(serviceObj);
+		// originalPrice += service.getPrice();
+		// }
+
+		// // Calculate discounted price
+		// subtotal = originalPrice * (1 - (discountPercent / 100.0));
+		// bundleServicesJson = bundleServiceArray.build().toString();
+		// }
+		// }
+		// // Handle individual services
+		// if (serviceIds != null && serviceIds.length > 0) {
+		// JsonArrayBuilder servicesArray = Json.createArrayBuilder();
+
+		// for (String serviceId : serviceIds) {
+
+		// Service service = serviceDB.getServiceById(Integer.parseInt(serviceId));
+		// if (service != null) {
+
+		// System.out.println("Service Image for Review: " + service.getImageUrl());
+		// JsonObjectBuilder serviceObj = Json.createObjectBuilder()
+		// .add("service", service.getServiceName()).add("price", service.getPrice())
+		// .add("img_url", service.getImageUrl());
+		// servicesArray.add(serviceObj);
+		// subtotal += service.getPrice();
+		// }
+		// }
+		// servicesJson = servicesArray.build().toString();
+		// }
+
+		// // Insert transaction into database
+		// TransactionDAO transactionDB = new TransactionDAO();
+		// transactionDB.insertTransaction(userId, selectedAddress.getAddress(),
+		// selectedAddress.getPostalCode(),
+		// selectedAddress.getUnit(), selectedSlotId, selectedDate, servicesJson,
+		// bundleName, bundleImg,
+		// bundleServicesJson, discountPercent, status, subtotal, paidAt);
+
+		// // Redirect to user dashboard
+		// response.sendRedirect(request.getContextPath() + "/profile");
+
+		// } catch (IllegalStateException e) {
+		// System.out.println("Session expired: " + e.getMessage());
+		// e.printStackTrace();
+		// request.setAttribute("err", "Please log in to continue booking.");
+		// response.sendRedirect(request.getContextPath() + "/login");
+		// } catch (NullPointerException e) {
+		// System.out.println("Invalid Data: " + e.getMessage());
+		// e.printStackTrace();
+		// request.setAttribute("err", "Please try again booking.");
+		// response.sendRedirect(request.getContextPath() + "/slots");
+		// } catch (Exception e) {
+		// System.out.println("Error handling booking: " + e.getMessage());
+		// e.printStackTrace();
+		// request.setAttribute("err", "Unable to process booking confirmation. Please
+		// try again.");
+		// request.getRequestDispatcher("/error/500").forward(request, response);
+		// }
+
 		try {
-			Address selectedAddress = new Address();
-			TimeSlotDAO timeSlotDB = new TimeSlotDAO();
-			BundleDAO bundleDB = new BundleDAO();
-			ServiceDAO serviceDB = new ServiceDAO();
+			Stripe.apiKey = SecretsConfig.getStripeApiKey();
 
-			// Check session exists for user
-			Integer userId = (Integer) session.getAttribute("userId");
-			if (userId == null) {
-				throw new IllegalStateException("User not logged in");
-			}
+			// Build the complete URLs
+			String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+			String successUrl = baseUrl + request.getContextPath() + "/profile";
+			String cancelUrl = baseUrl + request.getContextPath() + "/book";
 
-			Integer buttonPressed = Integer.parseInt(request.getParameter("btnSubmit"));
-			String status = "PENDING";
-			LocalDateTime paidAt = null;
+			SessionCreateParams params = SessionCreateParams.builder().setMode(SessionCreateParams.Mode.PAYMENT)
+					.setSuccessUrl(successUrl) // Complete URL like "http://localhost:8080/yourapp/profile"
+					.setCancelUrl(cancelUrl) // Complete URL like "http://localhost:8080/yourapp/book"
+					.addLineItem(SessionCreateParams.LineItem.builder().setQuantity(1L)
+							.setPrice("price_1QZ4muRpRtGdj3Co0gvNeWrq").build())
+					.addLineItem(SessionCreateParams.LineItem.builder().setQuantity(1L)
+							.setPrice("price_1QZ4muRpRtGdj3Co0gvNeWrq").build())
+					.build();
 
-			// Set status and paidAt based on button press
-			if (buttonPressed == 2) {
-				status = "IN_PROGRESS";
-				paidAt = LocalDateTime.now();
-			}
+			Session stripeSession = Session.create(params);
+			System.out.println(stripeSession.getUrl());
+			response.sendRedirect(stripeSession.getUrl());
 
-			selectedAddress = (Address) session.getAttribute("selectedAddress");
-
-			LocalDate selectedDate = (LocalDate) session.getAttribute("selectedDate");
-			Integer selectedSlotId = timeSlotDB.getTimeSlotByTime((LocalTime) session.getAttribute("selectedTime"))
-					.getId();
-
-			// Handle services and bundles
-			String bundleIdStr = request.getParameter("bundleId");
-			String[] serviceIds = request.getParameterValues("selectedServices");
-
-			Double subtotal = 0.0;
-			String bundleName = null;
-			String bundleImg = null;
-			Integer discountPercent = 0;
-			String servicesJson = null;
-			String bundleServicesJson = null;
-
-			// Handle bundle selection
-			if (bundleIdStr != null && !bundleIdStr.isEmpty() && !bundleIdStr.equals("0")) {
-				Integer bundleId = Integer.parseInt(bundleIdStr);
-				Bundle bundle = bundleDB.getBundleById(bundleId);
-
-				if (bundle != null) {
-					bundleName = bundle.getBundleName();
-					bundleImg = bundle.getImageUrl();
-					discountPercent = bundle.getDiscountPercent();
-
-					// Calculate total price of services in bundle
-					double originalPrice = 0.0;
-					JsonArrayBuilder bundleServiceArray = Json.createArrayBuilder();
-
-					for (Service service : bundle.getServices()) {
-
-						System.out.println("Service Image for Review: " + service.getImageUrl());
-						JsonObjectBuilder serviceObj = Json.createObjectBuilder()
-								.add("service", service.getServiceName()).add("price", service.getPrice())
-								.add("img_url", service.getImageUrl());
-						bundleServiceArray.add(serviceObj);
-						originalPrice += service.getPrice();
-					}
-
-					// Calculate discounted price
-					subtotal = originalPrice * (1 - (discountPercent / 100.0));
-					bundleServicesJson = bundleServiceArray.build().toString();
-				}
-			}
-			// Handle individual services
-			if (serviceIds != null && serviceIds.length > 0) {
-				JsonArrayBuilder servicesArray = Json.createArrayBuilder();
-
-				for (String serviceId : serviceIds) {
-
-					Service service = serviceDB.getServiceById(Integer.parseInt(serviceId));
-					if (service != null) {
-
-						System.out.println("Service Image for Review: " + service.getImageUrl());
-						JsonObjectBuilder serviceObj = Json.createObjectBuilder()
-								.add("service", service.getServiceName()).add("price", service.getPrice())
-								.add("img_url", service.getImageUrl());
-						servicesArray.add(serviceObj);
-						subtotal += service.getPrice();
-					}
-				}
-				servicesJson = servicesArray.build().toString();
-			}
-
-			// Insert transaction into database
-			TransactionDAO transactionDB = new TransactionDAO();
-			transactionDB.insertTransaction(userId, selectedAddress.getAddress(), selectedAddress.getPostalCode(),
-					selectedAddress.getUnit(), selectedSlotId, selectedDate, servicesJson, bundleName, bundleImg,
-					bundleServicesJson, discountPercent, status, subtotal, paidAt);
-
-			// Redirect to user dashboard
-			response.sendRedirect(request.getContextPath() + "/profile");
-
-		} catch (IllegalStateException e) {
-			System.out.println("Session expired: " + e.getMessage());
+		} catch (StripeException e) {
 			e.printStackTrace();
-			request.setAttribute("err", "Please log in to continue booking.");
-			response.sendRedirect(request.getContextPath() + "/login");
-		} catch (NullPointerException e) {
-			System.out.println("Invalid Data: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Please try again booking.");
-			response.sendRedirect(request.getContextPath() + "/slots");
-		} catch (Exception e) {
-			System.out.println("Error handling booking: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Unable to process booking confirmation. Please try again.");
-			request.getRequestDispatcher("/error/500").forward(request, response);
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Payment setup failed");
 		}
 	}
 

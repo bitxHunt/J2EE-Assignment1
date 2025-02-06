@@ -94,7 +94,7 @@ public class UserManagement extends HttpServlet {
 
 		try {
 			roleId = Integer.parseInt(request.getParameter("role"));
-		} catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {	
 			request.getSession().setAttribute("userManagementErrorMsg", "Invalid role selected.");
 			response.sendRedirect(request.getContextPath() + "/admin/manage-users");
 			return;

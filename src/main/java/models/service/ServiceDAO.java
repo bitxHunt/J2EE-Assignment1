@@ -23,24 +23,24 @@ import jakarta.servlet.http.Part;
 public class ServiceDAO {
 	private Cloudinary cloudinary;
 
-	//retrieves all services
+	// retrieves all services
 	public ArrayList<Service> getAllServices() throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();
 		try {
-			String sqlStr = "SELECT s.*, c.category_name FROM service s LEFT JOIN category c ON s.category_id = c.category_id ORDER BY s.service_id";
+			String sqlStr = "SELECT s.*, c.name FROM service s LEFT JOIN category c ON s.category_id = c.id ORDER BY s.id";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
 				Service service = new Service();
-				service.setServiceId(rs.getInt("service_id"));
-				service.setServiceName(rs.getString("service_name"));
-				service.setServiceDescription(rs.getString("service_description"));
-				service.setCategoryId(rs.getInt("category_id"));
-				service.setCategoryName(rs.getString("category_name"));
+				service.setServiceId(rs.getInt("id"));
+				service.setServiceName(rs.getString("name"));
+				service.setServiceDescription(rs.getString("description"));
+				service.setCategoryId(rs.getInt("id"));
+				service.setCategoryName(rs.getString("name"));
 				service.setPrice(rs.getFloat("price"));
-				service.setImageUrl(rs.getString("image_url"));
+				service.setImageUrl(rs.getString("img_url"));
 				service.setIsActive(rs.getBoolean("is_active"));
 				services.add(service);
 			}
@@ -52,24 +52,24 @@ public class ServiceDAO {
 		return services;
 	}
 
-	//retrieves all active services
+	// retrieves all active services
 	public ArrayList<Service> getAllActiveServices() throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();
 		try {
-			String sqlStr = "SELECT s.*, c.category_name FROM service s LEFT JOIN category c ON s.category_id = c.category_id WHERE s.is_active = true ORDER BY s.service_id";
+			String sqlStr = "SELECT s.*, c.name FROM service s LEFT JOIN category c ON s.category_id = c.id WHERE s.is_active = true ORDER BY s.id";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
 				Service service = new Service();
-				service.setServiceId(rs.getInt("service_id"));
-				service.setServiceName(rs.getString("service_name"));
-				service.setServiceDescription(rs.getString("service_description"));
-				service.setCategoryId(rs.getInt("category_id"));
-				service.setCategoryName(rs.getString("category_name"));
+				service.setServiceId(rs.getInt("id"));
+				service.setServiceName(rs.getString("name"));
+				service.setServiceDescription(rs.getString("description"));
+				service.setCategoryId(rs.getInt("id"));
+				service.setCategoryName(rs.getString("name"));
 				service.setPrice(rs.getFloat("price"));
-				service.setImageUrl(rs.getString("image_url"));
+				service.setImageUrl(rs.getString("img_url"));
 				service.setIsActive(rs.getBoolean("is_active"));
 				services.add(service);
 			}
@@ -81,25 +81,25 @@ public class ServiceDAO {
 		return services;
 	}
 
-	//retrieve service by specific id
+	// retrieve service by specific id
 	public Service getServiceById(int serviceId) throws SQLException {
 		Connection conn = DB.connect();
 		Service service = null;
 		try {
-			String sqlStr = "SELECT s.*, c.category_name FROM service s LEFT JOIN category c ON s.category_id = c.category_id WHERE s.service_id = ?";
+			String sqlStr = "SELECT s.*, c.name FROM service s LEFT JOIN category c ON s.category_id = c.id WHERE s.id = ?";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, serviceId);
 			ResultSet rs = pstmt.executeQuery();
 
 			if (rs.next()) {
 				service = new Service();
-				service.setServiceId(rs.getInt("service_id"));
-				service.setServiceName(rs.getString("service_name"));
-				service.setServiceDescription(rs.getString("service_description"));
-				service.setCategoryId(rs.getInt("category_id"));
-				service.setCategoryName(rs.getString("category_name"));
+				service.setServiceId(rs.getInt("id"));
+				service.setServiceName(rs.getString("name"));
+				service.setServiceDescription(rs.getString("description"));
+				service.setCategoryId(rs.getInt("id"));
+				service.setCategoryName(rs.getString("name"));
 				service.setPrice(rs.getFloat("price"));
-				service.setImageUrl(rs.getString("image_url"));
+				service.setImageUrl(rs.getString("img_url"));
 				service.setIsActive(rs.getBoolean("is_active"));
 			}
 		} finally {
@@ -108,7 +108,7 @@ public class ServiceDAO {
 		return service;
 	}
 
-	//insert new service with optional image
+	// insert new service with optional image
 	public boolean createService(Service service, Part imagePart) throws SQLException {
 		Connection conn = DB.connect();
 		boolean success = false;
@@ -119,8 +119,8 @@ public class ServiceDAO {
 					? CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart)
 					: null;
 			String sqlStr = (imagePart.getSize() > 0)
-					? "INSERT INTO service (service_name, service_description, category_id, price, image_url) VALUES (?, ?, ?, ?, ?)"
-					: "INSERT INTO service (service_name, service_description, category_id, price) VALUES (?, ?, ?, ?)";
+					? "INSERT INTO service (name, description, category_id, price, image_url) VALUES (?, ?, ?, ?, ?)"
+					: "INSERT INTO service (name, description, category_id, price) VALUES (?, ?, ?, ?)";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setString(1, service.getServiceName());
 			pstmt.setString(2, service.getServiceDescription());
@@ -140,7 +140,7 @@ public class ServiceDAO {
 		return success;
 	}
 
-	//update service field
+	// update service field
 	public boolean updateService(Service service, Part imagePart) throws SQLException {
 		Connection conn = DB.connect();
 		boolean success = false;
@@ -148,7 +148,7 @@ public class ServiceDAO {
 
 		try {
 			StringBuilder sqlStr = new StringBuilder(
-					"UPDATE service SET service_name=?, service_description=?, category_id=?, price=?, is_active=?");
+					"UPDATE service SET name=?, description=?, category_id=?, price=?, is_active=?");
 
 			String newImageUrl = null;
 			// Only handle image if a new one is uploaded
@@ -160,7 +160,7 @@ public class ServiceDAO {
 				newImageUrl = CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart);
 
 				// If upload successful and no default image, delete old image and update SQL
-				//check to not to delete old image
+				// check to not to delete old image
 				if (newImageUrl != null && currentImageUrl != null
 						&& currentImageUrl != "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg") {
 					// Delete old image from Cloudinary
@@ -171,7 +171,7 @@ public class ServiceDAO {
 					}
 
 					// Add image_url to UPDATE statement
-					sqlStr.append(", image_url=?");
+					sqlStr.append(", img_url=?");
 				}
 			}
 
@@ -198,52 +198,52 @@ public class ServiceDAO {
 		return success;
 	}
 
-
-	//delete service and Cloudinary image
+	// delete service and Cloudinary image
 	public boolean deleteService(int serviceId) throws SQLException {
-	    Connection conn = DB.connect();
-	    this.cloudinary = CloudinaryConnection.getCloudinary();
-	    boolean success = false;
-	    try {
-	        // Get service info first for image deletion
-	        Service service = getServiceById(serviceId);
-	        
-	        // Delete the service from database
-	        String sqlStr = "DELETE FROM service WHERE service_id = ?";
-	        PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-	        pstmt.setInt(1, serviceId);
-	        int rowsAffected = pstmt.executeUpdate();
-	        success = rowsAffected > 0;
-	        
-	        // If successful and image is not default, delete from Cloudinary but check to not be default image
-	        if (success) {
-	            if (service != null && service.getImageUrl() != null && !service.getImageUrl().equals(
-	                "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg")) {
-	                try {
-	                    CloudinaryConnection.deleteFromCloudinary(cloudinary, service.getImageUrl());
-	                } catch (IOException e) {
-	                    System.out.println("Error deleting service image: " + e.getMessage());
-	                }
-	            }
-	        }
-	    } finally {
-	        conn.close();
-	    }
-	    return success;
+		Connection conn = DB.connect();
+		this.cloudinary = CloudinaryConnection.getCloudinary();
+		boolean success = false;
+		try {
+			// Get service info first for image deletion
+			Service service = getServiceById(serviceId);
+
+			// Delete the service from database
+			String sqlStr = "DELETE FROM service WHERE id = ?";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, serviceId);
+			int rowsAffected = pstmt.executeUpdate();
+			success = rowsAffected > 0;
+
+			// If successful and image is not default, delete from Cloudinary but check to
+			// not be default image
+			if (success) {
+				if (service != null && service.getImageUrl() != null && !service.getImageUrl().equals(
+						"https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg")) {
+					try {
+						CloudinaryConnection.deleteFromCloudinary(cloudinary, service.getImageUrl());
+					} catch (IOException e) {
+						System.out.println("Error deleting service image: " + e.getMessage());
+					}
+				}
+			}
+		} finally {
+			conn.close();
+		}
+		return success;
 	}
 
-	//retrieve services filtered by category
+	// retrieve services filtered by category
 	public ArrayList<Service> getServicesByCategory(int categoryId) throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();
 
 		try {
 			String sqlStr = """
-					    SELECT s.*, c.category_name
+					    SELECT s.*, c.name
 					    FROM service s
-					    LEFT JOIN category c ON s.category_id = c.category_id
+					    LEFT JOIN category c ON s.category_id = c.id
 					    WHERE s.category_id = ? AND s.is_active = true
-					    ORDER BY s.service_id
+					    ORDER BY s.id
 					""";
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
@@ -252,13 +252,13 @@ public class ServiceDAO {
 
 			while (rs.next()) {
 				Service service = new Service();
-				service.setServiceId(rs.getInt("service_id"));
-				service.setServiceName(rs.getString("service_name"));
-				service.setServiceDescription(rs.getString("service_description"));
-				service.setCategoryId(rs.getInt("category_id"));
-				service.setCategoryName(rs.getString("category_name"));
+				service.setServiceId(rs.getInt("id"));
+				service.setServiceName(rs.getString("name"));
+				service.setServiceDescription(rs.getString("description"));
+				service.setCategoryId(rs.getInt("id"));
+				service.setCategoryName(rs.getString("name"));
 				service.setPrice(rs.getFloat("price"));
-				service.setImageUrl(rs.getString("image_url"));
+				service.setImageUrl(rs.getString("img_url"));
 				service.setIsActive(rs.getBoolean("is_active"));
 				services.add(service);
 			}
@@ -266,5 +266,28 @@ public class ServiceDAO {
 			conn.close();
 		}
 		return services;
+	}
+
+	// Seed the overall data from the csv file
+	public void seedData(Service service) throws SQLException {
+		Connection conn = DB.connect();
+		try {
+			String sqlStr = "CALL seed_service(?, ?, ?, ?, ?);";
+			CallableStatement stmt = conn.prepareCall(sqlStr);
+
+			stmt.setString(1, service.getServiceName());
+			stmt.setString(2, service.getServiceDescription());
+			stmt.setFloat(3, service.getPrice());
+			stmt.setString(4, service.getImageUrl());
+			stmt.setInt(5, service.getCategoryId());
+
+			stmt.execute();
+
+		} catch (Exception e) {
+			System.out.println("Error Seeding Service Data.");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
 	}
 }

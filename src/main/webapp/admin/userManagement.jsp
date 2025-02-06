@@ -54,7 +54,7 @@
 						for (User user : users) {
 							String roleName = "Unknown";
 							for (Role role : roles) {
-						if (role.getRoleId() == user.getRole().intValue()) {
+						if (role.getRoleId() == user.getRole()) {
 							roleName = role.getRoleName();
 							break;
 						}
