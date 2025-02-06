@@ -13,30 +13,63 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class AddressDAO {
-	public Address getAddressByUserId(int userId, int addTypeId) throws SQLException {
+
+	public ArrayList<Address> getAddressByUserId(int userId) throws SQLException {
 		Connection conn = DB.connect();
-		Address address = new Address();
+		ArrayList<Address> addresses = new ArrayList<Address>();
+
 		try {
-			String sqlStr = "SELECT at.id, at.name, a.address_id, a.user_id, a.address, a.postal_code, a.unit FROM address a INNER JOIN address_type at ON a.type_id = at.type_id WHERE a.user_id = ? AND a.type_id = ?;";
+			String sqlStr = "SELECT * FROM address WHERE user_id = ?;";
+
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, userId);
-			pstmt.setInt(2, addTypeId);
+
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				AddressType addType = new AddressType();
-				addType.setId(rs.getInt("id"));
-				addType.setName(rs.getString("name"));
-				;
-				address.setId(rs.getInt("address_id"));
-				address.setAddType(addType);
-				address.setUserId(rs.getInt("user_id"));
-				address.setAddress(rs.getString("address"));
-				address.setPostalCode(rs.getInt("postal_code"));
+				Address address = new Address();
+				address.setId(Integer.parseInt(rs.getString("id")));
+				address.setAddress(rs.getString("street"));
 				address.setUnit(rs.getString("unit"));
+				address.setPostalCode(rs.getInt("postal_code"));
+				addresses.add(address);
 			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return addresses;
+	}
+
+	public Address getUserSpecificAddress(int userId, int addTypeId) throws SQLException {
+		Connection conn = DB.connect();
+		Address address = new Address();
+		AddressType addType = new AddressType();
+
+		try {
+			String sqlStr = "SELECT * FROM address WHERE user_id = ? AND address_type_id = ?;";
+
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, userId);
+			pstmt.setInt(2, addTypeId);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				address.setId(Integer.parseInt(rs.getString("id")));
+				address.setAddress(rs.getString("street"));
+				address.setUnit(rs.getString("unit"));
+				address.setPostalCode(rs.getInt("postal_code"));
+				address.setUserId(userId);
+				addType.setId(addTypeId);
+				address.setAddType(addType);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -45,30 +78,29 @@ public class AddressDAO {
 		return address;
 	}
 
-//	public int createAddressByUserId(String street, String unit, int postalCode, int userId, int addTypeId)
-//			throws SQLException {
-//
-//		Connection conn = DB.connect();
-//		int rowsAffected = 0;
-//
-//		try {
-//			String sqlStr = "INSERT INTO address (street, unit, postal_code, user_id, address_type_id) VALUES (?, ?, ?, ?, ?);";
-//			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-//
-//			pstmt.setString(1, street);
-//			pstmt.setString(2, unit);
-//			pstmt.setInt(3, postalCode);
-//			pstmt.setInt(4, userId);
-//			pstmt.setInt(5, addTypeId);
-//
-//			rowsAffected = pstmt.executeUpdate();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			conn.close();
-//		}
-//		return rowsAffected;
-//	}
+	public int createAddressByUserId(Address address, int userId, int addTypeId) throws SQLException {
+
+		Connection conn = DB.connect();
+		int rowsAffected = 0;
+
+		try {
+			String sqlStr = "INSERT INTO address (street, unit, postal_code, user_id, address_type_id) VALUES (?, ?, ?, ?, ?);";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+
+			pstmt.setString(1, address.getAddress());
+			pstmt.setString(2, address.getUnit());
+			pstmt.setInt(3, address.getPostalCode());
+			pstmt.setInt(4, userId);
+			pstmt.setInt(5, addTypeId);
+
+			rowsAffected = pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return rowsAffected;
+	}
 
 	public void updateAddressById(Integer userId, Integer addressId, String address, Integer postalCode, String unit)
 			throws SQLException {

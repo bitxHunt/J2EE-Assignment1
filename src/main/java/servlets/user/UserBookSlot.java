@@ -65,33 +65,33 @@ public class UserBookSlot extends HttpServlet {
 		HttpSession session = request.getSession();
 		String pathInfo = request.getPathInfo();
 
-		switch (pathInfo == null ? "/slots" : pathInfo) {
-		case "/slots":
-			System.out.println("Running GET request for /slots");
-			handleSlots(request, response, session);
+		switch (pathInfo == null ? "/" : pathInfo) {
+		case "/":
+			System.out.println("Running GET request for /");
+			getTimeSlot(request, response, session);
 			break;
 		case "/address":
 			System.out.println("Running GET request for /address");
-			handleAddress(request, response, session);
+			getAddress(request, response, session);
 			break;
 		case "/services":
 			System.out.println("Running GET request for /services");
-			handleServices(request, response, session);
+			getBundleService(request, response, session);
 			break;
-		case "/review":
-			System.out.println("Running POST request for /review");
-			handleReview(request, response, session);
-			break;
-		case "/view":
-			System.out.println("Running GET request for /view");
-			handleView(request, response, session);
-			break;
-		case "/payment":
-			System.out.println("Running GET request for /payment");
-			handleGetPayment(request, response, session);
-			break;
+//		case "/review":
+//			System.out.println("Running POST request for /review");
+//			handleReview(request, response, session);
+//			break;
+//		case "/view":
+//			System.out.println("Running GET request for /view");
+//			handleView(request, response, session);
+//			break;
+//		case "/payment":
+//			System.out.println("Running GET request for /payment");
+//			handleGetPayment(request, response, session);
+//			break;
 		default:
-			response.sendRedirect(request.getContextPath() + "/book/slots");
+			response.sendRedirect(request.getContextPath() + "/book");
 		}
 	}
 
@@ -105,81 +105,82 @@ public class UserBookSlot extends HttpServlet {
 		String pathInfo = request.getPathInfo();
 		HttpSession session = request.getSession();
 
-		switch (pathInfo == null ? "/slots" : pathInfo) {
+		switch (pathInfo == null ? "/" : pathInfo) {
+		case "/":
+			System.out.println("Running POST request for /book");
+			postTimeSlot(request, response, session);
+			break;
 		case "/address":
 			System.out.println("Running POST request for /address");
-			handleAddress(request, response, session);
+			postAddress(request, response, session);
 			break;
-		case "/services":
-			System.out.println("Running POST request for /services");
-			handleServices(request, response, session);
-			break;
-		case "/review":
-			System.out.println("Running POST request for /review");
-			handleReview(request, response, session);
-			break;
-		case "/confirm":
-			System.out.println("Running POST request for /confirm");
-			handleBooking(request, response, session);
-			break;
-		case "/cancel":
-			System.out.println("Running POST request for /cancel");
-			handleCancel(request, response, session);
-			break;
-		case "/payment":
-			System.out.println("Running GET request for /payment");
-			handlePostPayment(request, response, session);
-			break;
+//		case "/services":
+//			System.out.println("Running POST request for /services");
+//			handleServices(request, response, session);
+//			break;
+//		case "/review":
+//			System.out.println("Running POST request for /review");
+//			handleReview(request, response, session);
+//			break;
+//		case "/confirm":
+//			System.out.println("Running POST request for /confirm");
+//			handleBooking(request, response, session);
+//			break;
+//		case "/cancel":
+//			System.out.println("Running POST request for /cancel");
+//			handleCancel(request, response, session);
+//			break;
+//		case "/payment":
+//			System.out.println("Running GET request for /payment");
+//			handlePostPayment(request, response, session);
+//			break;
 		default:
 			doGet(request, response);
 		}
 	}
 
-	private void handleSlots(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+	// =========================================================================================================
+	// Time Slot (GET/POST routes)
+	// =========================================================================================================
+
+	// GET Request for loading all available time slots and display on frontend
+	private void getTimeSlot(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws ServletException, IOException {
+
 		try {
 
-//			// Get all available slots from the database
-//			BookingDAO bookingDB = new BookingDAO();
-//			List<Booking> availableSlots = bookingDB.getAvailableSlots();
-//			// Set attribute to pass to the front end
-//			request.setAttribute("timeslots", availableSlots);
-//
-//			// Forward the request to the front end
-//			request.getRequestDispatcher("/user/bookSlot.jsp").forward(request, response);
-			
 			// Initialize the time slot object
 			TimeSlotDAO timeSlotDB = new TimeSlotDAO();
-			
+
 			// Get All Week Dates
 			ArrayList<LocalDate> weekDates = timeSlotDB.getWeekDates();
-			
+
 			// Get the chosen date from the frontend
 			LocalDate chosenDate = LocalDate.now();
-			
-			if(request.getParameter("chosen_date") != null) {
-				chosenDate = LocalDate.parse(request.getParameter("chosen_date"));
+
+			if (request.getParameter("date") != null) {
+				chosenDate = LocalDate.parse(request.getParameter("date"));
 			}
 
 			// Display All Timeslots associated with the chosen date
 			ArrayList<TimeSlot> timeSlots = timeSlotDB.getSlotsByDate(chosenDate);
-			
+
 			request.setAttribute("weekDates", weekDates);
 			request.setAttribute("timeSlots", timeSlots);
-			
+
 			// Forward the request to the front end
 			request.getRequestDispatcher("/user/bookSlot.jsp").forward(request, response);
-			
+
 		} catch (Exception e) {
 			System.out.println("Error handling slots: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Unable to load available slots. Please try again later.");
-			request.getRequestDispatcher("/error/500").forward(request, response);
+			response.sendRedirect(request.getContextPath() + "/error/500");
 		}
 	}
 
-	private void handleAddress(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+	// POST request for submission of chosen time slot
+	private void postTimeSlot(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws ServletException, IOException {
+
 		try {
 
 			// Check session exists for user
@@ -189,38 +190,26 @@ public class UserBookSlot extends HttpServlet {
 			}
 
 			// Get the selected time slot from the front end
+			String selectedDate = request.getParameter("date");
 			String selectedSlot = request.getParameter("selected_slot");
+
 			if (selectedSlot != null) {
 
-				// Split the string since it is in the format "yyyy-MM-dd_HH:mm"
-				String[] dateTime = selectedSlot.split("_");
-				String date = dateTime[0];
-				String time = dateTime[1];
-
-				LocalDate selectedDate = LocalDate.parse(date);
-				LocalTime selectedTime = LocalTime.parse(time);
+				LocalDate date = selectedDate.equals("null") ? LocalDate.now() : LocalDate.parse(selectedDate);
+				int slotId = Integer.parseInt(selectedSlot);
 
 				// Set session attributes to pass on till the confirmation and insert to DB
-				session.setAttribute("selectedDate", selectedDate);
-				session.setAttribute("selectedTime", selectedTime);
+				session.setAttribute("selectedDate", date);
+				session.setAttribute("selectedSlot", slotId);
+
+				response.sendRedirect(request.getContextPath() + "/book/address");
 			}
 
+			// Error Handling if user did not select any slots
 			else if (selectedSlot == null) {
 				throw new NullPointerException("No slot selected");
 			}
 
-			// Get the user's address from the database for the GET request
-			AddressDAO addDB = new AddressDAO();
-
-			Address homeAddress = addDB.getAddressByUserId(userId, 1);
-			Address officeAddress = addDB.getAddressByUserId(userId, 2);
-
-			// Set attributes to pass to the front end
-			request.setAttribute("homeAddress", homeAddress);
-			request.setAttribute("officeAddress", officeAddress);
-
-			// Forward the request to the front end
-			request.getRequestDispatcher("/user/bookAddress.jsp").forward(request, response);
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
 			e.printStackTrace();
@@ -230,16 +219,19 @@ public class UserBookSlot extends HttpServlet {
 			System.out.println("No slot selected: " + e.getMessage());
 			e.printStackTrace();
 			request.setAttribute("err", "Please select a time slot to continue booking.");
-			request.getRequestDispatcher("/404ErrorPage.jsp").forward(request, response);
+			request.getRequestDispatcher("/bookSlot.jsp").forward(request, response);
 		} catch (Exception e) {
-			System.out.println("Error handling address: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Unable to load address information. Please try again.");
-			request.getRequestDispatcher("/error/500").forward(request, response);
+			System.out.println("Error handling time slots: " + e.getMessage());
+			response.sendRedirect(request.getContextPath() + "/error/500");
 		}
 	}
 
-	private void handleServices(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+	// =========================================================================================================
+	// Address (GET/POST routes)
+	// =========================================================================================================
+
+	// GET Request for loading all addresses of the user and display on frontend
+	private void getAddress(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws ServletException, IOException {
 		try {
 
@@ -249,12 +241,43 @@ public class UserBookSlot extends HttpServlet {
 				throw new IllegalStateException("User not logged in");
 			}
 
-			Address selectedAddress = new Address();
+			// Get the user's address from the database for the GET request
+			AddressDAO addressDB = new AddressDAO();
+
+			ArrayList<Address> addresses = addressDB.getAddressByUserId(userId);
+
+			// Set attributes to pass to the front end
+			request.setAttribute("addresses", addresses);
+
+			// Forward the request to the front end
+			request.getRequestDispatcher("/user/bookAddress.jsp").forward(request, response);
+		} catch (IllegalStateException e) {
+			System.out.println("Session expired: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("err", "Please log in to continue booking.");
+			response.sendRedirect(request.getContextPath() + "/login");
+		} catch (Exception e) {
+			System.out.println("Error handling address: " + e.getMessage());
+			e.printStackTrace();
+			response.sendRedirect(request.getContextPath() + "/error/500");
+		}
+	}
+
+	// POST request for submission of chosen address
+	private void postAddress(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws ServletException, IOException {
+		try {
+
+			// Check session exists for user
+			Integer userId = (Integer) session.getAttribute("userId");
+			if (userId == null) {
+				throw new IllegalStateException("User not logged in");
+			}
 
 			// Get the address from the user.
 			// If there is no selection, it will throw a NumberFormatException which is
 			// catched under.
-			Integer selectedAddressId = Integer.parseInt(request.getParameter("address_type"));
+			Integer selectedAddressId = Integer.parseInt(request.getParameter("selected_address"));
 			System.out.println("Selected address id: " + selectedAddressId);
 
 			// If the address is external, get the address details from the form
@@ -262,23 +285,61 @@ public class UserBookSlot extends HttpServlet {
 
 				// ID 3 is external address
 				if (selectedAddressId == 3) {
-					String address = request.getParameter("external_address");
-					String unit = request.getParameter("external_unit");
-					String postal = request.getParameter("external_postal");
+					String street = request.getParameter("street");
+					String unit = request.getParameter("unit");
+					String postal = request.getParameter("postal");
 
-					selectedAddress.setAddress(address);
-					selectedAddress.setUnit(unit);
-					selectedAddress.setPostalCode(Integer.parseInt(postal));
+					Address externalAddress = new Address();
+					externalAddress.setAddress(street);
+					externalAddress.setUnit(unit);
+					externalAddress.setPostalCode(Integer.parseInt(postal));
+
+					session.setAttribute("selectedAddress", externalAddress);
 				}
 
 				// Get the selected address from the database if home or office is selected.
 				else {
-					AddressDAO addDB = new AddressDAO();
-					selectedAddress = addDB.getAddressByUserId(userId, selectedAddressId);
+					AddressDAO addressDB = new AddressDAO();
+					Address selectedAddress = addressDB.getUserSpecificAddress(userId, selectedAddressId);
+
+					session.setAttribute("selectedAddress", selectedAddress.getId());
+
+					System.out.println("Selected Address: " + selectedAddress.getId());
 				}
 
-				session.setAttribute("selectedAddress", selectedAddress);
-				session.setAttribute("selectedAddressId", selectedAddressId);
+				response.sendRedirect(request.getContextPath() + "/book/services");
+			}
+		} catch (IllegalStateException e) {
+			System.out.println("Session expired: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("err", "Please log in to continue booking.");
+			response.sendRedirect(request.getContextPath() + "/login");
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid address type: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("err", "Invalid address type. Please try again.");
+			response.sendRedirect(request.getContextPath() + "/book/address");
+		} catch (Exception e) {
+			System.out.println("Error handling address: " + e.getMessage());
+			e.printStackTrace();
+			response.sendRedirect(request.getContextPath() + "/error/500");
+		}
+	}
+
+	// =========================================================================================================
+	// Bundles and Services (GET/POST routes)
+	// =========================================================================================================
+
+	// GET Request for loading all available time slots and display on frontend
+	private void getBundleService(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws ServletException, IOException {
+
+		try {
+
+			// Check session exists for user
+			Integer userId = (Integer) session.getAttribute("userId");
+			if (userId == null) {
+				throw new IllegalStateException("User not logged in");
 			}
 
 			// Get all services and bundles from the database to pass on to the frontend for
@@ -294,21 +355,10 @@ public class UserBookSlot extends HttpServlet {
 
 			// Forward the request to the front end
 			request.getRequestDispatcher("/user/bookService.jsp").forward(request, response);
-		} catch (IllegalStateException e) {
-			System.out.println("Session expired: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Please log in to continue booking.");
-			response.sendRedirect(request.getContextPath() + "/login");
-		} catch (NumberFormatException e) {
-			System.out.println("Invalid address type: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Invalid address type. Please try again.");
-			response.sendRedirect(request.getContextPath() + "/book/address");
+
 		} catch (Exception e) {
-			System.out.println("Error handling address: " + e.getMessage());
-			e.printStackTrace();
-			request.setAttribute("err", "Unable to load address information. Please try again.");
-			request.getRequestDispatcher("/error/500").forward(request, response);
+			System.out.println("Error handling slots: " + e.getMessage());
+			response.sendRedirect(request.getContextPath() + "/error/500");
 		}
 	}
 

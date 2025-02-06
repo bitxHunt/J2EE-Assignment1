@@ -94,46 +94,44 @@ public class UserProfile extends HttpServlet {
 			if (userId == null) {
 				throw new IllegalStateException("User not logged in");
 			}
-
+			
 			UserDAO userDB = new UserDAO();
-			AddressDAO addDB = new AddressDAO();
-			TransactionDAO transDB = new TransactionDAO();
-			Double totalAmount = 0.0;
-			Double originalTotalAmount = 0.0;
-			Double savings = 0.0;
+//			AddressDAO addressDB = new AddressDAO();
+//			TransactionDAO transDB = new TransactionDAO();
+//			Double totalAmount = 0.0;
+//			Double originalTotalAmount = 0.0;
+//			Double savings = 0.0;
 
 			User user = userDB.getUserById(userId);
-			Address homeAddress = addDB.getAddressByUserId(userId, 1);
-			Address officeAddress = addDB.getAddressByUserId(userId, 2);
-			ArrayList<Transaction> transactions = transDB.getActiveBookingsByUserID(userId);
+//			ArrayList<Address> addresses = addressDB.getAddressByUserId(userId);
+//			ArrayList<Transaction> transactions = transDB.getActiveBookingsByUserID(userId);
 
-			for (Transaction transaction : transactions) {
-				double subTotal = transaction.getSubTotal();
-				double discount = transaction.getDiscount();
-
-				totalAmount += subTotal;
-				System.out.println(totalAmount);
-
-				// Check for division by zero
-				if (discount < 100) {
-					originalTotalAmount += subTotal * (100 / (100 - discount));
-					System.out.println(originalTotalAmount);
-				}
-			}
-
-			savings = originalTotalAmount - totalAmount;
-			String formatTotal = String.format("%.2f%n", totalAmount);
-			String formatSavings = String.format("%.2f%n", savings);
-
-			System.out.println("Total Amount: " + totalAmount);
-			System.out.println("Savings: " + savings);
+//			for (Transaction transaction : transactions) {
+//				double subTotal = transaction.getSubTotal();
+//				double discount = transaction.getDiscount();
+//
+//				totalAmount += subTotal;
+//				System.out.println(totalAmount);
+//
+//				// Check for division by zero
+//				if (discount < 100) {
+//					originalTotalAmount += subTotal * (100 / (100 - discount));
+//					System.out.println(originalTotalAmount);
+//				}
+//			}
+//
+//			savings = originalTotalAmount - totalAmount;
+//			String formatTotal = String.format("%.2f%n", totalAmount);
+//			String formatSavings = String.format("%.2f%n", savings);
+//
+//			System.out.println("Total Amount: " + totalAmount);
+//			System.out.println("Savings: " + savings);
 
 			request.setAttribute("user", user);
-			request.setAttribute("homeAddress", homeAddress);
-			request.setAttribute("officeAddress", officeAddress);
-			request.setAttribute("transactions", transactions);
-			request.setAttribute("totalAmount", formatTotal);
-			request.setAttribute("totalSaving", formatSavings);
+//			request.setAttribute("addresses", addresses);
+//			request.setAttribute("transactions", transactions);
+//			request.setAttribute("totalAmount", formatTotal);
+//			request.setAttribute("totalSaving", formatSavings);
 
 			request.getRequestDispatcher("/user/profile.jsp").forward(request, response);
 		} catch (IllegalStateException e) {
@@ -142,6 +140,7 @@ public class UserProfile extends HttpServlet {
 			request.setAttribute("errorMessage", "Please log in to continue.");
 			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (Exception e) {
+			request.getRequestDispatcher("/error/500.jsp").forward(request, response);
 			e.printStackTrace();
 		}
 
@@ -161,12 +160,12 @@ public class UserProfile extends HttpServlet {
 			AddressDAO addDB = new AddressDAO();
 
 			User user = userDB.getUserById(userId);
-			Address homeAddress = addDB.getAddressByUserId(userId, 1);
-			Address officeAddress = addDB.getAddressByUserId(userId, 2);
+//			Address homeAddress = addDB.getAddressByUserId(userId, 1);
+//			Address officeAddress = addDB.getAddressByUserId(userId, 2);
 
 			request.setAttribute("user", user);
-			request.setAttribute("homeAddress", homeAddress);
-			request.setAttribute("officeAddress", officeAddress);
+//			request.setAttribute("homeAddress", homeAddress);
+//			request.setAttribute("officeAddress", officeAddress);
 
 			request.getRequestDispatcher("/user/profileEdit.jsp").forward(request, response);
 		} catch (IllegalStateException e) {

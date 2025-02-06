@@ -16,7 +16,7 @@ package models.user;
 import util.DB;
 import com.cloudinary.Cloudinary;
 import util.CloudinaryConnection;
-
+import models.address.Address;
 import models.status.Status;
 
 import java.sql.CallableStatement;
@@ -37,26 +37,25 @@ public class UserDAO {
 	// User Registration
 	// Controlled by commit from the sql
 	// If the user creation failed, address creation willl halt
-	public User registerUser(String firstName, String lastName, String email, String hashedPassword, String phoneNo,
-			String street, String unit, int postalCode, int addTypeId) throws SQLException {
+	public User registerUser(User user, Address address) throws SQLException {
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		User user = new User();
 
 		try {
 			conn = DB.connect();
 			conn.setAutoCommit(false);
 
-			String sqlStrInsertUser = "INSERT INTO users (first_name, last_name, email, password, phone_no) VALUES (?, ?, ?, ?, ?) RETURNING id;";
+			String sqlStrInsertUser = "INSERT INTO users (first_name, last_name, email, password, phone_no, img_url) VALUES (?, ?, ?, ?, ?) RETURNING id;";
 			pstmt = conn.prepareStatement(sqlStrInsertUser);
 
-			pstmt.setString(1, firstName);
-			pstmt.setString(2, lastName);
-			pstmt.setString(3, email);
-			pstmt.setString(4, hashedPassword);
-			pstmt.setString(5, phoneNo);
+			pstmt.setString(1, user.getFirstName());
+			pstmt.setString(2, user.getLastName());
+			pstmt.setString(3, user.getEmail());
+			pstmt.setString(4, user.getPassword());
+			pstmt.setString(5, user.getPhoneNo());
+			pstmt.setString(6, user.getImageURL());
 
 			// Execute registering user SQL Query
 			rs = pstmt.executeQuery();
@@ -65,21 +64,21 @@ public class UserDAO {
 
 				// Store user object to pass back to the email
 				user.setId(Integer.parseInt(rs.getString("id")));
-				user.setEmail(email);
-				user.setFirstName(firstName);
-				user.setLastName(lastName);
+				user.setFirstName(user.getFirstName());
+				user.setLastName(user.getLastName());
 
+				user.setEmail(user.getEmail());
 				System.out.println("User id: " + user.getId());
 
 				// Execute registering address SQL Query
 				String sqlStrInsertAddress = "INSERT INTO address (street, unit, postal_code, user_id, address_type_id) VALUES (?, ?, ?, ?, ?);";
 				pstmt = conn.prepareStatement(sqlStrInsertAddress);
 
-				pstmt.setString(1, street);
-				pstmt.setString(2, unit);
-				pstmt.setInt(3, postalCode);
+				pstmt.setString(1, address.getAddress());
+				pstmt.setString(2, address.getUnit());
+				pstmt.setInt(3, address.getPostalCode());
 				pstmt.setInt(4, user.getId());
-				pstmt.setInt(5, addTypeId);
+				pstmt.setInt(5, address.getAddType().getId());
 
 				pstmt.executeUpdate();
 
@@ -105,9 +104,6 @@ public class UserDAO {
 			String sqlStr = "UPDATE users SET status_id = ? WHERE id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 
-			System.out.println("Status Id: " + status.getId());
-			System.out.println("User Id: " + userId);
-
 			pstmt.setInt(1, status.getId());
 			pstmt.setInt(2, userId);
 
@@ -121,6 +117,7 @@ public class UserDAO {
 		return rowsAffected;
 	}
 
+	// User Login
 	public User loginUser(String email) throws SQLException {
 		Connection conn = DB.connect();
 		User user = new User();
@@ -232,12 +229,13 @@ public class UserDAO {
 		Connection conn = DB.connect();
 		User user = new User();
 		try {
-			String sqlStr = "SELECT first_name, last_name, email, phone_no, img_url FROM users WHERE id = ?;";
+			String sqlStr = "SELECT * FROM users WHERE id = ?;";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, userId);
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
+				user.setId(userId);
 				user.setFirstName(rs.getString("first_name"));
 				user.setLastName(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));

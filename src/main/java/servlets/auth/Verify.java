@@ -70,34 +70,20 @@ public class Verify extends HttpServlet {
 			int rowsAffected = userDB.updateStatus(userId, verifiedStatus);
 
 			if (rowsAffected > 0) {
-				// Retrieve the updated user details
+				// Redirect to the profile page
 				User user = userDB.getUserById(userId);
-
-				if (user == null) {
-					request.setAttribute("errorMessage", "User not found.");
-					RequestDispatcher rd = request.getRequestDispatcher("/error/404ErrorPage.jsp");
-					rd.forward(request, response);
-					return;
-				}
-
-				// Store user details in session
-				session.setAttribute("userId", userId);
+				session.setAttribute("userId", user.getId());
 				session.setAttribute("role", user.getRole());
-
-				// Forward the request to the profile page with user details
-				request.setAttribute("user", user);
-				RequestDispatcher rd = request.getRequestDispatcher("/user/profile.jsp");
-				rd.forward(request, response);
+				session.setAttribute("profileImg", user.getImageURL());
+				response.sendRedirect(request.getContextPath() + "/profile");
 			} else {
 				// Set an error message for update failure
-				RequestDispatcher rd = request.getRequestDispatcher("/error/500ErrorPage.jsp");
-				rd.forward(request, response);
+				response.sendRedirect(request.getContextPath() + "/error/500");
 			}
 		} catch (Exception e) {
 			// Handle unexpected errors
 			e.printStackTrace(); // Log the exception for debugging purposes
-			RequestDispatcher rd = request.getRequestDispatcher("/error/500ErrorPage.jsp");
-			rd.forward(request, response);
+			response.sendRedirect(request.getContextPath() + "/error/500");
 		}
 	}
 

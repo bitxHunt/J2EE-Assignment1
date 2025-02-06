@@ -19,12 +19,6 @@ DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd");
 <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css"
 	rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<style>
-.date-radio:checked+.date-label {
-	background-color: rgba(147, 51, 234, 0.1);
-	border-color: rgb(147, 51, 234);
-}
-</style>
 </head>
 <body class="min-h-screen bg-gradient-to-b from-base-300 to-base-200">
 	<%
@@ -62,21 +56,19 @@ DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd");
 			</div>
 
 			<!-- Date Selection -->
-			<form id="dateForm" method="GET"
-				action="<%=request.getContextPath()%>/book/slots"
+			<form id="dateForm" method="get"
+				action="<%=request.getContextPath()%>/book"
 				class="w-full mb-8 bg-base-100 p-6 rounded-lg shadow-xl">
 				<div
 					class="flex justify-between items-center border-b border-base-300 pb-4 mb-6">
 					<%
 					for (LocalDate date : weekDates) {
-						boolean isSelected = date.equals(request.getAttribute("selectedDate"));
 					%>
 					<div class="flex flex-col items-center">
 						<span class="text-sm text-base-content/70 mb-2"><%=date.format(dayFormatter)%></span>
 						<div class="relative">
-							<input type="radio" name="chosen_date" value="<%=date%>"
+							<input type="radio" name="date" value="<%=date%>"
 								class="date-radio absolute opacity-0 w-full h-full cursor-pointer"
-								<%=isSelected ? "checked" : ""%>
 								onchange="document.getElementById('dateForm').submit();" />
 							<div
 								class="date-label px-4 py-2 rounded-lg border-2 border-transparent hover:border-purple-500/50 transition-all">
@@ -91,10 +83,10 @@ DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd");
 			</form>
 
 			<!-- Time Slots Grid -->
-			<form method="GET"
-				action="<%=request.getContextPath()%>/book/address">
-				<input type="hidden" name="chosen_date"
-					value="<%=request.getAttribute("selectedDate")%>">
+			<form method="post"
+				action="<%=request.getContextPath()%>/book">
+				<input type="hidden" name="date"
+					value="<%=request.getParameter("date")%>">
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 					<%
 					int currentSlot = 0;
@@ -127,25 +119,38 @@ DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd");
 										<span class="text-lg font-medium"><%=slot.getStartTime()%></span>
 										<span class="text-sm text-base-content/70"><%=slot.getCapacity()%>
 											Slots Available</span>
-									</div> <%
- if (slot.getCapacity() > 0) {
- %> <input type="radio"
-									name="selected_slot"
-									value="<%=request.getAttribute("selectedDate")%>_<%=slot.getStartTime()%>"
-									class="radio radio-primary" required />
+									</div> 
+									
+									<% 
+									
+									if (slot.getCapacity() > 0) { 
+									
+									%> 
+									
+									<input type="radio" name="selected_slot"
+									value="<%=slot.getId()%>"
+									class="radio radio-primary" required /> 
+									
 									<%
-									} else {
-									%> <span
-									class="badge badge-error gap-2"> <svg
+									
+ 									} else {
+ 									
+ 									%> 
+ 									
+ 									<span class="badge badge-error gap-2"> <svg
 											xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
 											fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round"
 												stroke-linejoin="round" stroke-width="2"
 												d="M6 18L18 6M6 6l12 12" />
                                         </svg> Fully Booked
-								</span> <%
- }
- %>
+									</span> 
+									
+									<% 
+									
+ 									}
+ 
+ 									%>
 								</label>
 								<%
 								}

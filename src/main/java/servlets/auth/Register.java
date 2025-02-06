@@ -7,6 +7,8 @@
 package servlets.auth;
 
 import models.user.*;
+import models.address.Address;
+import models.address.AddressType;
 import models.request.*;
 import middlewares.JWTMiddleware;
 import util.org.mindrot.jbcrypt.BCrypt;
@@ -75,6 +77,7 @@ public class Register extends HttpServlet {
 		String street = request.getParameter("street");
 		String unit = request.getParameter("unit");
 		String postalCode = request.getParameter("postalCode");
+		String imageUrl = "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732446530/bizbynfxadhthnoymbdo.webp";
 
 		int addTypeId = Integer.parseInt(request.getParameter("addressTypeId"));
 
@@ -93,15 +96,33 @@ public class Register extends HttpServlet {
 		String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(10));
 
 		// Initialise the objects of user, jwtmiddleware and the request service
+		User user = new User();
+		Address address = new Address();
+		Request requestService = new Request();
+		AddressType addType = new AddressType();
+		
 		UserDAO userDB = new UserDAO();
 		JWTMiddleware jwt = new JWTMiddleware();
-		Request requestService = new Request();
+		
 
 		try {
 			
-			// Return the whole user object if the record is inserted
-			User user = userDB.registerUser(firstName, lastName, email, hashedPassword, phoneNo, street, unit,
-					addTypeId, addTypeId);
+			// Set User Object
+			user.setFirstName(firstName);
+			user.setLastName(lastName);
+			user.setEmail(email);
+			user.setPassword(hashedPassword);
+			user.setPhoneNo(phoneNo);
+			user.setImageURL(imageUrl);
+			
+			// Set Address Object
+			address.setAddress(street);
+			address.setUnit(unit);
+			address.setPostalCode(Integer.parseInt(postalCode));
+			addType.setId(addTypeId);
+			address.setAddType(addType);
+			
+			User createdUser = userDB.registerUser(user, address);
 
 			// Log out the user id
 			System.out.println("Created User Id: " + user.getId());
@@ -113,7 +134,7 @@ public class Register extends HttpServlet {
 					String emailServiceURL = "http://localhost:8081/b2b/api/v1/email/verify";
 					WebTarget target = client.target(emailServiceURL);
 
-					requestService.setUser(user);
+					requestService.setUser(createdUser);
 					requestService.setToken(verifyToken);
 
 					Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
