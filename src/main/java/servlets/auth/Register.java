@@ -92,6 +92,7 @@ public class Register extends HttpServlet {
 		// Hash password
 		String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(10));
 
+		// Initialise the objects of user, jwtmiddleware and the request service
 		UserDAO userDB = new UserDAO();
 		JWTMiddleware jwt = new JWTMiddleware();
 		Request requestService = new Request();
@@ -109,7 +110,7 @@ public class Register extends HttpServlet {
 				String verifyToken = jwt.createVerifyToken(user.getId());
 
 				try (Client client = ClientBuilder.newClient()) {
-					String emailServiceURL = "http://localhost:8081//b2b/api/v1/email/verify";
+					String emailServiceURL = "http://localhost:8081/b2b/api/v1/email/verify";
 					WebTarget target = client.target(emailServiceURL);
 
 					requestService.setUser(user);
@@ -120,11 +121,12 @@ public class Register extends HttpServlet {
 							.post(Entity.entity(requestService, MediaType.APPLICATION_JSON));
 
 					if (res.getStatus() == Response.Status.OK.getStatusCode()) {
-						response.sendRedirect(request.getContextPath() + "/sendVerification?email=" + user.getEmail());
+						response.sendRedirect(request.getContextPath() + "/login");
 					} else {
 						request.getSession().setAttribute("errMsg", "Failed to send verification email");
 						response.sendRedirect(request.getContextPath() + "/register");
 					}
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 					request.getSession().setAttribute("errMsg", "Failed to send verification email: " + e.getMessage());

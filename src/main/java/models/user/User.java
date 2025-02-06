@@ -6,6 +6,8 @@
 
 package models.user;
 
+import models.status.Status;
+
 public class User {
 	private int id = 0;
 	private String customerId = "";
@@ -16,6 +18,7 @@ public class User {
 	private String password = "";
 	private String phoneNo = "";
 	private int role = 0;
+	private Status status = null;
 
 	// Implicit Constructor
 	public User() {
@@ -28,11 +31,12 @@ public class User {
 		this.password = "";
 		this.phoneNo = "";
 		this.role = 0;
+		this.status = null;
 	}
 
 	// Explicit Constructor
 	public User(int id, String customer_id, String firstName, String lastName, String imageURL, String email, String password,
-			String phoneNo, int role) {
+			String phoneNo, int role, Status status) {
 
 		// Booting Up
 		this.id = id;
@@ -44,6 +48,7 @@ public class User {
 		this.password = password;
 		this.phoneNo = phoneNo;
 		this.role = role;
+		this.status = status;
 	}
 
 	public int getId() {
@@ -116,5 +121,13 @@ public class User {
 
 	public void setRole(int role) {
 		this.role = role;
+	}
+	
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 }

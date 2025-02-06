@@ -14,6 +14,7 @@ import models.address.*;
 import models.bundle.*;
 import models.role.*;
 import models.status.*;
+import models.organization.*;
 
 public class DataSeeding {
 	private static final String categoryData = "src/main/webapp/WEB-INF/data/category.csv";
@@ -25,6 +26,7 @@ public class DataSeeding {
 	private static final String userData = "src/main/webapp/WEB-INF/data/user.csv";
 	private static final String emailServiceData = "src/main/webapp/WEB-INF/data/emailService.csv";
 	private static final String statusData = "src/main/webapp/WEB-INF/data/status.csv";
+	private static final String organizationData = "src/main/webapp/WEB-INF/data/organization.csv";
 
 	public ArrayList<ArrayList<String>> loadData(String filePath) {
 		File file = new File(filePath);
@@ -218,7 +220,7 @@ public class DataSeeding {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void seedEmailService() throws SQLException {
 		try {
 			EmailService emailService = new EmailService();
@@ -239,7 +241,7 @@ public class DataSeeding {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void seedStatus() throws SQLException {
 		try {
 			Status status = new Status();
@@ -254,6 +256,33 @@ public class DataSeeding {
 
 				// Pass the model to seed data
 				statusDB.seedData(status);
+			}
+		} catch (Exception e) {
+			System.out.println("Error Seeding Status Table.");
+			e.printStackTrace();
+		}
+	}
+
+	public void seedOrganization() throws SQLException {
+		try {
+			Organization organization = new Organization();
+			OrganizationDAO organizationDB = new OrganizationDAO();
+			User user = new User();
+
+			ArrayList<ArrayList<String>> dataArray = loadData(organizationData);
+
+			for (ArrayList<String> row : dataArray) {
+
+				user.setId(Integer.parseInt(row.get(4)));
+
+				// Row of data
+				organization.setName(row.get(1));
+				organization.setAccessKey(row.get(2));
+				organization.setSecretKey(row.get(3));
+				organization.setUser(user);
+
+				// Pass the model to seed data
+				organizationDB.seedData(organization);
 			}
 		} catch (Exception e) {
 			System.out.println("Error Seeding Status Table.");

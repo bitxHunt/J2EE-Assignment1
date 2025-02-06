@@ -6,41 +6,84 @@
 
 package models.booking;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.time.LocalTime;
+import java.time.LocalDate;
+
+import models.address.Address;
+import models.timeSlot.TimeSlot;
+import models.user.User;
 
 public class Booking {
-	private Date date;
-	private List<LocalTime> slots;
+	private int id;
+	private String status;
+	private LocalDate date;
+	private TimeSlot timeSlot;
+	private User user;
+	private Address address;
 
-	// Implicit Constructor
 	public Booking() {
-		this.date = new Date();
-		this.slots = new ArrayList<>();
+		this.id = 0;
+		this.status = "";
+		this.date = LocalDate.now();
+		this.timeSlot = null;
+		this.user = null;
+		this.address = null;
 	}
 
-	// Explicit Constructor
-	public Booking(Date date, List<LocalTime> slots) {
+	public Booking(int id, String status, LocalDate date, TimeSlot timeSlot, User user, Address address) {
+		this.id = id;
+		this.status = status;
 		this.date = date;
-		this.slots = slots;
+		this.timeSlot = timeSlot;
+		this.user = user;
+		this.address = address;
 	}
 
-	// Getters and setters
-	public Date getDate() {
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 
-	public List<LocalTime> getSlots() {
-		return slots;
+	public TimeSlot getTimeSlot() {
+		return timeSlot;
 	}
 
-	public void setSlots(List<LocalTime> slots) {
-		this.slots = slots;
+	public void setTimeSlot(TimeSlot timeSlot) {
+		this.timeSlot = timeSlot;
 	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
 }

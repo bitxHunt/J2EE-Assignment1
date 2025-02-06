@@ -26,6 +26,7 @@ public class Main {
 			seed.seedStatus();
 			seed.seedEmailService();
 			seed.seedUsers();
+			seed.seedOrganization();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

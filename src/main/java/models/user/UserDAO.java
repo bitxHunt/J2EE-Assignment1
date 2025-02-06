@@ -17,6 +17,8 @@ import util.DB;
 import com.cloudinary.Cloudinary;
 import util.CloudinaryConnection;
 
+import models.status.Status;
+
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Date;
@@ -32,85 +34,9 @@ import jakarta.servlet.http.Part;
 public class UserDAO {
 	private Cloudinary cloudinary;
 
-	public ArrayList<User> getAllUsers() throws SQLException {
-
-		Connection conn = DB.connect();
-		ArrayList<User> users = new ArrayList<User>();
-		try {
-			String sqlStr = "SELECT * FROM users;";
-			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-			ResultSet rs = pstmt.executeQuery();
-
-			System.out.println(rs.getMetaData().getColumnCount());
-
-			while (rs.next()) {
-				User user = new User();
-				user.setFirstName(rs.getString("first_name"));
-				user.setLastName(rs.getString("last_name"));
-				user.setEmail(rs.getString("email"));
-				user.setPassword(rs.getString("password"));
-				user.setRole(rs.getInt("role_id"));
-				users.add(user);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			conn.close();
-		}
-		return users;
-	}
-
-	public User getUserById(Integer userId) throws SQLException {
-		Connection conn = DB.connect();
-		User user = new User();
-		try {
-			String sqlStr = "SELECT first_name, last_name, email, image_url, phone_number FROM users WHERE user_id = ?;";
-			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-			pstmt.setInt(1, userId);
-			ResultSet rs = pstmt.executeQuery();
-
-			while (rs.next()) {
-				user.setFirstName(rs.getString("first_name"));
-				user.setLastName(rs.getString("last_name"));
-				user.setEmail(rs.getString("email"));
-				user.setPhoneNo(rs.getString("phone_number"));
-				user.setImageURL(rs.getString("image_url"));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			conn.close();
-		}
-		return user;
-	}
-
-	public User loginUser(String email) throws SQLException {
-		Connection conn = DB.connect();
-		User user = new User();
-		try {
-			String sqlStr = "SELECT * FROM users WHERE email = ?;";
-			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-			pstmt.setString(1, email);
-			ResultSet rs = pstmt.executeQuery();
-
-			while (rs.next()) {
-				user.setId(rs.getInt("id"));
-				user.setFirstName(rs.getString("first_name"));
-				user.setLastName(rs.getString("last_name"));
-				user.setEmail(rs.getString("email"));
-				user.setPassword(rs.getString("password"));
-				user.setRole(rs.getInt("role_id"));
-				user.setImageURL(rs.getString("image_url"));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			conn.close();
-		}
-		return user;
-	}
-
+	// User Registration
+	// Controlled by commit from the sql
+	// If the user creation failed, address creation willl halt
 	public User registerUser(String firstName, String lastName, String email, String hashedPassword, String phoneNo,
 			String street, String unit, int postalCode, int addTypeId) throws SQLException {
 
@@ -134,16 +60,15 @@ public class UserDAO {
 
 			// Execute registering user SQL Query
 			rs = pstmt.executeQuery();
-			
+
 			if (rs.next()) {
-				
+
 				// Store user object to pass back to the email
 				user.setId(Integer.parseInt(rs.getString("id")));
 				user.setEmail(email);
 				user.setFirstName(firstName);
 				user.setLastName(lastName);
-				
-				
+
 				System.out.println("User id: " + user.getId());
 
 				// Execute registering address SQL Query
@@ -158,11 +83,66 @@ public class UserDAO {
 
 				pstmt.executeUpdate();
 
-				// Only commit the full registration once both the user and the address has been
+				// Only commit registration once both the user and the address has been
 				// registered
 				conn.commit();
 			}
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return user;
+	}
+
+	// Update Verification Status
+	public int updateStatus(int userId, Status status) throws SQLException {
+		Connection conn = DB.connect();
+		int rowsAffected = 0;
+
+		try {
+			String sqlStr = "UPDATE users SET status_id = ? WHERE id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+
+			System.out.println("Status Id: " + status.getId());
+			System.out.println("User Id: " + userId);
+
+			pstmt.setInt(1, status.getId());
+			pstmt.setInt(2, userId);
+
+			rowsAffected = pstmt.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("Error Updating User Verification Status.");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return rowsAffected;
+	}
+
+	public User loginUser(String email) throws SQLException {
+		Connection conn = DB.connect();
+		User user = new User();
+		Status status = new Status();
+
+		try {
+			String sqlStr = "SELECT * FROM users WHERE email = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setString(1, email);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				user.setId(rs.getInt("id"));
+				user.setFirstName(rs.getString("first_name"));
+				user.setLastName(rs.getString("last_name"));
+				user.setEmail(rs.getString("email"));
+				user.setPassword(rs.getString("password"));
+				user.setRole(rs.getInt("role_id"));
+				status.setId(Integer.parseInt(rs.getString("status_id")));
+				user.setStatus(status);
+				user.setImageURL(rs.getString("img_url"));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -219,13 +199,66 @@ public class UserDAO {
 		}
 	}
 
+	public ArrayList<User> getAllUsers() throws SQLException {
+
+		Connection conn = DB.connect();
+		ArrayList<User> users = new ArrayList<User>();
+		try {
+			String sqlStr = "SELECT * FROM users;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			ResultSet rs = pstmt.executeQuery();
+
+			System.out.println(rs.getMetaData().getColumnCount());
+
+			while (rs.next()) {
+				User user = new User();
+				user.setFirstName(rs.getString("first_name"));
+				user.setLastName(rs.getString("last_name"));
+				user.setEmail(rs.getString("email"));
+				user.setPassword(rs.getString("password"));
+				user.setRole(rs.getInt("role_id"));
+				users.add(user);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return users;
+	}
+
+	public User getUserById(Integer userId) throws SQLException {
+		Connection conn = DB.connect();
+		User user = new User();
+		try {
+			String sqlStr = "SELECT first_name, last_name, email, phone_no, img_url FROM users WHERE id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, userId);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				user.setFirstName(rs.getString("first_name"));
+				user.setLastName(rs.getString("last_name"));
+				user.setEmail(rs.getString("email"));
+				user.setPhoneNo(rs.getString("phone_no"));
+				user.setImageURL(rs.getString("img_url"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return user;
+	}
+
 	// Author : Soe Zaw Aung
 	// Retrieve users with pagination support
 	public ArrayList<User> getUsersWithPagination(int page, int pageSize) throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<User> users = new ArrayList<>();
 		try {
-			String sqlStr = "SELECT * FROM users ORDER BY user_id LIMIT ? OFFSET ?";
+			String sqlStr = "SELECT * FROM users ORDER BY id LIMIT ? OFFSET ?";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, pageSize);
 			pstmt.setInt(2, (page - 1) * pageSize);
@@ -233,7 +266,7 @@ public class UserDAO {
 
 			while (rs.next()) {
 				User user = new User();
-				user.setId(rs.getInt("user_id"));
+				user.setId(rs.getInt("id"));
 				user.setFirstName(rs.getString("first_name"));
 				user.setLastName(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));

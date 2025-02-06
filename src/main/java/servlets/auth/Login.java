@@ -59,16 +59,24 @@ public class Login extends HttpServlet {
 		// TODO Auto-generated method stub
 		try {
 			HttpSession session = request.getSession();
+			
 			String email = request.getParameter("email");
 			String password = request.getParameter("password");
 
 			UserDAO userDB = new UserDAO();
+			
+			// Get User Details
 			User user = userDB.loginUser(email);
 
-			if (BCrypt.checkpw(password, user.getPassword())) {
-				System.out.println("Password Matched");
+			// Check verification status
+			if (user.getStatus().getId() != 1) {
+				request.setAttribute("err", "Please verify your account.");
+				RequestDispatcher rd = request.getRequestDispatcher("/user/verification.jsp");
+				rd.forward(request, response);
+				return;
 			}
 
+			// Validation
 			if (user != null && BCrypt.checkpw(password, user.getPassword())) {
 				System.out.println("Login Successful");
 				session.setAttribute("userId", user.getId());
