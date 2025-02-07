@@ -536,11 +536,58 @@ public class UserBookSlot extends HttpServlet {
 				response.sendRedirect(request.getContextPath() + "/payment/setup");
 			}
 
-//			else {
-//				// If customer_id exists, create booking and redirect to profile
-//				createBooking(request, session);
-//				response.sendRedirect(request.getContextPath() + "/profile");
-//			}
+			else {
+				// Get all session attributes
+				LocalDate selectedDate = (LocalDate) session.getAttribute("selectedDate");
+				Integer selectedSlotId = (Integer) session.getAttribute("selectedSlot");
+				Integer selectedAddressId = (Integer) session.getAttribute("selectedAddress");
+				Integer selectedBundleId = (Integer) session.getAttribute("selectedBundle");
+				int[] selectedServiceIds = (int[]) session.getAttribute("selectedServices");
+
+				// Validate required booking information
+				if (selectedDate == null || selectedSlotId == null || selectedAddressId == null) {
+					throw new IllegalStateException("Required booking information missing");
+				}
+
+				// Initialize DAOs
+				ServiceDAO serviceDB = new ServiceDAO();
+				BundleDAO bundleDB = new BundleDAO();
+
+				// Get selected bundle and services
+				Bundle selectedBundle = null;
+				ArrayList<Service> selectedServices = new ArrayList<Service>();
+
+				// Handle bundle selection if exists
+				if (selectedBundleId != null) {
+					selectedBundle = bundleDB.getBundleById(selectedBundleId);
+				}
+
+				// Handle individual services if selected
+				if (selectedServiceIds != null && selectedServiceIds.length > 0) {
+					for (int serviceId : selectedServiceIds) {
+						Service service = serviceDB.getServiceById(serviceId);
+						if (service != null) {
+							selectedServices.add(service);
+						}
+					}
+				}
+
+				// Calculate total price
+				double totalPrice = 0.0;
+
+				// Add bundle price if selected
+				if (selectedBundle != null) {
+					totalPrice += selectedBundle.getDiscountedPrice();
+				}
+
+				// Add individual services price
+				for (Service service : selectedServices) {
+					totalPrice += service.getPrice();
+				}
+
+				// Set all attributes for the review page
+				
+			}
 
 		} catch (IllegalStateException e) {
 			System.out.println("Session error: " + e.getMessage());

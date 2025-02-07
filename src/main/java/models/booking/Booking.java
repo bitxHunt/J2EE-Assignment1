@@ -7,18 +7,23 @@
 package models.booking;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import models.address.Address;
+import models.bundle.Bundle;
+import models.service.Service;
 import models.timeSlot.TimeSlot;
 import models.user.User;
 
 public class Booking {
 	private int id;
-	private String status;
 	private LocalDate date;
 	private TimeSlot timeSlot;
 	private User user;
 	private Address address;
+	private ArrayList<Service> services;
+	private Bundle bundle;
+	private String status;
 
 	public Booking() {
 		this.id = 0;
@@ -27,15 +32,20 @@ public class Booking {
 		this.timeSlot = null;
 		this.user = null;
 		this.address = null;
+		this.services = null;
+		this.bundle = null;
 	}
 
-	public Booking(int id, String status, LocalDate date, TimeSlot timeSlot, User user, Address address) {
+	public Booking(int id, String status, LocalDate date, TimeSlot timeSlot, User user, Address address,
+			ArrayList<Service> services, Bundle bundle) {
 		this.id = id;
 		this.status = status;
 		this.date = date;
 		this.timeSlot = timeSlot;
 		this.user = user;
 		this.address = address;
+		this.services = services;
+		this.bundle = bundle;
 	}
 
 	public int getId() {
@@ -56,6 +66,22 @@ public class Booking {
 
 	public LocalDate getDate() {
 		return date;
+	}
+
+	public ArrayList<Service> getServices() {
+		return services;
+	}
+
+	public void setServices(ArrayList<Service> services) {
+		this.services = services;
+	}
+
+	public Bundle getBundle() {
+		return bundle;
+	}
+
+	public void setBundle(Bundle bundle) {
+		this.bundle = bundle;
 	}
 
 	public void setDate(LocalDate date) {

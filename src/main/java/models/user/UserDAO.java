@@ -47,7 +47,7 @@ public class UserDAO {
 			conn = DB.connect();
 			conn.setAutoCommit(false);
 
-			String sqlStrInsertUser = "INSERT INTO users (first_name, last_name, email, password, phone_no, img_url) VALUES (?, ?, ?, ?, ?) RETURNING id;";
+			String sqlStrInsertUser = "INSERT INTO users (first_name, last_name, email, password, phone_no, img_url) VALUES (?, ?, ?, ?, ?, ?) RETURNING id;";
 			pstmt = conn.prepareStatement(sqlStrInsertUser);
 
 			pstmt.setString(1, user.getFirstName());
