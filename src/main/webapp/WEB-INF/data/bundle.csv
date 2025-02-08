@@ -1,0 +1,5 @@
+id,name,description,discount_percent,img_url
+1,Home Starter,Basic house cleaning + Window cleaning,10,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg
+2,Deep Clean Plus,Deep house cleaning + Carpet deep clean,15,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpghttps://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg
+3,Moving Bundle,Move out clean + Carpet deep clean + Window cleaning,20,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg
+4,Commercial Complete,Office cleaning + Window cleaning + Upholstery cleaning,15,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg

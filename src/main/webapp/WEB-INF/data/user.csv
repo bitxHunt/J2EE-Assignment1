@@ -1,0 +1,5 @@
+id,customer_id,first_name,last_name,email,password,phone_no,created_at,updated_at,role_id
+1,CUST001,John,Doe,john.doe@example.com,$2y$10$hashedpassword1,+1234567890,2025-02-04 14:00:00,,1
+2,CUST002,Jane,Smith,jane.smith@example.com,$2y$10$hashedpassword2,+1987654321,2025-02-04 14:00:00,,2
+3,CUST003,Bob,Brown,bob.brown@example.com,$2y$10$hashedpassword3,+1123456789,2025-02-04 14:00:00,,1
+4,CUST004,Alice,Johnson,alice.johnson@example.com,$2y$10$hashedpassword4,+1098765432,2025-02-04 14:00:00,,2
