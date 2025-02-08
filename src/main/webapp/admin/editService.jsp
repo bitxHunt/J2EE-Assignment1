@@ -63,10 +63,9 @@
 		<div class="card bg-base-200 shadow-xl">
 			<div class="card-body">
 				<h2 class="card-title text-xl md:text-2xl mb-4">Edit Service</h2>
-				<form action="<%=service.getServiceId()%>" method="POST"
-					enctype="multipart/form-data">
-					<input type="hidden" name="_method" value="PUT">
-
+				<form
+					action="${pageContext.request.contextPath}/admin/edit-service/<%=service.getServiceId()%>"
+					method="POST" enctype="multipart/form-data">
 					<div class="grid gap-4">
 						<div class="form-control">
 							<label class="label cursor-pointer flex justify-start gap-4">

@@ -29,7 +29,7 @@
 					<img
 						src="<%=bundle.getImageUrl() != null
 		? bundle.getImageUrl()
-		: "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_cleaning_image_fz3izs.webp"%>"
+		: "https://res.cloudinary.com/dnaulhgz8/image/upload/v1738989578/cleaning_service_otzmkd.png"%>"
 						alt="Bundle Image" class="rounded-xl object-cover h-48 w-full" />
 				</figure>
 				<div class="card-body">

@@ -28,7 +28,7 @@ public class ServiceDAO {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();
 		try {
-			String sqlStr = "SELECT s.*, c.name FROM service s LEFT JOIN category c ON s.category_id = c.id ORDER BY s.id";
+			String sqlStr = "SELECT s.*, c.name AS category_name FROM service s LEFT JOIN category c ON s.category_id = c.id ORDER BY s.id";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			ResultSet rs = pstmt.executeQuery();
 
@@ -38,7 +38,7 @@ public class ServiceDAO {
 				service.setServiceName(rs.getString("name"));
 				service.setServiceDescription(rs.getString("description"));
 				service.setCategoryId(rs.getInt("id"));
-				service.setCategoryName(rs.getString("name"));
+				service.setCategoryName(rs.getString("category_name"));
 				service.setPrice(rs.getFloat("price"));
 				service.setImageUrl(rs.getString("img_url"));
 				service.setIsActive(rs.getBoolean("is_active"));
@@ -57,7 +57,7 @@ public class ServiceDAO {
 		Connection conn = DB.connect();
 		ArrayList<Service> services = new ArrayList<Service>();
 		try {
-			String sqlStr = "SELECT s.*, c.name FROM service s LEFT JOIN category c ON s.category_id = c.id WHERE s.is_active = true ORDER BY s.id";
+			String sqlStr = "SELECT s.*, c.name AS category_name FROM service s LEFT JOIN category c ON s.category_id = c.id WHERE s.is_active = true ORDER BY s.id";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			ResultSet rs = pstmt.executeQuery();
 
@@ -67,7 +67,7 @@ public class ServiceDAO {
 				service.setServiceName(rs.getString("name"));
 				service.setServiceDescription(rs.getString("description"));
 				service.setCategoryId(rs.getInt("id"));
-				service.setCategoryName(rs.getString("name"));
+				service.setCategoryName(rs.getString("category_name"));
 				service.setPrice(rs.getFloat("price"));
 				service.setImageUrl(rs.getString("img_url"));
 				service.setIsActive(rs.getBoolean("is_active"));
@@ -86,7 +86,7 @@ public class ServiceDAO {
 		Connection conn = DB.connect();
 		Service service = null;
 		try {
-			String sqlStr = "SELECT s.*, c.name FROM service s LEFT JOIN category c ON s.category_id = c.id WHERE s.id = ?";
+			String sqlStr = "SELECT s.*, c.name AS category_name FROM service s LEFT JOIN category c ON s.category_id = c.id WHERE s.id = ?";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, serviceId);
 			ResultSet rs = pstmt.executeQuery();
@@ -97,7 +97,7 @@ public class ServiceDAO {
 				service.setServiceName(rs.getString("name"));
 				service.setServiceDescription(rs.getString("description"));
 				service.setCategoryId(rs.getInt("id"));
-				service.setCategoryName(rs.getString("name"));
+				service.setCategoryName(rs.getString("category_name"));
 				service.setPrice(rs.getFloat("price"));
 				service.setImageUrl(rs.getString("img_url"));
 				service.setIsActive(rs.getBoolean("is_active"));
@@ -119,7 +119,7 @@ public class ServiceDAO {
 					? CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart)
 					: null;
 			String sqlStr = (imagePart.getSize() > 0)
-					? "INSERT INTO service (name, description, category_id, price, image_url) VALUES (?, ?, ?, ?, ?)"
+					? "INSERT INTO service (name, description, category_id, price, img_url) VALUES (?, ?, ?, ?, ?)"
 					: "INSERT INTO service (name, description, category_id, price) VALUES (?, ?, ?, ?)";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setString(1, service.getServiceName());
@@ -140,7 +140,6 @@ public class ServiceDAO {
 		return success;
 	}
 
-	// update service field
 	public boolean updateService(Service service, Part imagePart) throws SQLException {
 		Connection conn = DB.connect();
 		boolean success = false;
@@ -151,45 +150,52 @@ public class ServiceDAO {
 					"UPDATE service SET name=?, description=?, category_id=?, price=?, is_active=?");
 
 			String newImageUrl = null;
+			boolean hasNewImage = false; 
+
 			// Only handle image if a new one is uploaded
-			if (imagePart.getSize() > 0) {
+			if (imagePart != null && imagePart.getSize() > 0) {
 				// Get current image URL for deletion
 				String currentImageUrl = getServiceById(service.getServiceId()).getImageUrl();
 
 				// Upload new image first
 				newImageUrl = CloudinaryConnection.uploadImageToCloudinary(cloudinary, imagePart);
 
-				// If upload successful and no default image, delete old image and update SQL
-				// check to not to delete old image
-				if (newImageUrl != null && currentImageUrl != null
-						&& currentImageUrl != "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg") {
-					// Delete old image from Cloudinary
-					try {
-						CloudinaryConnection.deleteFromCloudinary(cloudinary, currentImageUrl);
-					} catch (Exception e) {
-						System.out.println("Error deleting old image: " + e.getMessage());
-					}
-
-					// Add image_url to UPDATE statement
+				// Only add img_url to SQL if there's a new image
+				if (newImageUrl != null) {
 					sqlStr.append(", img_url=?");
+					hasNewImage = true;
+
+					// Delete old image if it's not the default
+					if (currentImageUrl != null && !currentImageUrl.equals(
+							"https://res.cloudinary.com/dnaulhgz8/image/upload/v1738989578/cleaning_service_otzmkd.png")) {
+						try {
+							CloudinaryConnection.deleteFromCloudinary(cloudinary, currentImageUrl);
+						} catch (Exception e) {
+							System.out.println("Error deleting old image: " + e.getMessage());
+						}
+					}
 				}
 			}
 
-			sqlStr.append(" WHERE service_id=?");
+			sqlStr.append(" WHERE id=?");
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr.toString());
-			pstmt.setString(1, service.getServiceName());
-			pstmt.setString(2, service.getServiceDescription());
-			pstmt.setInt(3, service.getCategoryId());
-			pstmt.setFloat(4, service.getPrice());
-			pstmt.setBoolean(5, service.getIsActive());
+			int paramIndex = 1;
 
-			if (newImageUrl != null) {
-				pstmt.setString(6, newImageUrl);
-				pstmt.setInt(7, service.getServiceId());
-			} else {
-				pstmt.setInt(6, service.getServiceId());
+			// Set the basic parameters
+			pstmt.setString(paramIndex++, service.getServiceName());
+			pstmt.setString(paramIndex++, service.getServiceDescription());
+			pstmt.setInt(paramIndex++, service.getCategoryId());
+			pstmt.setFloat(paramIndex++, service.getPrice());
+			pstmt.setBoolean(paramIndex++, service.getIsActive());
+
+			// Add image URL if we have one
+			if (hasNewImage) {
+				pstmt.setString(paramIndex++, newImageUrl);
 			}
+
+			// Set the WHERE clause parameter
+			pstmt.setInt(paramIndex, service.getServiceId());
 
 			success = pstmt.executeUpdate() > 0;
 		} finally {
