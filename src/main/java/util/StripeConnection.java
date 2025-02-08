@@ -5,6 +5,7 @@ import com.stripe.exception.AuthenticationException;
 import com.stripe.exception.StripeException;
 import com.stripe.exception.ApiException;
 import com.stripe.model.Customer;
+import com.stripe.model.PaymentIntent;
 import com.stripe.model.Price;
 import com.stripe.model.Product;
 import com.stripe.model.SetupIntent;
@@ -12,6 +13,10 @@ import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.PriceCreateParams;
 import com.stripe.param.ProductCreateParams;
 import com.stripe.param.SetupIntentCreateParams;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import com.stripe.Stripe;
 
 public class StripeConnection {
@@ -25,6 +30,8 @@ public class StripeConnection {
 		SetupIntentCreateParams params = SetupIntentCreateParams.builder().addPaymentMethodType("card").build();
 
 		SetupIntent setupIntent = SetupIntent.create(params);
+
+		System.out.println("Stripe API Key: " + SecretsConfig.getStripeSecretKey());
 		return setupIntent.getClientSecret();
 	}
 
@@ -35,6 +42,53 @@ public class StripeConnection {
 
 		Customer customer = Customer.create(customerParams);
 		return customer.getId();
+	}
+
+	public String createPayNowQR(float amount, String reference) throws StripeException {
+		String qrUrl = "";
+		try {
+			// Setup basic payment parameters
+			Map<String, Object> params = new HashMap<>();
+			params.put("amount", (long) (amount * 100)); // Convert to cents
+			params.put("currency", "sgd");
+			params.put("confirm", true);
+			params.put("payment_method_types", new String[] { "paynow" });
+
+			// Add payment method data for PayNow
+			Map<String, Object> paymentMethodData = new HashMap<>();
+			paymentMethodData.put("type", "paynow");
+			params.put("payment_method_data", paymentMethodData);
+
+			// Add metadata for reference
+			Map<String, String> metadata = new HashMap<>();
+			metadata.put("reference", reference);
+			params.put("metadata", metadata);
+
+			// Create and confirm PaymentIntent
+			PaymentIntent payment = PaymentIntent.create(params);
+			System.out.println("Payment Intent Status: " + payment.getStatus());
+
+			// Get QR code URL using the proper NextAction object
+			PaymentIntent.NextAction nextAction = payment.getNextAction();
+			if (nextAction != null && nextAction.getPaynowDisplayQrCode() != null) {
+				qrUrl = nextAction.getPaynowDisplayQrCode().getImageUrlPng();
+				System.out.println("QR Code URL generated: " + qrUrl);
+			} else {
+				System.out.println(
+						"Next action is null or QR code not available. Payment Intent Status: " + payment.getStatus());
+			}
+
+		} catch (StripeException e) {
+			System.out.println("Stripe error: " + e.getMessage());
+			System.out.println("Error code: " + e.getCode());
+			System.out.println("Status code: " + e.getStatusCode());
+			throw e;
+		} catch (Exception e) {
+			System.out.println("Unexpected error: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return qrUrl;
 	}
 
 	// Create a product in stripe dashboard by the stripe API

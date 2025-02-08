@@ -132,9 +132,6 @@ public class UserPayment extends HttpServlet {
 			// Update user with customer_id
 			userDB.updateCustomerId(userId, customerId);
 
-//			// Create the booking
-//			createBooking(request, session);
-
 			response.setStatus(HttpServletResponse.SC_OK);
 
 		} catch (Exception e) {

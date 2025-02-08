@@ -20,6 +20,7 @@ public class AddressDAO {
 	public ArrayList<Address> getAddressByUserId(int userId) throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Address> addresses = new ArrayList<Address>();
+		AddressType addType = new AddressType();
 
 		try {
 			String sqlStr = "SELECT * FROM address WHERE user_id = ?;";
@@ -35,6 +36,8 @@ public class AddressDAO {
 				address.setAddress(rs.getString("street"));
 				address.setUnit(rs.getString("unit"));
 				address.setPostalCode(rs.getInt("postal_code"));
+				addType.setId(Integer.parseInt(rs.getString("address_type_id")));
+				address.setAddType(addType);
 				addresses.add(address);
 			}
 

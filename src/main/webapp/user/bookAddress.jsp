@@ -135,7 +135,7 @@
 					<div class="card-body relative">
 						<!-- Radio button positioned absolutely in top right -->
 						<div class="absolute top-4 right-4">
-							<input type="radio" name="selected_address" value="new"
+							<input type="radio" name="selected_address" value="0"
 								class="radio radio-primary"
 								<%=(homeAddress == null) ? "checked" : ""%>>
 						</div>

@@ -5,6 +5,7 @@
 <%@ page import="models.payment.Payment"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
+<%@ page import="java.time.LocalDateTime"%>
 
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -52,6 +53,33 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- Messages -->
+		<%
+		String successMsg = (String) session.getAttribute("successMsg");
+		if (successMsg != null && !successMsg.isEmpty()) {
+		%>
+		<div class="alert alert-success mb-4">
+			<span class="material-symbols-outlined">check_circle</span> <span><%=successMsg%></span>
+		</div>
+		<%
+		session.removeAttribute("successMsg");
+		%>
+		<%
+		}
+
+		String errorMsg = (String) session.getAttribute("errorMsg");
+		if (errorMsg != null && !errorMsg.isEmpty()) {
+		%>
+		<div class="alert alert-error mb-4">
+			<span class="material-symbols-outlined">error</span> <span><%=errorMsg%></span>
+		</div>
+		<%
+		session.removeAttribute("errorMsg");
+		%>
+		<%
+		}
+		%>
 
 		<!-- Booking Cards -->
 		<div class="space-y-6">
@@ -171,6 +199,33 @@
 							</button>
 						</form>
 						<%
+						} else if (booking.getStatus().equals("CONFIRMED")) {
+						LocalDateTime now = LocalDateTime.now();
+						LocalDateTime serviceEndTime = LocalDateTime.of(booking.getDate(), booking.getTimeSlot().getEndTime());
+
+						if (now.isAfter(serviceEndTime)) {
+						%>
+						<form action="${pageContext.request.contextPath}/book/complete"
+							method="POST">
+							<input type="hidden" name="bookingId"
+								value="<%=booking.getId()%>">
+							<button class="btn btn-success btn-sm gap-2">
+								<span class="material-symbols-outlined">task_alt</span> Mark as
+								Complete
+							</button>
+						</form>
+						<%
+						} else {
+						%>
+						<div class="tooltip" data-tip="Service not yet completed">
+							<button class="btn btn-success btn-sm gap-2" disabled>
+								<span class="material-symbols-outlined">schedule</span>
+								Available after
+								<%=serviceEndTime.format(timeFormatter)%>
+							</button>
+						</div>
+						<%
+						}
 						} else if (booking.getStatus().equals("IN_PROGRESS")) {
 						%>
 						<form action="${pageContext.request.contextPath}/book/cancel"

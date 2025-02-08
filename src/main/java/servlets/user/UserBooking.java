@@ -20,6 +20,7 @@ import models.transaction.Transaction;
 import models.transaction.TransactionDAO;
 import models.user.UserDAO;
 import models.user.User;
+import models.request.Request;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -34,14 +35,25 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 
 import util.SecretsConfig;
+import util.StripeConnection;
+
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Servlet implementation class UserBooking
@@ -120,6 +132,10 @@ public class UserBooking extends HttpServlet {
 		case "/payment":
 			System.out.println("Running POST request for /payment");
 			postPayment(request, response, session);
+			break;
+		case "/complete":
+			System.out.println("Running POST request for /complete");
+			postCompleteBooking(request, response, session);
 			break;
 		default:
 			doGet(request, response);
@@ -263,8 +279,8 @@ public class UserBooking extends HttpServlet {
 			// If the address is external, get the address details from the form
 			if (selectedAddressId != null) {
 
-				// ID 3 is external address
-				if (selectedAddressId == 3) {
+				// ID 0 is external address
+				if (selectedAddressId == 0) {
 					String street = request.getParameter("street");
 					String unit = request.getParameter("unit");
 					String postal = request.getParameter("postal");
@@ -279,12 +295,9 @@ public class UserBooking extends HttpServlet {
 
 				// Get the selected address from the database if home or office is selected.
 				else {
-					AddressDAO addressDB = new AddressDAO();
-					Address selectedAddress = addressDB.getUserSpecificAddress(userId, selectedAddressId);
+					session.setAttribute("selectedAddress", selectedAddressId);
 
-					session.setAttribute("selectedAddress", selectedAddress.getId());
-
-					System.out.println("Selected Address: " + selectedAddress.getId());
+					System.out.println("Selected Address: " + selectedAddressId);
 				}
 
 				response.sendRedirect(request.getContextPath() + "/book/services");
@@ -443,6 +456,11 @@ public class UserBooking extends HttpServlet {
 			Integer selectedBundleId = (Integer) session.getAttribute("selectedBundle");
 			int[] selectedServiceIds = (int[]) session.getAttribute("selectedServices");
 
+			System.out.println("Selected Date: " + selectedDate);
+			System.out.println("Selected Slot ID: " + selectedSlotId);
+			System.out.println("Selected Address ID: " + selectedAddressId);
+			System.out.println("Selected Bundle ID: " + selectedBundleId);
+
 			// Validate required booking information
 			if (selectedDate == null || selectedSlotId == null || selectedAddressId == null) {
 				throw new IllegalStateException("Required booking information missing");
@@ -572,11 +590,11 @@ public class UserBooking extends HttpServlet {
 			response.sendRedirect(request.getContextPath() + "/error/500");
 		}
 	}
-	
+
 	// =========================================================================================================
 	// Booking History (GET routes)
 	// =========================================================================================================
-	
+
 	protected void getViewBookings(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws ServletException, IOException {
 
@@ -604,6 +622,74 @@ public class UserBooking extends HttpServlet {
 			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (Exception e) {
 			System.out.println("Error in handleGetProfile: " + e.getMessage());
+			response.sendRedirect(request.getContextPath() + "/error/500");
+		}
+	}
+
+	// sending
+	private void postCompleteBooking(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws ServletException, IOException {
+		try {
+			Integer userId = (Integer) session.getAttribute("userId");
+			if (userId == null) {
+				throw new IllegalStateException("User not logged in");
+			}
+
+			int bookingId = Integer.parseInt(request.getParameter("bookingId"));
+			BookingDAO bookingDB = new BookingDAO();
+			UserDAO userDB = new UserDAO();
+
+			// Get booking and user details
+			Booking booking = bookingDB.getBookingById(bookingId);
+			User user = userDB.getUserById(userId);
+
+			if (booking == null) {
+				session.setAttribute("errorMsg", "Booking not found.");
+				response.sendRedirect(request.getContextPath() + "/book/view");
+				return;
+			}
+
+			boolean success = bookingDB.completeBooking(bookingId, userId);
+
+			if (success) {
+				float totalAmount = booking.getPayment().getAmount();
+				StripeConnection stripe = new StripeConnection();
+				String bookingReference = "BOOKING-" + bookingId;
+				String qrCodeUrl = stripe.createPayNowQR(totalAmount, bookingReference);
+
+				if (qrCodeUrl != null) {
+					// Send email with QR code
+					try (Client client = ClientBuilder.newClient()) {
+						String emailServiceURL = "http://localhost:8081/b2b/api/v1/email/payment";
+						WebTarget target = client.target(emailServiceURL);
+
+						Request requestService = new Request();
+						requestService.setUser(user);
+						requestService.setBooking(booking);
+						requestService.setQrCodeUrl(qrCodeUrl);
+
+						Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
+						Response res = invocationBuilder
+								.post(Entity.entity(requestService, MediaType.APPLICATION_JSON));
+
+						if (res.getStatus() != Response.Status.OK.getStatusCode()) {
+							System.out.println("Failed to send payment email");
+						}
+					} catch (Exception e) {
+						System.out.println("Error sending payment email: " + e.getMessage());
+						e.printStackTrace();
+					}
+				} else {
+					session.setAttribute("errorMsg", "Error generating PayNow QR code.");
+				}
+			} else {
+				// Rest of your existing error handling code...
+			}
+
+			response.sendRedirect(request.getContextPath() + "/book/view");
+
+		} catch (Exception e) {
+			session.setAttribute("errorMsg", "An error occurred: " + e.getMessage());
 			response.sendRedirect(request.getContextPath() + "/error/500");
 		}
 	}

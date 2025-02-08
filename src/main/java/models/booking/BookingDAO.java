@@ -22,11 +22,106 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import util.DB;
 
 public class BookingDAO {
+
+	// Get Booking By id
+	public Booking getBookingById(int bookingId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		Booking booking = null;
+
+		try {
+			conn = DB.connect();
+			String sqlStr = """
+					    SELECT b.*, t.start_time, t.end_time,
+					           a.street, a.unit, a.postal_code,
+					           p.amount, p.status as payment_status,
+					           p.payment_intent_id, p.paid_at, p.refund_id
+					    FROM customer_booking b
+					    LEFT JOIN time_slot t ON b.slot_id = t.id
+					    LEFT JOIN address a ON b.address_id = a.id
+					    LEFT JOIN payment p ON p.booking_id = b.id
+					    WHERE b.id = ?
+					""";
+
+			pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, bookingId);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				booking = new Booking();
+				TimeSlot timeSlot = new TimeSlot();
+				Address address = new Address();
+				Payment payment = new Payment();
+
+				// Set booking details
+				booking.setId(rs.getInt("id"));
+				booking.setDate(rs.getDate("date").toLocalDate());
+				booking.setStatus(rs.getString("status"));
+
+				// Set time slot
+				timeSlot.setStartTime(rs.getTime("start_time").toLocalTime());
+				timeSlot.setEndTime(rs.getTime("end_time").toLocalTime());
+				booking.setTimeSlot(timeSlot);
+
+				// Set address
+				address.setAddress(rs.getString("street"));
+				address.setUnit(rs.getString("unit"));
+				address.setPostalCode(rs.getInt("postal_code"));
+				booking.setAddress(address);
+
+				// Set payment
+				payment.setAmount(rs.getFloat("amount"));
+				payment.setStatus(rs.getString("payment_status"));
+				payment.setPaymentIntentId(rs.getString("payment_intent_id"));
+				payment.setRefundId(rs.getString("refund_id"));
+				booking.setPayment(payment);
+
+				// Get services
+				loadBookingServices(conn, booking);
+			}
+
+			return booking;
+		} finally {
+			if (rs != null)
+				rs.close();
+			if (pstmt != null)
+				pstmt.close();
+			if (conn != null)
+				conn.close();
+		}
+	}
+
+	// Helper method to load services
+	private void loadBookingServices(Connection conn, Booking booking) throws SQLException {
+		String sqlServices = """
+				    SELECT s.*, bs.amount
+				    FROM booking_service bs
+				    JOIN service s ON bs.service_id = s.id
+				    WHERE bs.booking_id = ?
+				""";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sqlServices)) {
+			pstmt.setInt(1, booking.getId());
+			ResultSet rs = pstmt.executeQuery();
+
+			ArrayList<Service> services = new ArrayList<>();
+			while (rs.next()) {
+				Service service = new Service();
+				service.setServiceId(rs.getInt("id"));
+				service.setServiceName(rs.getString("name"));
+				service.setPrice(rs.getFloat("amount"));
+				services.add(service);
+			}
+			booking.setServices(services);
+		}
+	}
 
 	// Get All Bookings by User
 	public ArrayList<Booking> getAllBookings(int userId) throws SQLException {
@@ -71,7 +166,7 @@ public class BookingDAO {
 				booking.setAddress(address);
 
 				// Set payment details
-				payment.setAmount(rs.getFloat("amount")); // Changed from getInt to getFloat
+				payment.setAmount(rs.getFloat("amount"));
 				payment.setStatus(rs.getString("payment_status"));
 				payment.setPaymentIntentId(rs.getString("payment_intent_id"));
 				payment.setRefundId(rs.getString("refund_id"));
@@ -252,9 +347,62 @@ public class BookingDAO {
 		}
 	}
 
-	// Insert bundle into booking
-//	public void bookingBundle() throws SQLException {
-//		Connection conn = DB.connect();
-//
-//	}
+	public boolean completeBooking(int bookingId, int userId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+
+		try {
+			conn = DB.connect();
+			conn.setAutoCommit(false);
+
+			// Get booking details
+			Booking booking = getBookingById(bookingId);
+			if (booking == null)
+				return false;
+
+			// Check ownership and status
+			if (!booking.getStatus().equals("CONFIRMED"))
+				return false;
+
+			// Create LocalDateTime for comparison
+			LocalDateTime serviceEndTime = LocalDateTime.of(booking.getDate(), booking.getTimeSlot().getEndTime());
+
+			// Check if current time is after service end time
+			if (LocalDateTime.now().isBefore(serviceEndTime)) {
+				return false;
+			}
+
+			// Update booking status
+			String updateSql = """
+					    UPDATE customer_booking
+					    SET status = 'COMPLETED',
+					        completed_at = CURRENT_TIMESTAMP
+					    WHERE id = ? AND user_id = ?
+					""";
+
+			pstmt = conn.prepareStatement(updateSql);
+			pstmt.setInt(1, bookingId);
+			pstmt.setInt(2, userId);
+
+			int rowsAffected = pstmt.executeUpdate();
+
+			if (rowsAffected > 0) {
+				conn.commit();
+				return true;
+			} else {
+				conn.rollback();
+				return false;
+			}
+
+		} catch (Exception e) {
+			if (conn != null)
+				conn.rollback();
+			throw e;
+		} finally {
+			if (pstmt != null)
+				pstmt.close();
+			if (conn != null)
+				conn.close();
+		}
+	}
 }
