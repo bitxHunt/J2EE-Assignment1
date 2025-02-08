@@ -64,7 +64,7 @@ public class CategoryDAO {
 		boolean isDeleteable = true;
 
 		try {
-			String checkServiceSql = "SELECT COUNT(*) FROM service WHERE id = ?";
+			String checkServiceSql = "SELECT COUNT(*) FROM service WHERE category_id = ?";
 			PreparedStatement checkServiceStmt = conn.prepareStatement(checkServiceSql);
 			checkServiceStmt.setInt(1, categoryId);
 			ResultSet checkServiceRS = checkServiceStmt.executeQuery();

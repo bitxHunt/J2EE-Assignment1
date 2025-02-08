@@ -147,6 +147,7 @@ public class EditServiceById extends HttpServlet {
 			}
 
 		} catch (SQLException e) {
+			System.out.println(e.getLocalizedMessage());
 			request.setAttribute("err", "Database error: " + e.getMessage());
 			request.getRequestDispatcher("/error/500").forward(request, response);
 		}

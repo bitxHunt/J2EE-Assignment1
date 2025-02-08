@@ -51,7 +51,7 @@
 				class="card bg-base-200 shadow-xl hover:shadow-2xl transition-all duration-300">
 				<figure class="px-6 pt-6">
 					<img
-						src="<%=service.getImageUrl() != null ? service.getImageUrl() : "https://placehold.co/600x400"%>"
+						src="<%=service.getImageUrl() != null ? service.getImageUrl() : "https://res.cloudinary.com/dnaulhgz8/image/upload/v1738989578/cleaning_service_otzmkd.png"%>"
 						alt="<%=service.getServiceName()%>"
 						class="rounded-xl object-cover w-full h-48" />
 				</figure>
