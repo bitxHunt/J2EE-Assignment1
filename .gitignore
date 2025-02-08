@@ -1,0 +1,8 @@
+.settings
+/build
+.classpath
+.project
+/src/main/java/config.properties
+/src/main/java/cloudinary.properties
+/src/main/java/stripe.properties
+/src/main/webapp/WEB-INF

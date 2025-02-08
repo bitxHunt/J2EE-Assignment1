@@ -33,7 +33,9 @@
 			<a href="${pageContext.request.contextPath}/admin"
 				class="btn btn-ghost">Home</a> <a
 				href="${pageContext.request.contextPath}/admin/manage-users"
-				class="btn btn-ghost">HR Management</a>
+				class="btn btn-ghost">HR Management</a><a
+				href="${pageContext.request.contextPath}/admin/manage-bookings"
+				class="btn btn-ghost">Bookings</a>
 			<button
 				onclick="window.location='${pageContext.request.contextPath}/admin/createForm'"
 				class="btn btn-primary">Create New</button>
