@@ -258,6 +258,7 @@ public class UserDAO {
 
 			while (rs.next()) {
 				user.setId(userId);
+				user.setCustomerId(rs.getString("customer_id"));
 				user.setFirstName(rs.getString("first_name"));
 				user.setLastName(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));

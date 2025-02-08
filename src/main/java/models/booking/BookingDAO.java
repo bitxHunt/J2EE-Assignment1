@@ -8,6 +8,7 @@ package models.booking;
 
 import models.service.*;
 import models.bundle.*;
+import models.payment.Payment;
 import models.user.*;
 import models.address.*;
 import models.status.*;
@@ -26,28 +27,111 @@ import java.util.ArrayList;
 import util.DB;
 
 public class BookingDAO {
-	// Seed Customer Booking Data
-//	public void seedData(Booking booking) throws SQLException {
-//		Connection conn = DB.connect();
-//
-//		try {
-//			String sqlStr = "CALL seed_customer_booking(?, ?, ?, ?);";
-//			CallableStatement stmt = conn.prepareCall(sqlStr);
-//
-//			stmt.setString(1, booking.getStatus());
-//			stmt.setString(2, booking.get);
-//			stmt.setString(3, organization.getSecretKey());
-//			stmt.setInt(4, organization.getUser().getId());
-//
-//			stmt.execute();
-//
-//		} catch (Exception e) {
-//			System.out.println("Error Seeding User Data.");
-//			e.printStackTrace();
-//		} finally {
-//			conn.close();
-//		}
-//	}
+
+	// Get All Bookings by User
+	public ArrayList<Booking> getAllBookings(int userId) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		ArrayList<Booking> bookings = new ArrayList<Booking>();
+
+		try {
+			conn = DB.connect();
+			// Main booking query with basic joins including payment
+			String sqlStr = "SELECT b.*, t.start_time, t.end_time, " + "a.street, a.unit, a.postal_code, "
+					+ "p.amount, p.status as payment_status, p.payment_intent_id, " + "p.paid_at, p.refund_id "
+					+ "FROM customer_booking b " + "LEFT JOIN time_slot t ON b.slot_id = t.id "
+					+ "LEFT JOIN address a ON b.address_id = a.id " + "LEFT JOIN payment p ON p.booking_id = b.id "
+					+ "WHERE b.user_id = ? " + "ORDER BY b.date DESC, b.created_at DESC";
+
+			pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, userId);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				Booking booking = new Booking();
+				TimeSlot timeSlot = new TimeSlot();
+				Address address = new Address();
+				Payment payment = new Payment();
+
+				// Set booking details
+				booking.setId(rs.getInt("id"));
+				booking.setDate(rs.getDate("date").toLocalDate());
+				booking.setStatus(rs.getString("status"));
+
+				// Set time slot
+				timeSlot.setStartTime(rs.getTime("start_time").toLocalTime());
+				timeSlot.setEndTime(rs.getTime("end_time").toLocalTime());
+				booking.setTimeSlot(timeSlot);
+
+				// Set address
+				address.setAddress(rs.getString("street"));
+				address.setUnit(rs.getString("unit"));
+				address.setPostalCode(rs.getInt("postal_code"));
+				booking.setAddress(address);
+
+				// Set payment details
+				payment.setAmount(rs.getFloat("amount")); // Changed from getInt to getFloat
+				payment.setStatus(rs.getString("payment_status"));
+				payment.setPaymentIntentId(rs.getString("payment_intent_id"));
+				payment.setRefundId(rs.getString("refund_id"));
+				booking.setPayment(payment);
+
+				// Get services for this booking
+				String sqlServices = "SELECT s.*, bs.amount FROM booking_service bs "
+						+ "JOIN service s ON bs.service_id = s.id " + "WHERE bs.booking_id = ?";
+
+				PreparedStatement pstmtServices = conn.prepareStatement(sqlServices);
+				pstmtServices.setInt(1, booking.getId());
+				ResultSet rsServices = pstmtServices.executeQuery();
+
+				ArrayList<Service> services = new ArrayList<>();
+				while (rsServices.next()) {
+					Service service = new Service();
+					service.setServiceId(rsServices.getInt("id"));
+					service.setServiceName(rsServices.getString("name"));
+					service.setPrice(rsServices.getFloat("amount"));
+					services.add(service);
+				}
+				booking.setServices(services);
+
+				// Get bundle if exists
+				String sqlBundle = "SELECT b.*, bb.discount_percent FROM booking_bundle bb "
+						+ "JOIN bundle b ON bb.bundle_id = b.id " + "WHERE bb.booking_id = ?";
+
+				PreparedStatement pstmtBundle = conn.prepareStatement(sqlBundle);
+				pstmtBundle.setInt(1, booking.getId());
+				ResultSet rsBundle = pstmtBundle.executeQuery();
+
+				if (rsBundle.next()) {
+					Bundle bundle = new Bundle();
+					bundle.setBundleId(rsBundle.getInt("id"));
+					bundle.setBundleName(rsBundle.getString("name"));
+					bundle.setDiscountPercent(rsBundle.getInt("discount_percent"));
+					booking.setBundle(bundle);
+				}
+
+				rsBundle.close();
+				pstmtBundle.close();
+				rsServices.close();
+				pstmtServices.close();
+
+				bookings.add(booking);
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error getting bookings: " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			if (rs != null)
+				rs.close();
+			if (pstmt != null)
+				pstmt.close();
+			if (conn != null)
+				conn.close();
+		}
+		return bookings;
+	}
 
 	// Insert into customer_booking table
 	public void createBooking(int userId, int addressId, int timeSlotId, LocalDate bookingDate,
@@ -57,14 +141,15 @@ public class BookingDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		Booking booking = new Booking();
+		float totalAmount = 0;
 
 		try {
 			conn = DB.connect();
 			conn.setAutoCommit(false);
 
 			// Insert into customer_booking first
-			String sqlInsertBooking = "INSERT INTO customer_booking (date, slot_id, user_id, address_id, status_id) "
-					+ "VALUES (?, ?, ?, ?, 3) RETURNING id;";
+			String sqlInsertBooking = "INSERT INTO customer_booking (date, slot_id, user_id, address_id) "
+					+ "VALUES (?, ?, ?, ?) RETURNING id;";
 
 			pstmt = conn.prepareStatement(sqlInsertBooking);
 			pstmt.setDate(1, Date.valueOf(bookingDate));
@@ -78,42 +163,92 @@ public class BookingDAO {
 				int bookingId = rs.getInt("id");
 				booking.setId(bookingId);
 
-				// Insert booking services if any
+				// Insert Standalone booking services if any and calculate service total
 				if (services != null && !services.isEmpty()) {
 					String sqlInsertService = "INSERT INTO booking_service (booking_id, service_id, amount) "
 							+ "VALUES (?, ?, ?);";
 
-					// Insert additional services if any
-					for (int i = 1; i < services.size(); i++) {
-						Service service = services.get(i);
+					// Calculate total from all services
+					for (Service service : services) {
 						pstmt = conn.prepareStatement(sqlInsertService);
 						pstmt.setInt(1, bookingId);
 						pstmt.setInt(2, service.getServiceId());
 						pstmt.setFloat(3, service.getPrice());
 						pstmt.executeUpdate();
+
+						totalAmount += service.getPrice();
 					}
+
+					System.out.println("Total Service Amount: " + totalAmount);
 				}
 
-				// Insert booking bundle if exists
+				// Insert booking bundle if exists and apply discount
 				if (bundle != null) {
-					String sqlInsertBundle = "INSERT INTO booking_bundle (booking_id, bundle_id, discount_percent);"
+					String sqlInsertBundle = "INSERT INTO booking_bundle (booking_id, bundle_id, discount_percent) "
 							+ "VALUES (?, ?, ?);";
 
-					// Insert additional services if any
 					pstmt = conn.prepareStatement(sqlInsertBundle);
 					pstmt.setInt(1, bookingId);
 					pstmt.setInt(2, bundle.getBundleId());
 					pstmt.setInt(3, bundle.getDiscountPercent());
+					pstmt.executeUpdate();
+
+					// Insert all services that belong to the bundle
+					String sqlInsertBundleService = "INSERT INTO booking_service (booking_id, service_id, amount) "
+							+ "VALUES (?, ?, ?);";
+
+					for (Service bundleService : bundle.getServices()) {
+						pstmt = conn.prepareStatement(sqlInsertBundleService);
+						pstmt.setInt(1, bookingId);
+						pstmt.setInt(2, bundleService.getServiceId());
+						pstmt.setFloat(3, bundleService.getPrice());
+						pstmt.executeUpdate();
+					}
+
+					System.out.println("Total Bundle Amount: " + bundle.getDiscountedPrice());
+					totalAmount += bundle.getDiscountedPrice();
 				}
+
+				// Insert into payment table with just booking_id and amount
+				String sqlInsertPayment = "INSERT INTO payment (booking_id, amount) VALUES (?, ?);";
+
+				pstmt = conn.prepareStatement(sqlInsertPayment);
+				pstmt.setInt(1, bookingId);
+				pstmt.setFloat(2, totalAmount);
+				pstmt.executeUpdate();
 
 				// Commit the transaction
 				conn.commit();
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (conn != null) {
+				try {
+					conn.rollback();
+				} catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+			throw new SQLException("Error creating booking: " + e.getMessage());
 		} finally {
-			conn.close();
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 		}
 	}
 

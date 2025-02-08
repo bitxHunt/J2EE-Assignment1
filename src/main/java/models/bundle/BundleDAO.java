@@ -390,5 +390,26 @@ public class BundleDAO {
 			conn.close();
 		}
 	}
+	
+	// Seed Bundle Service Data
+	public void seedBundleServiceData(Bundle bundle) throws SQLException {
+		Connection conn = DB.connect();
+
+		try {
+			String sqlStr = "CALL seed_bundle_service(?, ?);";
+			CallableStatement stmt = conn.prepareCall(sqlStr);
+
+			stmt.setInt(1, bundle.getBundleId());
+			stmt.setInt(2, bundle.getServices().get(0).getServiceId());
+
+			stmt.execute();
+
+		} catch (Exception e) {
+			System.out.println("Error Seeding Bundle Service Data.");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+	}
 
 }

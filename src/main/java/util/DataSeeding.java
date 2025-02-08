@@ -294,23 +294,26 @@ public class DataSeeding {
 	public void seedBundleService() throws SQLException {
 		try {
 			Bundle bundle = new Bundle();
+			Service service = new Service();
 			BundleDAO bundleDB = new BundleDAO();
+			
+			ArrayList<Service> services = new ArrayList<Service>();
 
-			ArrayList<ArrayList<String>> dataArray = loadData(bundleData);
+			ArrayList<ArrayList<String>> dataArray = loadData(bundleServiceData);
 
 			for (ArrayList<String> row : dataArray) {
 
 				// Row of data
-				bundle.setBundleName(row.get(1));
-				bundle.setBundleDescription(row.get(2));
-				bundle.setDiscountPercent(Integer.parseInt(row.get(3)));
-				bundle.setImageUrl(row.get(4));
+				bundle.setBundleId(Integer.parseInt(row.get(0)));
+				service.setServiceId(Integer.parseInt(row.get(1)));
+				services.add(service);
+				bundle.setServices(services);
 
 				// Pass the model to seed data
-				bundleDB.seedData(bundle);
+				bundleDB.seedBundleServiceData(bundle);
 			}
 		} catch (Exception e) {
-			System.out.println("Error Seeding Bundle Table.");
+			System.out.println("Error Seeding Bundle Service Table.");
 			e.printStackTrace();
 		}
 	}
