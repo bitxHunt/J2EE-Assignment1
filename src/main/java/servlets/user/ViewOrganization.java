@@ -26,15 +26,13 @@ public class ViewOrganization extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
-//		Integer userId = (Integer) session.getAttribute("userId");
-//
-//		if (userId == null) {
-//			response.sendRedirect(request.getContextPath() + "/login");
-//			return;
-//		}
-		
-		Integer userId =1;
+		Integer userId = (Integer) session.getAttribute("userId");
 
+		if (userId == null) {
+			response.sendRedirect(request.getContextPath() + "/login");
+			return;
+		}
+		
 		try {
 			ArrayList<Organization> organizations = organizationDAO.getOrganizationsByUserId(userId);
 			request.setAttribute("organizations", organizations);
