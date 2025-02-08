@@ -20,6 +20,7 @@ public class Main {
 			seed.seedCategory();
 			seed.seedService();
 			seed.seedBundle();
+			seed.seedBundleService();
 			seed.seedRole();
 			seed.seedTimeSlot();
 			seed.seedAddressType();

@@ -10,8 +10,8 @@ import models.user.User;
 import models.user.UserDAO;
 import models.address.Address;
 import models.address.AddressDAO;
-import models.transaction.Transaction;
-import models.transaction.TransactionDAO;
+import models.booking.Booking;
+import models.booking.BookingDAO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -94,56 +94,36 @@ public class UserProfile extends HttpServlet {
 			if (userId == null) {
 				throw new IllegalStateException("User not logged in");
 			}
-			
+
 			UserDAO userDB = new UserDAO();
-//			AddressDAO addressDB = new AddressDAO();
-//			TransactionDAO transDB = new TransactionDAO();
-//			Double totalAmount = 0.0;
-//			Double originalTotalAmount = 0.0;
-//			Double savings = 0.0;
+			AddressDAO addressDB = new AddressDAO();
+			BookingDAO bookingDB = new BookingDAO();
 
+			// Get user data
 			User user = userDB.getUserById(userId);
-//			ArrayList<Address> addresses = addressDB.getAddressByUserId(userId);
-//			ArrayList<Transaction> transactions = transDB.getActiveBookingsByUserID(userId);
 
-//			for (Transaction transaction : transactions) {
-//				double subTotal = transaction.getSubTotal();
-//				double discount = transaction.getDiscount();
-//
-//				totalAmount += subTotal;
-//				System.out.println(totalAmount);
-//
-//				// Check for division by zero
-//				if (discount < 100) {
-//					originalTotalAmount += subTotal * (100 / (100 - discount));
-//					System.out.println(originalTotalAmount);
-//				}
-//			}
-//
-//			savings = originalTotalAmount - totalAmount;
-//			String formatTotal = String.format("%.2f%n", totalAmount);
-//			String formatSavings = String.format("%.2f%n", savings);
-//
-//			System.out.println("Total Amount: " + totalAmount);
-//			System.out.println("Savings: " + savings);
+			// Get home address (address_type_id = 1 for home)
+			Address homeAddress = addressDB.getUserSpecificAddress(userId, 1);
 
+			// Get all bookings ordered by date DESC
+			ArrayList<Booking> bookings = bookingDB.getAllBookings(userId);
+
+			// Set attributes for JSP
 			request.setAttribute("user", user);
-//			request.setAttribute("addresses", addresses);
-//			request.setAttribute("transactions", transactions);
-//			request.setAttribute("totalAmount", formatTotal);
-//			request.setAttribute("totalSaving", formatSavings);
+			request.setAttribute("homeAddress", homeAddress);
+			request.setAttribute("bookings", bookings);
 
 			request.getRequestDispatcher("/user/profile.jsp").forward(request, response);
+
 		} catch (IllegalStateException e) {
 			System.out.println("Session expired: " + e.getMessage());
 			e.printStackTrace();
 			request.setAttribute("errorMessage", "Please log in to continue.");
 			response.sendRedirect(request.getContextPath() + "/login");
 		} catch (Exception e) {
-			request.getRequestDispatcher("/error/500.jsp").forward(request, response);
-			e.printStackTrace();
+			System.out.println("Error in handleGetProfile: " + e.getMessage());
+			response.sendRedirect(request.getContextPath() + "/error/500");
 		}
-
 	}
 
 	protected void handleGetEditProfile(HttpServletRequest request, HttpServletResponse response, HttpSession session)

@@ -59,14 +59,18 @@ public class Login extends HttpServlet {
 		// TODO Auto-generated method stub
 		try {
 			HttpSession session = request.getSession();
-			
+
 			String email = request.getParameter("email");
 			String password = request.getParameter("password");
 
 			UserDAO userDB = new UserDAO();
-			
+
 			// Get User Details
 			User user = userDB.loginUser(email);
+
+			if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
+				throw new NullPointerException("Invalid Credentials.");
+			}
 
 			// Check verification status
 			if (user.getStatus().getId() != 1) {
@@ -77,7 +81,7 @@ public class Login extends HttpServlet {
 			}
 
 			// Validation
-			if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+			if (BCrypt.checkpw(password, user.getPassword())) {
 				System.out.println("Login Successful");
 				session.setAttribute("userId", user.getId());
 				session.setAttribute("role", user.getRole());
@@ -97,8 +101,11 @@ public class Login extends HttpServlet {
 				RequestDispatcher rd = request.getRequestDispatcher("/user/login.jsp");
 				rd.forward(request, response);
 			}
+		} catch (NullPointerException e) {
+			request.setAttribute("err", e.getMessage());
+			RequestDispatcher rd = request.getRequestDispatcher("/user/login.jsp");
+			rd.forward(request, response);
 		} catch (Exception e) {
-			e.printStackTrace();
 			request.setAttribute("err", e.getMessage());
 			RequestDispatcher rd = request.getRequestDispatcher("/user/login.jsp");
 			rd.forward(request, response);

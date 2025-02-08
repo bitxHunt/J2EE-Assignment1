@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import models.address.Address;
 import models.bundle.Bundle;
+import models.payment.Payment;
 import models.service.Service;
 import models.timeSlot.TimeSlot;
 import models.user.User;
@@ -24,6 +25,7 @@ public class Booking {
 	private ArrayList<Service> services;
 	private Bundle bundle;
 	private String status;
+	private Payment payment;
 
 	public Booking() {
 		this.id = 0;
@@ -34,10 +36,11 @@ public class Booking {
 		this.address = null;
 		this.services = null;
 		this.bundle = null;
+		this.payment = null;
 	}
 
 	public Booking(int id, String status, LocalDate date, TimeSlot timeSlot, User user, Address address,
-			ArrayList<Service> services, Bundle bundle) {
+			ArrayList<Service> services, Bundle bundle, Payment payment) {
 		this.id = id;
 		this.status = status;
 		this.date = date;
@@ -46,6 +49,7 @@ public class Booking {
 		this.address = address;
 		this.services = services;
 		this.bundle = bundle;
+		this.payment = payment;
 	}
 
 	public int getId() {
@@ -112,4 +116,11 @@ public class Booking {
 		this.address = address;
 	}
 
+	public Payment getPayment() {
+		return payment;
+	}
+
+	public void setPayment(Payment payment) {
+		this.payment = payment;
+	}
 }
