@@ -59,7 +59,7 @@
 							break;
 						}
 							}
-							boolean isAdmin = "ADMIN".equals(roleName);
+							boolean isAdmin = "admin".equals(roleName);
 					%>
 					<tr>
 						<td><%=user.getId()%></td>
@@ -209,8 +209,7 @@
 		<dialog id="deleteUserModal" class="modal">
 		<div class="modal-box">
 			<h3 class="font-bold text-lg">Confirm Delete</h3>
-			<p class="py-4">Are you sure you want to delete this user? This
-				action cannot be undone.</p>
+			<p class="py-4">Warning: Deleting this user will also delete their organization and its partnership with Clean-X. This action is permanent and cannot be reversed.</p>
 			<form action="manage-users" method="POST">
 				<input type="hidden" name="action" value="delete"> <input
 					type="hidden" name="userId" id="deleteUserId"> <input

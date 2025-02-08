@@ -290,7 +290,7 @@ public class UserDAO {
 				user.setFirstName(rs.getString("first_name"));
 				user.setLastName(rs.getString("last_name"));
 				user.setEmail(rs.getString("email"));
-				user.setPhoneNo(rs.getString("phone_number"));
+				user.setPhoneNo(rs.getString("phone_no"));
 				user.setRole(rs.getInt("role_id"));
 				users.add(user);
 			}
@@ -319,6 +319,26 @@ public class UserDAO {
 		}
 		return 0;
 	}
+	
+	public int getUserRoleById(Integer userId) throws SQLException {
+		Connection conn = DB.connect();
+		User user = new User();
+		int role = 0;
+		try {
+			String sqlStr = "SELECT role_id FROM users WHERE id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setInt(1, userId);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				role = rs.getInt("role_id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return role;
+	}
 
 	// Register new user with specified role including admin
 	public Integer registerUserWithRole(String firstName, String lastName, String email, String hashedPassword,
@@ -327,7 +347,7 @@ public class UserDAO {
 		Integer rowsAffected = 0;
 
 		try {
-			String sqlStr = "INSERT INTO users (first_name, last_name, email, password, phone_number, role_id) "
+			String sqlStr = "INSERT INTO users (first_name, last_name, email, password, phone_no, role_id) "
 					+ "VALUES (?, ?, ?, ?, ?, ?)";
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
@@ -355,7 +375,7 @@ public class UserDAO {
 	public boolean updateUserRole(int userId, int roleId) throws SQLException {
 		Connection conn = DB.connect();
 		try {
-			String sql = "UPDATE users SET role_id = ? WHERE user_id = ?";
+			String sql = "UPDATE users SET role_id = ? WHERE id = ?";
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, roleId);
 			pstmt.setInt(2, userId);
@@ -371,7 +391,7 @@ public class UserDAO {
 		Connection conn = DB.connect();
 		int rowsAffected = 0;
 		try {
-			String sqlStr = "DELETE FROM users WHERE user_id=?";
+			String sqlStr = "DELETE FROM users WHERE id=?";
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, userId);
 			rowsAffected = pstmt.executeUpdate();

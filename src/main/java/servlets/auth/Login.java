@@ -86,7 +86,7 @@ public class Login extends HttpServlet {
 				String imageUrl = (String) session.getAttribute("profileImg");
 				System.out.println("Profile" + imageUrl);
 
-				if (user.getRole() == 1) {
+				if (user.getRole() == 3) {
 					response.sendRedirect(request.getContextPath() + "/admin");
 				} else {
 					response.sendRedirect(request.getContextPath() + "/profile");

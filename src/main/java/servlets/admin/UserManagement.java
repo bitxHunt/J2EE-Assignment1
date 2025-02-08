@@ -176,7 +176,7 @@ public class UserManagement extends HttpServlet {
 			}
 
 			// Prevent changing admin role
-			if (currentRoleId == 1) {
+			if (currentRoleId == 3) {
 				HttpSession session = request.getSession();
 				session.setAttribute("userManagementMsg", "Cannot modify admin role.");
 				response.sendRedirect(request.getContextPath() + "/admin/manage-users");
@@ -236,7 +236,7 @@ public class UserManagement extends HttpServlet {
 			}
 
 			// Prevent deleting admin
-			if (currentRoleId == 1) {
+			if (currentRoleId == 3) {
 				HttpSession session = request.getSession();
 				session.setAttribute("userManagementMsg", "Cannot delete admin user.");
 				response.sendRedirect(request.getContextPath() + "/admin/manage-users");

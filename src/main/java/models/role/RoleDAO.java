@@ -27,8 +27,8 @@ public class RoleDAO {
 
 			while (rs.next()) {
 				Role role = new Role();
-				role.setRoleId(rs.getInt("role_id"));
-				role.setRoleName(rs.getString("role_name"));
+				role.setRoleId(rs.getInt("id"));
+				role.setRoleName(rs.getString("name"));
 				roles.add(role);
 			}
 
@@ -43,6 +43,7 @@ public class RoleDAO {
 
 		return roles;
 	}
+
 
 	// Seed the overall data from the csv file
 	public void seedData(Role role) throws SQLException {
