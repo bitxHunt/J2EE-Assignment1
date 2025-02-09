@@ -26,8 +26,9 @@
 			class="card bg-base-200 shadow-xl <%=!service.getIsActive() ? "opacity-40" : ""%>">
 			<figure class="px-6 pt-6">
 				<img
-					src="<%=service.getImageUrl() != null ? service.getImageUrl()
-		: "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732267743/default_cleaning_image_fz3izs.webp"%>"
+					src="<%=service.getImageUrl() == null || service.getImageUrl().trim().isEmpty()
+		? "https://cdn-icons-png.flaticon.com/512/1999/1999150.png"
+		: service.getImageUrl()%>"
 					alt="Service Image" class="rounded-xl object-cover h-48 w-full" />
 			</figure>
 			<div class="card-body">

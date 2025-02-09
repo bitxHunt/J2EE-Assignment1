@@ -22,6 +22,7 @@ public class BookingDetails {
 	private String assignedStaffEmail;
 	private int bookingId;
 	private boolean isAssigned;
+	private boolean isInHouse; 
 
 	// Default constructor
 	public BookingDetails() {
@@ -122,5 +123,13 @@ public class BookingDetails {
 
 	public void setAssigned(boolean assigned) {
 		isAssigned = assigned;
+	}
+	
+	public boolean isInHouse() {
+	    return isInHouse;
+	}
+
+	public void setInHouse(boolean inHouse) {
+	    isInHouse = inHouse;
 	}
 }

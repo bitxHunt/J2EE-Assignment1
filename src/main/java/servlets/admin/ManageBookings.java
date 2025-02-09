@@ -134,6 +134,7 @@ public class ManageBookings extends HttpServlet {
 			rd.forward(request, response);
 
 		} catch (SQLException e) {
+			System.out.println(e.getMessage());
 			request.setAttribute("err", "Database error: " + e.getMessage());
 			RequestDispatcher rd = request.getRequestDispatcher("/error/500");
 			rd.forward(request, response);

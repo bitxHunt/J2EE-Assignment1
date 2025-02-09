@@ -49,7 +49,8 @@
 				class="card bg-base-200/50 hover:bg-base-200 transition-all duration-300 shadow-lg hover:shadow-primary/20">
 				<figure class="px-6 pt-6">
 					<img
-						src="<%=bundle.getImageUrl() != null ? bundle.getImageUrl() : "https://placehold.co/600x400"%>"
+						src="<%=(bundle.getImageUrl() != null && !bundle.getImageUrl().trim().isEmpty()) ? bundle.getImageUrl()
+		: "https://cdn-icons-png.flaticon.com/512/1999/1999150.png"%>"
 						alt="<%=bundle.getBundleName()%>"
 						class="rounded-xl aspect-video object-cover w-full" />
 				</figure>

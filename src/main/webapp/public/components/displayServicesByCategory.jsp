@@ -20,7 +20,7 @@
 	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body class="min-h-screen bg-base-100">
-	
+
 
 	<div class="container mx-auto px-4 py-8">
 		<%
@@ -51,7 +51,9 @@
 				class="card bg-base-200 shadow-xl hover:shadow-2xl transition-all duration-300">
 				<figure class="px-6 pt-6">
 					<img
-						src="<%=service.getImageUrl() != null ? service.getImageUrl() : "https://res.cloudinary.com/dnaulhgz8/image/upload/v1738989578/cleaning_service_otzmkd.png"%>"
+						src="<%=service.getImageUrl() == null || service.getImageUrl().trim().isEmpty()
+		? "https://cdn-icons-png.flaticon.com/512/1999/1999150.png"
+		: service.getImageUrl()%>"
 						alt="<%=service.getServiceName()%>"
 						class="rounded-xl object-cover w-full h-48" />
 				</figure>
