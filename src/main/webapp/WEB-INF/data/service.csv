@@ -1,11 +1,11 @@
 id,name,description,price,image_url,category_id
-1,Basic House Cleaning,Regular cleaning of living spaces including dusting vacuuming and bathroom cleaning,80.30,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg,1
-2,Office Cleaning,Standard cleaning for office spaces,120.50,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg,5
-3,Deep House Cleaning,Intensive cleaning including cabinet interiors baseboards and window tracks,200.25,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg,2
-4,Carpet Deep Clean,Professional carpet cleaning and stain removal,150.00,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg,3
-5,Window Cleaning,Interior and exterior window cleaning,100.75,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg,3
-6,Upholstery Cleaning,Cleaning of furniture and fabric surfaces,120.00,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg,3
-7,Move Out Clean,Detailed cleaning of empty property,250.00,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg,4
-8,Move In Clean,Fresh start cleaning for new property,250.00,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg,4
-9,Restaurant Cleaning,SPECIALIZED CLEANING FOR FOOD SERVICE AREAS,300.50,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg,5
-10,Retail Space Cleaning,Cleaning services for retail environments,180.50,https://res.cloudinary.com/dnaulhgz8/image/upload/v1732466480/default_cleaner_photo_xcufh7.jpg,5
+1,Basic House Cleaning,Regular cleaning of living spaces including dusting vacuuming and bathroom cleaning,80.3,https://res.cloudinary.com/dnaulhgz8/image/upload/v1739118736/cleaning_service_eksmx0.png,1
+2,Office Cleaning,Standard cleaning for office spaces,120.5,https://res.cloudinary.com/dnaulhgz8/image/upload/v1739118736/cleaning_service_eksmx0.png,5
+3,Deep House Cleaning,Intensive cleaning including cabinet interiors baseboards and window tracks,200.25,https://res.cloudinary.com/dnaulhgz8/image/upload/v1739118736/cleaning_service_eksmx0.png,2
+4,Carpet Deep Clean,Professional carpet cleaning and stain removal,150,https://res.cloudinary.com/dnaulhgz8/image/upload/v1739118736/cleaning_service_eksmx0.png,3
+5,Window Cleaning,Interior and exterior window cleaning,100.75,https://res.cloudinary.com/dnaulhgz8/image/upload/v1739118736/cleaning_service_eksmx0.png,3
+6,Upholstery Cleaning,Cleaning of furniture and fabric surfaces,120,https://res.cloudinary.com/dnaulhgz8/image/upload/v1739118736/cleaning_service_eksmx0.png,3
+7,Move Out Clean,Detailed cleaning of empty property,250,https://res.cloudinary.com/dnaulhgz8/image/upload/v1739118736/cleaning_service_eksmx0.png,4
+8,Move In Clean,Fresh start cleaning for new property,250,https://res.cloudinary.com/dnaulhgz8/image/upload/v1739118736/cleaning_service_eksmx0.png,4
+9,Restaurant Cleaning,SPECIALIZED CLEANING FOR FOOD SERVICE AREAS,300.5,https://res.cloudinary.com/dnaulhgz8/image/upload/v1739118736/cleaning_service_eksmx0.png,5
+10,Retail Space Cleaning,Cleaning services for retail environments,180.5,https://res.cloudinary.com/dnaulhgz8/image/upload/v1739118736/cleaning_service_eksmx0.png,5

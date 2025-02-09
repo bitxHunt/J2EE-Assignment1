@@ -201,13 +201,19 @@
 		<!-- Add New Address Section -->
 		<%
 		if (addresses == null || addresses.size() < 2) {
+			// Determine which type of address to add
+			String addressTypeToAdd = "HOME";
+			if (addresses != null && addresses.size() == 1) {
+				addressTypeToAdd = addresses.get(0).getAddType().getId() == 1 ? "OFFICE" : "HOME";
+			}
 		%>
 		<div class="card bg-base-100 shadow-xl text-center">
 			<div class="card-body">
 				<h3 class="text-xl font-bold mb-4">Add New Address</h3>
-				<a href="${pageContext.request.contextPath}/address/add"
+				<a
+					href="${pageContext.request.contextPath}/address/create?type=<%=addressTypeToAdd%>"
 					class="btn btn-primary gap-2 inline-flex items-center justify-center">
-					<span class="material-symbols-outlined">add</span> Add <%=addresses != null && addresses.size() == 1 && addresses.get(0).getAddType().getId() == 1 ? "Office" : "Home"%>
+					<span class="material-symbols-outlined">add</span> Add <%=addressTypeToAdd.equals("HOME") ? "Home" : "Office"%>
 					Address
 				</a>
 			</div>

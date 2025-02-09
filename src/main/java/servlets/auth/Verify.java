@@ -1,8 +1,10 @@
-	package servlets.auth;
+package servlets.auth;
 
 import middlewares.JWTMiddleware;
 import models.user.*;
 import models.status.*;
+import models.request.*;
+
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,6 +12,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import java.io.IOException;
 
@@ -38,13 +47,15 @@ public class Verify extends HttpServlet {
 		// Initialize objects
 		JWTMiddleware jwt = new JWTMiddleware();
 		UserDAO userDB = new UserDAO();
+		RequestDAO requestDB = new RequestDAO();
 		HttpSession session = request.getSession();
 
 		try {
 			// Retrieve the JWT token from the URL query parameter
 			String token = request.getParameter("token");
+			Request requestService = requestDB.getStatusByToken(token);
 
-			if (token == null || token.isEmpty()) {
+			if (token == null || token.isEmpty() || requestService.getStatus() == false) {
 				// Set an error message for missing token
 				request.setAttribute("errorMessage", "Token is missing or invalid.");
 				RequestDispatcher rd = request.getRequestDispatcher("/user/verification.jsp");
@@ -70,6 +81,9 @@ public class Verify extends HttpServlet {
 			int rowsAffected = userDB.updateStatus(userId, verifiedStatus);
 
 			if (rowsAffected > 0) {
+				// Set the token back to false
+				requestDB.setRequestStatus(false, token);
+
 				// Redirect to the profile page
 				User user = userDB.getUserById(userId);
 				session.setAttribute("userId", user.getId());
@@ -94,7 +108,9 @@ public class Verify extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
+
 		doGet(request, response);
+
 	}
 
 }

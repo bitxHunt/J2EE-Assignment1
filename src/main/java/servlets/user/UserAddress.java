@@ -40,8 +40,33 @@ public class UserAddress extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doPost(request, response);
+		HttpSession session = request.getSession();
+		String pathInfo = request.getPathInfo();
+
+		try {
+			// Check if user is logged in
+			Integer userId = (Integer) session.getAttribute("userId");
+			if (userId == null) {
+				throw new IllegalStateException("User not logged in");
+			}
+
+			switch (pathInfo == null ? "/create" : pathInfo) {
+			case "/create":
+				// Get the address type from query parameter
+				String addressType = request.getParameter("type");
+				if (addressType != null && (addressType.equals("HOME") || addressType.equals("OFFICE"))) {
+					request.setAttribute("addressType", addressType);
+					request.getRequestDispatcher("/user/createAddress.jsp").forward(request, response);
+				} else {
+					response.sendRedirect(request.getContextPath() + "/profile/edit");
+				}
+				break;
+			default:
+				response.sendRedirect(request.getContextPath() + "/profile/edit");
+			}
+		} catch (IllegalStateException e) {
+			response.sendRedirect(request.getContextPath() + "/login");
+		}
 	}
 
 	/**
@@ -58,6 +83,7 @@ public class UserAddress extends HttpServlet {
 		case "/add":
 			System.out.println("Running POST request for /add");
 			addNewAddress(request, response, session);
+			break;
 		case "/edit":
 			System.out.println("Running POST request for /edit");
 			editAddress(request, response, session);
@@ -88,6 +114,8 @@ public class UserAddress extends HttpServlet {
 
 			// Get the address type id value from the frontend and change accordingly.
 			Integer addTypeId = addType.equals("HOME") ? 1 : 2;
+			
+			System.out.println("Address Type Id from create Address: " + addTypeId);
 
 			// Validate input fields
 			if (address == null || address.trim().isEmpty() || unit == null || unit.trim().isEmpty()
@@ -104,7 +132,7 @@ public class UserAddress extends HttpServlet {
 			newAddress.setPostalCode(postalCode);
 
 			AddressDAO addressDB = new AddressDAO();
-			addressDB.createAddressByUserId(newAddress, userId, addTypeId);
+			addressDB.createAddressByUserId(newAddress, userId, addTypeId, true);
 
 			response.sendRedirect(request.getContextPath() + "/profile");
 		} catch (IllegalStateException e) {
@@ -145,15 +173,15 @@ public class UserAddress extends HttpServlet {
 			// Create an address object to pass to address creation
 			AddressType selectedAddType = new AddressType();
 			Address newAddress = new Address();
-			
+
 			newAddress.setAddress(address);
 			newAddress.setUnit(unit);
 			newAddress.setPostalCode(postal);
 			selectedAddType.setId(addTypeId);
 			newAddress.setAddType(selectedAddType);
-			
+
 			// Create record for the updated address
-			addressDB.createAddressByUserId(newAddress, userId, addTypeId);
+			addressDB.createAddressByUserId(newAddress, userId, addTypeId, true);
 
 			response.sendRedirect(request.getContextPath() + "/profile");
 		} catch (IllegalStateException e) {

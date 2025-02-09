@@ -79,8 +79,6 @@ public class BookingDAO {
 				// Set payment
 				payment.setAmount(rs.getFloat("amount"));
 				payment.setStatus(rs.getString("payment_status"));
-				payment.setPaymentIntentId(rs.getString("payment_intent_id"));
-				payment.setRefundId(rs.getString("refund_id"));
 				booking.setPayment(payment);
 
 				// Get services
@@ -168,8 +166,6 @@ public class BookingDAO {
 				// Set payment details
 				payment.setAmount(rs.getFloat("amount"));
 				payment.setStatus(rs.getString("payment_status"));
-				payment.setPaymentIntentId(rs.getString("payment_intent_id"));
-				payment.setRefundId(rs.getString("refund_id"));
 				booking.setPayment(payment);
 
 				// Get services for this booking

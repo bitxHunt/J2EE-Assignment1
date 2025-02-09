@@ -26,15 +26,17 @@ public class StripeConnection {
 		Stripe.apiKey = SecretsConfig.getStripeSecretKey();
 	}
 
+	// Set up Intent is to store the credit card info of the customer
+	// This is so that payment can be auto deducted if qr code were to not be scanned
 	public String createSetupIntent() throws StripeException {
 		SetupIntentCreateParams params = SetupIntentCreateParams.builder().addPaymentMethodType("card").build();
 
 		SetupIntent setupIntent = SetupIntent.create(params);
 
-		System.out.println("Stripe API Key: " + SecretsConfig.getStripeSecretKey());
 		return setupIntent.getClientSecret();
 	}
 
+	// Creating customer is necessary as we can retrieve the card details from it
 	public String createCustomerWithPaymentMethod(String email, String paymentMethodId) throws StripeException {
 		// Create Customer
 		CustomerCreateParams customerParams = CustomerCreateParams.builder().setEmail(email)
@@ -44,6 +46,7 @@ public class StripeConnection {
 		return customer.getId();
 	}
 
+	// Paynow QR Code Generation
 	public String createPayNowQR(float amount, String reference) throws StripeException {
 		String qrUrl = "";
 		try {

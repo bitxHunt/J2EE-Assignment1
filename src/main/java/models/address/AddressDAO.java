@@ -20,10 +20,10 @@ public class AddressDAO {
 	public ArrayList<Address> getAddressByUserId(int userId, boolean status) throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Address> addresses = new ArrayList<Address>();
-		AddressType addType = new AddressType();
 
 		try {
-			String sqlStr = "SELECT * FROM address WHERE user_id = ? AND is_active = ?;";
+			String sqlStr = "SELECT a.* FROM address a " + "WHERE a.user_id = ? " + "AND a.is_active = ? "
+					+ "ORDER BY a.address_type_id ASC;";
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, userId);
@@ -33,19 +33,29 @@ public class AddressDAO {
 
 			while (rs.next()) {
 				Address address = new Address();
-				address.setId(Integer.parseInt(rs.getString("id")));
+				AddressType addType = new AddressType(); // Create new AddressType for each address
+
+				int addressId = rs.getInt("id");
+				int typeId = rs.getInt("address_type_id");
+
+				// Set Address properties
+				address.setId(addressId);
 				address.setAddress(rs.getString("street"));
 				address.setUnit(rs.getString("unit"));
 				address.setPostalCode(rs.getInt("postal_code"));
-				addType.setId(Integer.parseInt(rs.getString("address_type_id")));
+
+				// Set AddressType
+				addType.setId(typeId);
 				address.setAddType(addType);
+
 				addresses.add(address);
 			}
-
 		} catch (Exception e) {
+			System.out.println("Error getting addresses: " + e.getMessage());
 			e.printStackTrace();
 		} finally {
-			conn.close();
+			if (conn != null)
+				conn.close();
 		}
 		return addresses;
 	}
@@ -104,29 +114,53 @@ public class AddressDAO {
 	}
 
 	// Used in conjunction with soft update and soft delete of the address
-
-	public int createAddressByUserId(Address address, int userId, int addTypeId) throws SQLException {
-
+	public int createAddressByUserId(Address address, int userId, int addTypeId, boolean status) throws SQLException {
 		Connection conn = DB.connect();
-		int rowsAffected = 0;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int generatedId = -1;
 
 		try {
-			String sqlStr = "INSERT INTO address (street, unit, postal_code, user_id, address_type_id) VALUES (?, ?, ?, ?, ?);";
-			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			String sqlStr = "INSERT INTO address (street, unit, postal_code, user_id, address_type_id, is_active) "
+					+ "VALUES (?, ?, ?, ?, ?, ?) RETURNING id;";
 
+			pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setString(1, address.getAddress());
 			pstmt.setString(2, address.getUnit());
 			pstmt.setInt(3, address.getPostalCode());
 			pstmt.setInt(4, userId);
 			pstmt.setInt(5, addTypeId);
+			pstmt.setBoolean(6, status);
 
-			rowsAffected = pstmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				generatedId = rs.getInt(1);
+			}
+
+			System.out.println("Created address with ID: " + generatedId);
+			return generatedId;
+
+		} catch (SQLException e) {
+			System.out.println("Error creating address: " + e.getMessage());
+			throw e;
 		} finally {
-			conn.close();
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+				}
 		}
-		return rowsAffected;
 	}
 
 	// Sample update of address if consistency were to be not considered {Not Used}

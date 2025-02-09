@@ -286,11 +286,14 @@ public class UserBooking extends HttpServlet {
 					String postal = request.getParameter("postal");
 
 					Address externalAddress = new Address();
+					AddressDAO addressDB = new AddressDAO();
 					externalAddress.setAddress(street);
 					externalAddress.setUnit(unit);
 					externalAddress.setPostalCode(Integer.parseInt(postal));
+					
+					int selectedExternalAddressId = addressDB.createAddressByUserId(externalAddress, userId, 3, false);
 
-					session.setAttribute("selectedAddress", externalAddress);
+					session.setAttribute("selectedAddress", selectedExternalAddressId);
 				}
 
 				// Get the selected address from the database if home or office is selected.
@@ -626,7 +629,9 @@ public class UserBooking extends HttpServlet {
 		}
 	}
 
-	// sending
+	// =========================================================================================================
+	// Mark Booking as Complete and receive the paynow QR code (POST routes)
+	// =========================================================================================================
 	private void postCompleteBooking(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws ServletException, IOException {
 		try {
@@ -660,7 +665,7 @@ public class UserBooking extends HttpServlet {
 				if (qrCodeUrl != null) {
 					// Send email with QR code
 					try (Client client = ClientBuilder.newClient()) {
-						String emailServiceURL = "http://localhost:8081/b2b/api/v1/email/payment";
+						String emailServiceURL = "http://localhost:8081/b2b/api/v1/email/invoice";
 						WebTarget target = client.target(emailServiceURL);
 
 						Request requestService = new Request();
@@ -682,8 +687,6 @@ public class UserBooking extends HttpServlet {
 				} else {
 					session.setAttribute("errorMsg", "Error generating PayNow QR code.");
 				}
-			} else {
-				// Rest of your existing error handling code...
 			}
 
 			response.sendRedirect(request.getContextPath() + "/book/view");

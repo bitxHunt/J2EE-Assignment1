@@ -166,7 +166,6 @@ public class UserProfile extends HttpServlet {
 			}
 
 			UserDAO userDB = new UserDAO();
-			AddressDAO addressDB = new AddressDAO();
 
 			String firstName = request.getParameter("firstName");
 			String lastName = request.getParameter("lastName");

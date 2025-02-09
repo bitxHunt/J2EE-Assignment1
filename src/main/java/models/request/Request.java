@@ -11,6 +11,7 @@ public class Request {
 	private EmailService emailService;
 	private Booking booking;
 	private String qrCodeUrl;
+	private Boolean status;
 
 	public Request() {
 		this.id = 0;
@@ -19,10 +20,30 @@ public class Request {
 		this.emailService = null;
 		this.booking = null;
 		this.qrCodeUrl = "";
+		this.status = null;
+	}
+
+	public Request(int id, String token, User user, EmailService emailService, Booking booking, String qrCodeUrl,
+			Boolean status) {
+		this.id = id;
+		this.token = token;
+		this.user = user;
+		this.emailService = emailService;
+		this.booking = booking;
+		this.qrCodeUrl = qrCodeUrl;
+		this.status = status;
 	}
 
 	public int getId() {
 		return id;
+	}
+
+	public Boolean getStatus() {
+		return status;
+	}
+
+	public void setStatus(Boolean status) {
+		this.status = status;
 	}
 
 	public void setId(int id) {

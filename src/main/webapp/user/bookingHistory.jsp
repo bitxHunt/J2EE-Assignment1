@@ -188,18 +188,7 @@
 					<!-- Action Buttons -->
 					<div class="card-actions justify-end mt-4">
 						<%
-						if (booking.getStatus().equals("PENDING")) {
-						%>
-						<form action="${pageContext.request.contextPath}/book/payment"
-							method="GET">
-							<input type="hidden" name="id" value="<%=booking.getId()%>">
-							<button class="btn btn-primary btn-sm gap-2">
-								<span class="material-symbols-outlined">payments</span> Make
-								Payment
-							</button>
-						</form>
-						<%
-						} else if (booking.getStatus().equals("CONFIRMED")) {
+						if (booking.getStatus().equals("CONFIRMED")) {
 						LocalDateTime now = LocalDateTime.now();
 						LocalDateTime serviceEndTime = LocalDateTime.of(booking.getDate(), booking.getTimeSlot().getEndTime());
 

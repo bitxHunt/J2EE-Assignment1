@@ -3,8 +3,6 @@ package models.payment;
 public class Payment {
 	private int id;
 	private String status;
-	private String refundId;
-	private String paymentIntentId;
 	private float amount;
 	private int bookingId;
 
@@ -12,8 +10,6 @@ public class Payment {
 	public Payment() {
 		this.id = 0;
 		this.status = "";
-		this.refundId = "";
-		this.paymentIntentId = "";
 		this.amount = 0;
 		this.bookingId = 0;
 	}
@@ -24,8 +20,6 @@ public class Payment {
 		// Booting Up
 		this.id = id;
 		this.status = status;
-		this.refundId = refundId;
-		this.paymentIntentId = paymentIntentId;
 		this.amount = amount;
 		this.bookingId = bookingId;
 	}
@@ -44,22 +38,6 @@ public class Payment {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-	public String getRefundId() {
-		return refundId;
-	}
-
-	public void setRefundId(String refundId) {
-		this.refundId = refundId;
-	}
-
-	public String getPaymentIntentId() {
-		return paymentIntentId;
-	}
-
-	public void setPaymentIntentId(String paymentIntentId) {
-		this.paymentIntentId = paymentIntentId;
 	}
 
 	public float getAmount() {

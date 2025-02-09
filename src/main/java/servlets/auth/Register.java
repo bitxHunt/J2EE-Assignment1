@@ -68,6 +68,7 @@ public class Register extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		// Get Data from the frontend
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
 		String email = request.getParameter("email");
@@ -77,6 +78,8 @@ public class Register extends HttpServlet {
 		String street = request.getParameter("street");
 		String unit = request.getParameter("unit");
 		String postalCode = request.getParameter("postalCode");
+		
+		// Default Image URL
 		String imageUrl = "https://res.cloudinary.com/dnaulhgz8/image/upload/v1732446530/bizbynfxadhthnoymbdo.webp";
 
 		int addTypeId = Integer.parseInt(request.getParameter("addressTypeId"));
@@ -104,7 +107,6 @@ public class Register extends HttpServlet {
 		UserDAO userDB = new UserDAO();
 		JWTMiddleware jwt = new JWTMiddleware();
 		
-
 		try {
 			
 			// Set User Object
@@ -130,6 +132,12 @@ public class Register extends HttpServlet {
 			if (user.getId() > 0) {
 				String verifyToken = jwt.createVerifyToken(user.getId());
 
+				// EmailService id 1 is the verification service
+				int emailServiceId = 1;
+				
+				// Add a request record into the request table with the token
+				RequestDAO requestDB = new RequestDAO();
+				
 				try (Client client = ClientBuilder.newClient()) {
 					String emailServiceURL = "http://localhost:8081/b2b/api/v1/email/verify";
 					WebTarget target = client.target(emailServiceURL);
@@ -142,6 +150,8 @@ public class Register extends HttpServlet {
 							.post(Entity.entity(requestService, MediaType.APPLICATION_JSON));
 
 					if (res.getStatus() == Response.Status.OK.getStatusCode()) {
+						// If email is sent successfully, add a record inside the request table.
+						requestDB.addRequest(verifyToken, user.getId(), emailServiceId);
 						response.sendRedirect(request.getContextPath() + "/login");
 					} else {
 						request.getSession().setAttribute("errMsg", "Failed to send verification email");

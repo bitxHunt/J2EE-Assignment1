@@ -103,8 +103,6 @@
 
 		<!-- Address and Booking Grid -->
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-			<!-- Address Section -->
-			<!-- Inside your profile.jsp, replace the Address Section with this: -->
 
 			<!-- Address Section -->
 			<div class="card bg-base-200 shadow-xl">

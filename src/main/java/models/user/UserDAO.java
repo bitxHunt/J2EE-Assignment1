@@ -147,7 +147,40 @@ public class UserDAO {
 		}
 		return user;
 	}
-	
+
+	// Get user by email
+	public User getUserByEmail(String email) throws SQLException {
+		Connection conn = DB.connect();
+		User user = new User();
+		Status status = new Status();
+
+		try {
+			String sqlStr = "SELECT * FROM users WHERE email = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+			pstmt.setString(1, email);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				user.setId(rs.getInt("id"));
+				user.setFirstName(rs.getString("first_name"));
+				user.setLastName(rs.getString("last_name"));
+				user.setEmail(rs.getString("email"));
+				user.setPassword(rs.getString("password"));
+				user.setRole(rs.getInt("role_id"));
+				status.setId(Integer.parseInt(rs.getString("status_id")));
+				user.setStatus(status);
+				user.setImageURL(rs.getString("img_url"));
+			}
+
+		} catch (Exception e) {
+			System.out.println("Error Getting User Information by Email.");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+		return user;
+	}
+
 	// Update Customer ID for Stripe Integration
 	public int updateCustomerId(int userId, String customerId) throws SQLException {
 		Connection conn = DB.connect();
@@ -193,7 +226,7 @@ public class UserDAO {
 					}
 				}
 
-				String sqlStr = "UPDATE users SET first_name = ?, last_name = ?, phone_number = ?, image_url = ? WHERE user_id = ?;";
+				String sqlStr = "UPDATE users SET first_name = ?, last_name = ?, phone_no = ?, img_url = ? WHERE id = ?;";
 				PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 				pstmt.setString(1, firstName);
 				pstmt.setString(2, lastName);
@@ -202,7 +235,7 @@ public class UserDAO {
 				pstmt.setInt(5, userId);
 				pstmt.executeUpdate();
 			} else {
-				String sqlStr = "UPDATE users SET first_name = ?, last_name = ?, phone_number = ? WHERE user_id = ?;";
+				String sqlStr = "UPDATE users SET first_name = ?, last_name = ?, phone_no = ? WHERE id = ?;";
 				PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 				pstmt.setString(1, firstName);
 				pstmt.setString(2, lastName);
@@ -272,12 +305,10 @@ public class UserDAO {
 		}
 		return user;
 	}
-	
 
 	// Author : Soe Zaw Aung
 	// Retrieve users with pagination support
-	
-	
+
 	public ArrayList<User> getStaffMembers() throws SQLException {
 
 		Connection conn = DB.connect();
@@ -307,7 +338,7 @@ public class UserDAO {
 		}
 		return users;
 	}
-	
+
 	public ArrayList<User> getUsersWithPagination(int page, int pageSize) throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<User> users = new ArrayList<>();
@@ -353,7 +384,7 @@ public class UserDAO {
 		}
 		return 0;
 	}
-	
+
 	public int getUserRoleById(Integer userId) throws SQLException {
 		Connection conn = DB.connect();
 		User user = new User();

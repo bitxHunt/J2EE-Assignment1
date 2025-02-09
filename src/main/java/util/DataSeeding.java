@@ -286,7 +286,7 @@ public class DataSeeding {
 				organizationDB.seedData(organization);
 			}
 		} catch (Exception e) {
-			System.out.println("Error Seeding Status Table.");
+			System.out.println("Error Seeding Organization Table.");
 			e.printStackTrace();
 		}
 	}
