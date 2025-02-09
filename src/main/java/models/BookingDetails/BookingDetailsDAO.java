@@ -32,9 +32,9 @@ public class BookingDetailsDAO {
 			ArrayList<Object> params = new ArrayList<>();
 
 			if (postalCode != null) {
-				sql.append(" AND a.postal_code = ?");
-				params.add(postalCode);
-			}
+		        sql.append(" AND CAST(a.postal_code AS VARCHAR) LIKE ?");
+		        params.add(postalCode + "%"); 
+		    }
 
 			if (startDate != null && endDate != null) {
 				sql.append(" AND cb.date BETWEEN ? AND ?");
@@ -139,44 +139,46 @@ public class BookingDetailsDAO {
 	}
 
 	public int getTotalBookings(Integer postalCode, LocalDate startDate, LocalDate endDate) throws SQLException {
-		Connection conn = null;
-		try {
-			conn = DB.connect();
-			StringBuilder sql = new StringBuilder("SELECT COUNT(*) as total FROM customer_booking cb "
-					+ "LEFT JOIN address a ON cb.address_id = a.id WHERE 1=1");
+	    Connection conn = null;
+	    try {
+	        conn = DB.connect();
+	        StringBuilder sql = new StringBuilder("SELECT COUNT(*) as total FROM customer_booking cb "
+	                + "LEFT JOIN address a ON cb.address_id = a.id WHERE 1=1");
 
-			ArrayList<Object> params = new ArrayList<>();
+	        ArrayList<Object> params = new ArrayList<>();
+	        if (postalCode != null ) {
+	            sql.append(" AND CAST(a.postal_code AS VARCHAR) LIKE ?");
+	            params.add(postalCode+ "%");
+	        }
 
-			if (postalCode != null) {
-				sql.append(" AND a.postal_code = ?");
-				params.add(postalCode);
-			}
+	        if (startDate != null && endDate != null) {
+	            sql.append(" AND cb.date BETWEEN ? AND ?");
+	            params.add(startDate);
+	            params.add(endDate);
+	        }
 
-			if (startDate != null && endDate != null) {
-				sql.append(" AND cb.date BETWEEN ? AND ?");
-				params.add(startDate);
-				params.add(endDate);
-			}
+	        PreparedStatement pstmt = conn.prepareStatement(sql.toString());
 
-			PreparedStatement pstmt = conn.prepareStatement(sql.toString());
+	        // Set parameters
+	        for (int i = 0; i < params.size(); i++) {
+	            if (params.get(i) instanceof LocalDate) {
+	                pstmt.setDate(i + 1, java.sql.Date.valueOf((LocalDate) params.get(i)));
+	            } else {
+	                pstmt.setObject(i + 1, params.get(i));
+	            }
+	        }
 
-			// Set parameters
-			for (int i = 0; i < params.size(); i++) {
-				if (params.get(i) instanceof LocalDate) {
-					pstmt.setDate(i + 1, java.sql.Date.valueOf((LocalDate) params.get(i)));
-				} else {
-					pstmt.setObject(i + 1, params.get(i));
-				}
-			}
-
-			ResultSet rs = pstmt.executeQuery();
-			if (rs.next()) {
-				return rs.getInt("total");
-			}
-			return 0;
-		} finally {
-			if (conn != null)
-				conn.close();
-		}
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            return rs.getInt("total");
+	        }
+	        return 0;
+	    } catch (SQLException e) {
+	        throw e;
+	    } finally {
+	        if (conn != null)
+	            conn.close();
+	    }
 	}
 }
+	
