@@ -1,3 +1,9 @@
+<%-- 
+    Name: Thiha Swan Htet
+    Class: DIT/FT/2B/01
+    Admin No: p2336671
+--%>
+
 <%@ page import="java.time.LocalDate"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="java.util.*"%>
@@ -16,7 +22,9 @@ DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd");
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Book Your Session</title>
-<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
+<link
+	href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css"
+	rel="stylesheet" type="text/css" />
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet"
 	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -84,8 +92,7 @@ DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd");
 			</form>
 
 			<!-- Time Slots Grid -->
-			<form method="post"
-				action="<%=request.getContextPath()%>/book">
+			<form method="post" action="<%=request.getContextPath()%>/book">
 				<input type="hidden" name="date"
 					value="<%=request.getParameter("date")%>">
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -120,38 +127,23 @@ DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd");
 										<span class="text-lg font-medium"><%=slot.getStartTime()%></span>
 										<span class="text-sm text-base-content/70"><%=slot.getCapacity()%>
 											Slots Available</span>
-									</div> 
-									
-									<% 
-									
-									if (slot.getCapacity() > 0) { 
-									
-									%> 
-									
-									<input type="radio" name="selected_slot"
-									value="<%=slot.getId()%>"
-									class="radio radio-primary" required /> 
-									
+									</div> <%
+ if (slot.getCapacity() > 0) {
+ %> <input type="radio" name="selected_slot"
+									value="<%=slot.getId()%>" class="radio radio-primary" required />
+
 									<%
-									
- 									} else {
- 									
- 									%> 
- 									
- 									<span class="badge badge-error gap-2"> <svg
+									} else {
+									%> <span class="badge badge-error gap-2"> <svg
 											xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
 											fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round"
 												stroke-linejoin="round" stroke-width="2"
 												d="M6 18L18 6M6 6l12 12" />
                                         </svg> Fully Booked
-									</span> 
-									
-									<% 
-									
- 									}
- 
- 									%>
+								</span> <%
+ }
+ %>
 								</label>
 								<%
 								}

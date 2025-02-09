@@ -1,3 +1,9 @@
+/***********************************************************
+* Name: Thiha Swan Htet, Harry
+* Class: DIT/FT/2B/01
+* Admin No: P2336671
+************************************************************/
+
 package util;
 
 import com.stripe.exception.ApiConnectionException;
@@ -94,6 +100,7 @@ public class StripeConnection {
 		return qrUrl;
 	}
 
+	// Not really used. Just to test
 	// Create a product in stripe dashboard by the stripe API
 	public void createProduct(String name, String description, boolean isActive, Integer price, String imageUrl) {
 		String systemMessage = "Running Stripe Product Creation Function";
