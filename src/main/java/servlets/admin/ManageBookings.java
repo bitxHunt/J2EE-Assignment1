@@ -16,6 +16,7 @@ import models.user.UserDAO;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 @WebServlet("/admin/manage-bookings")
@@ -34,20 +35,60 @@ public class ManageBookings extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			 String action = request.getParameter("action");
-		        
-		        if ("cancel".equals(action)) {
-		            String bookingIdStr = request.getParameter("bookingId");
-		            if (bookingIdStr != null && !bookingIdStr.trim().isEmpty()) {
-		                int bookingId = Integer.parseInt(bookingIdStr);
-		                boolean success = bookingDetailsDAO.cancelBooking(bookingId);
-		                if (success) {
-		                    response.sendRedirect(request.getContextPath() + "/admin/manage-bookings?success=true");
-		                    return;
-		                }
-		            }
-		        }
-		        
+			String action = request.getParameter("action");
+
+			if ("cancel".equals(action)) {
+				String bookingIdStr = request.getParameter("bookingId");
+				if (bookingIdStr != null && !bookingIdStr.trim().isEmpty()) {
+					int bookingId = Integer.parseInt(bookingIdStr);
+					boolean success = bookingDetailsDAO.cancelBooking(bookingId);
+					if (success) {
+						response.sendRedirect(request.getContextPath() + "/admin/manage-bookings?success=true");
+						return;
+					}
+				}
+			}
+
+			// Get filter parameters
+			String postalCodeStr = request.getParameter("postalCode");
+			String startDateStr = request.getParameter("startDate");
+			String endDateStr = request.getParameter("endDate");
+
+			Integer postalCode = null;
+			LocalDate startDate = null;
+			LocalDate endDate = null;
+
+			// Parse postal code if provided
+			if (postalCodeStr != null && !postalCodeStr.trim().isEmpty()) {
+				try {
+					postalCode = Integer.parseInt(postalCodeStr.trim());
+					if (postalCode < 0 || postalCode > 999999) {
+						request.setAttribute("error", "Invalid postal code range");
+						postalCode = null;
+					}
+				} catch (NumberFormatException e) {
+					request.setAttribute("error", "Invalid postal code format");
+				}
+			}
+
+			// Parse dates if provided
+			if (startDateStr != null && !startDateStr.trim().isEmpty() && endDateStr != null
+					&& !endDateStr.trim().isEmpty()) {
+				try {
+					startDate = LocalDate.parse(startDateStr);
+					endDate = LocalDate.parse(endDateStr);
+
+					// Validate date range
+					if (endDate.isBefore(startDate)) {
+						request.setAttribute("error", "End date cannot be before start date");
+						startDate = null;
+						endDate = null;
+					}
+				} catch (Exception e) {
+					request.setAttribute("error", "Invalid date format");
+				}
+			}
+
 			// Get page parameter, default to 1 if not present
 			int page = 1;
 			String pageParam = request.getParameter("page");
@@ -62,15 +103,15 @@ public class ManageBookings extends HttpServlet {
 				}
 			}
 
-			// Get bookings for current page
-			ArrayList<BookingDetails> bookings = bookingDetailsDAO.getAllBookings(page);
+			// Get bookings for current page with filters
+			ArrayList<BookingDetails> bookings = bookingDetailsDAO.getAllBookings(page, postalCode, startDate, endDate);
 
-			// Get total bookings for pagination
-			int totalBookings = bookingDetailsDAO.getTotalBookings();
+			// Get total bookings for pagination with filters
+			int totalBookings = bookingDetailsDAO.getTotalBookings(postalCode, startDate, endDate);
 			int totalPages = (int) Math.ceil((double) totalBookings / PAGE_SIZE);
 
 			// Check if requested page exists
-			if (page > totalPages) {
+			if (page > totalPages && totalPages > 0) {
 				response.sendRedirect(request.getContextPath() + "/error/404ErrorPage.jsp");
 				return;
 			}
@@ -78,6 +119,12 @@ public class ManageBookings extends HttpServlet {
 			// Get staff list for modal
 			ArrayList<User> staffList = userDAO.getStaffMembers();
 
+			// Store filter values in request for form persistence
+			request.setAttribute("postalCode", postalCodeStr);
+			request.setAttribute("startDate", startDateStr);
+			request.setAttribute("endDate", endDateStr);
+
+			// Set attributes for JSP
 			request.setAttribute("bookings", bookings);
 			request.setAttribute("currentPage", page);
 			request.setAttribute("totalPages", totalPages);
@@ -105,15 +152,15 @@ public class ManageBookings extends HttpServlet {
 					|| staffIdStr.trim().isEmpty()) {
 				throw new IllegalArgumentException("Please select both booking and staff");
 			}
-			
-			System.out.println("booking id str is "+bookingIdStr);
-			System.out.println("booking id str is "+staffIdStr);
+
+			System.out.println("booking id str is " + bookingIdStr);
+			System.out.println("booking id str is " + staffIdStr);
 
 			// Parse values
 			int bookingId = Integer.parseInt(bookingIdStr.trim());
 			int staffId = Integer.parseInt(staffIdStr.trim());
-			System.out.println("booking id is "+bookingId);
-			System.out.println("booking id is "+staffId);
+			System.out.println("booking id is " + bookingId);
+			System.out.println("booking id is " + staffId);
 
 			// Validate values
 			if (bookingId <= 0 || staffId <= 0) {
@@ -139,8 +186,7 @@ public class ManageBookings extends HttpServlet {
 			request.setAttribute("err", "Database error: " + e.getMessage());
 			RequestDispatcher rd = request.getRequestDispatcher("/error/500");
 			rd.forward(request, response);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			request.setAttribute("err", "Database error: " + e.getMessage());
 			RequestDispatcher rd = request.getRequestDispatcher("/error/500");
 			rd.forward(request, response);
