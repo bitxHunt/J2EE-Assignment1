@@ -101,16 +101,16 @@ public class UserProfile extends HttpServlet {
 
 			// Get user data
 			User user = userDB.getUserById(userId);
-
-			// Get home address (address_type_id = 1 for home)
-			Address homeAddress = addressDB.getUserSpecificAddress(userId, 1);
+			
+			// Get User Addresses
+			ArrayList<Address> addresses = addressDB.getAddressByUserId(userId, true);
 
 			// Get all bookings ordered by date DESC
 			ArrayList<Booking> bookings = bookingDB.getAllBookings(userId);
 
 			// Set attributes for JSP
 			request.setAttribute("user", user);
-			request.setAttribute("homeAddress", homeAddress);
+			request.setAttribute("addresses", addresses);
 			request.setAttribute("bookings", bookings);
 
 			request.getRequestDispatcher("/user/profile.jsp").forward(request, response);
@@ -140,12 +140,10 @@ public class UserProfile extends HttpServlet {
 			AddressDAO addDB = new AddressDAO();
 
 			User user = userDB.getUserById(userId);
-//			Address homeAddress = addDB.getAddressByUserId(userId, 1);
-//			Address officeAddress = addDB.getAddressByUserId(userId, 2);
+			ArrayList<Address> addresses = addDB.getAddressByUserId(userId, true);
 
 			request.setAttribute("user", user);
-//			request.setAttribute("homeAddress", homeAddress);
-//			request.setAttribute("officeAddress", officeAddress);
+			request.setAttribute("addresses", addresses);
 
 			request.getRequestDispatcher("/user/profileEdit.jsp").forward(request, response);
 		} catch (IllegalStateException e) {

@@ -8,7 +8,7 @@ package servlets.user;
 
 import models.address.Address;
 import models.address.AddressDAO;
-
+import models.address.AddressType;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -55,35 +55,56 @@ public class UserAddress extends HttpServlet {
 		String pathInfo = request.getPathInfo();
 
 		switch (pathInfo == null ? "/edit" : pathInfo) {
+		case "/add":
+			System.out.println("Running POST request for /add");
+			addNewAddress(request, response, session);
 		case "/edit":
-			System.out.println("Running POST request for /address/edit");
-			handleEditAddress(request, response, session);
+			System.out.println("Running POST request for /edit");
+			editAddress(request, response, session);
 			break;
 		case "/delete":
-			System.out.println("Running POST request for /address/delete");
-			handleDeleteAddress(request, response, session);
+			System.out.println("Running POST request for /delete");
+			deleteAddress(request, response, session);
 			break;
 		default:
 			response.sendRedirect(request.getContextPath() + "/address");
 		}
 	}
 
-	public void handleEditAddress(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+	public void addNewAddress(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws ServletException, IOException {
+
 		try {
 			Integer userId = (Integer) session.getAttribute("userId");
 			if (userId == null) {
 				throw new IllegalStateException("User not logged in");
 			}
 
-			String strAddId = request.getParameter("addressId");
-			Integer addressId = Integer.parseInt(strAddId);
 			String address = request.getParameter("address");
-			String postalCode = request.getParameter("postalCode");
 			String unit = request.getParameter("unit");
+			Integer postalCode = Integer.parseInt(request.getParameter("postalCode"));
+
+			String addType = request.getParameter("addressType");
+
+			// Get the address type id value from the frontend and change accordingly.
+			Integer addTypeId = addType.equals("HOME") ? 1 : 2;
+
+			// Validate input fields
+			if (address == null || address.trim().isEmpty() || unit == null || unit.trim().isEmpty()
+					|| postalCode == null || postalCode <= 0) {
+
+				request.getSession().setAttribute("errMsg", "Please Enter Values For All The Required Fields.");
+				response.sendRedirect(request.getContextPath() + "/profile/edit");
+				return;
+			}
+
+			Address newAddress = new Address();
+			newAddress.setAddress(address);
+			newAddress.setUnit(unit);
+			newAddress.setPostalCode(postalCode);
 
 			AddressDAO addressDB = new AddressDAO();
-			addressDB.updateAddressById(userId, addressId, address, Integer.parseInt(postalCode), unit);
+			addressDB.createAddressByUserId(newAddress, userId, addTypeId);
 
 			response.sendRedirect(request.getContextPath() + "/profile");
 		} catch (IllegalStateException e) {
@@ -96,7 +117,8 @@ public class UserAddress extends HttpServlet {
 		}
 	}
 
-	public void handleDeleteAddress(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+	// Soft Edit Address
+	public void editAddress(HttpServletRequest request, HttpServletResponse response, HttpSession session)
 			throws ServletException, IOException {
 		try {
 			Integer userId = (Integer) session.getAttribute("userId");
@@ -104,12 +126,60 @@ public class UserAddress extends HttpServlet {
 				throw new IllegalStateException("User not logged in");
 			}
 
-			String strAddId = request.getParameter("addressId");
-			Integer addressId = Integer.parseInt(strAddId);
-			System.out.println("Address ID: " + addressId);
+			// Get data from the frontend
+			Integer addId = Integer.parseInt(request.getParameter("addressId"));
+			String address = request.getParameter("address");
+			String unit = request.getParameter("unit");
+			Integer postal = Integer.parseInt(request.getParameter("postalCode"));
+			String addType = request.getParameter("addressType");
+
+			// Get the address type id value from the frontend and change accordingly.
+			Integer addTypeId = addType.equals("HOME") ? 1 : 2;
 
 			AddressDAO addressDB = new AddressDAO();
-			addressDB.deleteAddressById(userId, addressId);
+
+			// First update the status of the address to false
+			// This is to maintain data integrity with the booking history
+			addressDB.updateAddressStatus(userId, addId, false);
+
+			// Create an address object to pass to address creation
+			AddressType selectedAddType = new AddressType();
+			Address newAddress = new Address();
+			
+			newAddress.setAddress(address);
+			newAddress.setUnit(unit);
+			newAddress.setPostalCode(postal);
+			selectedAddType.setId(addTypeId);
+			newAddress.setAddType(selectedAddType);
+			
+			// Create record for the updated address
+			addressDB.createAddressByUserId(newAddress, userId, addTypeId);
+
+			response.sendRedirect(request.getContextPath() + "/profile");
+		} catch (IllegalStateException e) {
+			System.out.println("Session expired: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("errorMessage", "Please log in to continue booking.");
+			response.sendRedirect(request.getContextPath() + "/login");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	// Soft Delete Address
+	public void deleteAddress(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+			throws ServletException, IOException {
+		try {
+			Integer userId = (Integer) session.getAttribute("userId");
+			if (userId == null) {
+				throw new IllegalStateException("User not logged in");
+			}
+
+			Integer addId = Integer.parseInt(request.getParameter("addressId"));
+			System.out.println("Address ID: " + addId);
+
+			AddressDAO addressDB = new AddressDAO();
+			addressDB.updateAddressStatus(userId, addId, false);
 
 			response.sendRedirect(request.getContextPath() + "/profile");
 		} catch (IllegalStateException e) {

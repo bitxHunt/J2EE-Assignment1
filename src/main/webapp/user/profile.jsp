@@ -22,7 +22,7 @@
 <body class="bg-base-300 min-h-screen">
 	<%
 	User user = (User) request.getAttribute("user");
-	Address homeAddress = (Address) request.getAttribute("homeAddress");
+	ArrayList<Address> addresses = (ArrayList<Address>) request.getAttribute("addresses");
 	ArrayList<Booking> bookings = (ArrayList<Booking>) request.getAttribute("bookings");
 	Booking latestBooking = bookings != null && !bookings.isEmpty() ? bookings.get(0) : null;
 	%>
@@ -104,43 +104,67 @@
 		<!-- Address and Booking Grid -->
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 			<!-- Address Section -->
+			<!-- Inside your profile.jsp, replace the Address Section with this: -->
+
+			<!-- Address Section -->
 			<div class="card bg-base-200 shadow-xl">
 				<div class="card-body">
 					<div class="flex justify-between items-center mb-6">
-						<h2 class="card-title text-2xl">My Address</h2>
+						<h2 class="card-title text-2xl">My Addresses</h2>
+						<a href="${pageContext.request.contextPath}/profile/edit"
+							class="btn btn-ghost btn-sm"> <span
+							class="material-symbols-outlined">edit</span> Manage Addresses
+						</a>
 					</div>
 
 					<%
-					if (homeAddress != null && homeAddress.getAddress() != null) {
+					if (addresses != null && !addresses.isEmpty()) {
+						for (Address address : addresses) {
+							boolean isHome = address.getAddType().getId() == 1;
 					%>
-					<!-- Home Address Card -->
+					<!-- Address Card -->
 					<div
 						class="bg-base-100 rounded-xl p-6 mb-4 hover:bg-base-100/80 transition-colors">
 						<div class="flex items-center gap-4 mb-4">
-							<div class="p-3 bg-primary/10 rounded-full">
-								<span class="material-symbols-outlined text-primary text-2xl">home</span>
+							<div
+								class="p-3 <%=isHome ? "bg-primary/10" : "bg-secondary/10"%> rounded-full">
+								<span
+									class="material-symbols-outlined <%=isHome ? "text-primary" : "text-secondary"%> text-2xl">
+									<%=isHome ? "home" : "apartment"%>
+								</span>
 							</div>
 							<div>
-								<h3 class="font-bold text-lg">Home Address</h3>
+								<h3 class="font-bold text-lg"><%=isHome ? "Home" : "Office"%>
+									Address
+								</h3>
+								<%
+								if (isHome) {
+								%>
 								<div class="badge badge-primary badge-sm">Primary</div>
+								<%
+								}
+								%>
 							</div>
 						</div>
 						<div class="space-y-2 ml-2 border-l-2 border-primary/20 pl-4">
-							<p class="text-base-content/90"><%=homeAddress.getAddress()%></p>
+							<p class="text-base-content/90"><%=address.getAddress()%></p>
 							<p class="text-base-content/75">
-								Unit #<%=homeAddress.getUnit()%></p>
+								Unit #<%=address.getUnit()%></p>
 							<p class="text-base-content/75">
 								Singapore
-								<%=homeAddress.getPostalCode()%></p>
+								<%=address.getPostalCode()%></p>
 						</div>
 					</div>
 					<%
+					}
 					} else {
 					%>
 					<div class="text-center py-8">
 						<span
 							class="material-symbols-outlined text-4xl text-base-content/30 mb-4">location_off</span>
-						<p class="text-base-content/60">No address added yet</p>
+						<p class="text-base-content/60">No addresses added yet</p>
+						<a href="${pageContext.request.contextPath}/profile/edit"
+							class="btn btn-primary btn-sm mt-4">Add Address</a>
 					</div>
 					<%
 					}
