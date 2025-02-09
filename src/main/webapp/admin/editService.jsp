@@ -110,9 +110,11 @@
 
 							<div class="form-control">
 								<label class="label">Service Image</label> <img
-									src="<%=service.getImageUrl()%>" alt="Current service image"
-									class="max-w-xs mb-2"> <input type="file"
-									name="serviceImage" accept="image/*"
+									src="<%=service.getImageUrl() == null || service.getImageUrl().trim().isEmpty()
+		? "https://cdn-icons-png.flaticon.com/512/1999/1999150.png"
+		: service.getImageUrl()%>"
+									alt="Current service image" class="max-w-xs mb-2"> <input
+									type="file" name="serviceImage" accept="image/*"
 									class="file-input file-input-bordered w-full">
 							</div>
 

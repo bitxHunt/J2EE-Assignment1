@@ -98,9 +98,11 @@
 
 						<div class="form-control">
 							<label class="label">Bundle Image</label> <img
-								src="<%=bundle.getImageUrl()%>" alt="Current bundle image"
-								class="max-w-xs mb-2 rounded-lg"> <input type="file"
-								name="bundleImage" accept="image/*"
+								src="<%=bundle.getImageUrl() == null || bundle.getImageUrl().trim().isEmpty()
+		? "https://cdn-icons-png.flaticon.com/512/1999/1999150.png"
+		: bundle.getImageUrl()%>"
+								alt="Current bundle image" class="max-w-xs mb-2 rounded-lg">
+							<input type="file" name="bundleImage" accept="image/*"
 								class="file-input file-input-bordered w-full">
 						</div>
 
@@ -138,7 +140,7 @@
 								onclick="window.location='${pageContext.request.contextPath}/admin'"
 								class="btn btn-neutral w-full sm:w-auto">Cancel</button>
 
-							
+
 							<button type="submit" form="deleteBundleForm"
 								class="btn btn-error w-full sm:w-auto">Delete Bundle</button>
 
