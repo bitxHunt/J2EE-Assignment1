@@ -41,20 +41,20 @@
 					<label class="label"> <span class="label-text">Postal
 							Code</span>
 					</label> <input type="number" name="postalCode" value="${postalCode}"
-						placeholder="Enter"
-						class="input input-bordered w-full max-w-xs" min="0" max="999999" />
+						placeholder="Enter" class="input input-bordered w-full max-w-xs"
+						min="0" max="999999" />
 				</div>
 
 				<div class="form-control">
 					<label class="label"> <span class="label-text">Start
-							Date</span>
+							Date (Scheduled date)</span>
 					</label> <input type="date" name="startDate" value="${startDate}"
 						class="input input-bordered w-full max-w-xs" />
 				</div>
 
 				<div class="form-control">
 					<label class="label"> <span class="label-text">End
-							Date</span>
+							Date (Scheduled date)</span>
 					</label> <input type="date" name="endDate" value="${endDate}"
 						class="input input-bordered w-full max-w-xs" />
 				</div>
@@ -73,8 +73,8 @@
 					<tr>
 						<th>ID</th>
 						<th>Status</th>
-						<th>Scheduled Date</th>
 						<th>Booked At</th>
+						<th>Scheduled Date</th>
 						<th>Time Slot</th>
 						<th>Address</th>
 						<th>Customer Phone</th>
@@ -94,26 +94,31 @@
                                                   'badge-error'}">
 									${booking.status}</div>
 							</td>
-							<td class="scheduled-date">${booking.scheduledDate}</td>
 							<td class="booked-at">${booking.bookedAt}</td>
+							<td class="scheduled-date">${booking.scheduledDate}</td>
 							<td>${booking.startTime}-${booking.endTime}</td>
 							<td>
 								<div class="max-w-xs truncate">${booking.street},
 									#${booking.unit}, ${booking.postalCode}</div>
 							</td>
 							<td>${booking.customerPhone}</td>
-							<td><span
-								class="${booking.assignedStaffEmail != null ? 'text-success' : 'text-error'}">
-									${booking.assignedStaffEmail != null ? booking.assignedStaffEmail : 'Not Assigned'}
-									${booking.assignedStaffEmail != null ? (booking.inHouse ? ' (In-house)' : ' (Agency)') : ''}
-							</span></td>
-							<td><c:if test="${!booking.assigned}">
-									<button onclick="openAssignModal(${booking.bookingId})"
-										class="btn btn-primary btn-sm">Assign Staff</button>
-								</c:if> <c:if test="${booking.assigned}">
-									<button onclick="confirmCancel(${booking.bookingId})"
-										class="btn btn-error btn-sm">Cancel</button>
-								</c:if></td>
+							<td><c:choose>
+									<c:when test="${booking.status == 'PENDING'}">
+										<button onclick="openAssignModal(${booking.bookingId})"
+											class="btn btn-primary btn-sm">Assign Staff</button>
+									</c:when>
+									<c:when test="${booking.status == 'CONFIRMED'}">
+										<button onclick="confirmCancel(${booking.bookingId})"
+											class="btn btn-error btn-sm">Cancel</button>
+									</c:when>
+									<c:when test="${booking.status == 'COMPLETED'}">
+										<span class="text-base-content/50">-</span>
+									</c:when>
+									<c:when test="${booking.status == 'CANCELED'}">
+										<button onclick="openAssignModal(${booking.bookingId})"
+											class="btn btn-primary btn-sm">Assign Staff</button>
+									</c:when>
+								</c:choose></td>
 						</tr>
 					</c:forEach>
 				</tbody>
