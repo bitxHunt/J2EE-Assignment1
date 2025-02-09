@@ -243,7 +243,7 @@ public class UserBooking extends HttpServlet {
 			// Get the user's address from the database for the GET request
 			AddressDAO addressDB = new AddressDAO();
 
-			ArrayList<Address> addresses = addressDB.getAddressByUserId(userId);
+			ArrayList<Address> addresses = addressDB.getAddressByUserId(userId, true);
 
 			// Set attributes to pass to the front end
 			request.setAttribute("addresses", addresses);

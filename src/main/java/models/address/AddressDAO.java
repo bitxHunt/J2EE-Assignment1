@@ -17,16 +17,17 @@ import java.util.ArrayList;
 
 public class AddressDAO {
 
-	public ArrayList<Address> getAddressByUserId(int userId) throws SQLException {
+	public ArrayList<Address> getAddressByUserId(int userId, boolean status) throws SQLException {
 		Connection conn = DB.connect();
 		ArrayList<Address> addresses = new ArrayList<Address>();
 		AddressType addType = new AddressType();
 
 		try {
-			String sqlStr = "SELECT * FROM address WHERE user_id = ?;";
+			String sqlStr = "SELECT * FROM address WHERE user_id = ? AND is_active = ?;";
 
 			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
 			pstmt.setInt(1, userId);
+			pstmt.setBoolean(2, status);
 
 			ResultSet rs = pstmt.executeQuery();
 
@@ -47,38 +48,6 @@ public class AddressDAO {
 			conn.close();
 		}
 		return addresses;
-	}
-
-	public Address getUserSpecificAddress(int userId, int addTypeId) throws SQLException {
-		Connection conn = DB.connect();
-		Address address = new Address();
-		AddressType addType = new AddressType();
-
-		try {
-			String sqlStr = "SELECT * FROM address WHERE user_id = ? AND address_type_id = ?;";
-
-			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
-			pstmt.setInt(1, userId);
-			pstmt.setInt(2, addTypeId);
-
-			ResultSet rs = pstmt.executeQuery();
-
-			while (rs.next()) {
-				address.setId(Integer.parseInt(rs.getString("id")));
-				address.setAddress(rs.getString("street"));
-				address.setUnit(rs.getString("unit"));
-				address.setPostalCode(rs.getInt("postal_code"));
-				address.setUserId(userId);
-				addType.setId(addTypeId);
-				address.setAddType(addType);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			conn.close();
-		}
-		return address;
 	}
 
 	public Address getAddressById(int addId) throws SQLException {
@@ -112,6 +81,30 @@ public class AddressDAO {
 		return address;
 	}
 
+	// Changing the address status to inactive for soft update
+	// If the address is updated using the UPDATE SET SQL, it will create
+	// inconsistencies in the
+	// booking history mapping to the wrong address
+
+	public void updateAddressStatus(int userId, int addId, boolean status) throws SQLException {
+		Connection conn = DB.connect();
+		try {
+			String sqlStr = "UPDATE address SET is_active = ? WHERE id = ? AND user_id = ?;";
+			PreparedStatement pstmt = conn.prepareStatement(sqlStr);
+
+			pstmt.setBoolean(1, status);
+			pstmt.setInt(2, addId);
+			pstmt.setInt(3, userId);
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+	}
+
+	// Used in conjunction with soft update and soft delete of the address
+
 	public int createAddressByUserId(Address address, int userId, int addTypeId) throws SQLException {
 
 		Connection conn = DB.connect();
@@ -136,6 +129,7 @@ public class AddressDAO {
 		return rowsAffected;
 	}
 
+	// Sample update of address if consistency were to be not considered {Not Used}
 	public void updateAddressById(Integer userId, Integer addressId, String address, Integer postalCode, String unit)
 			throws SQLException {
 		Connection conn = DB.connect();
@@ -155,6 +149,8 @@ public class AddressDAO {
 		}
 	}
 
+	// Sample deletion of address if consistency were to be not considered {Not
+	// Used}
 	public void deleteAddressById(Integer userId, Integer addressId) throws SQLException {
 		Connection conn = DB.connect();
 		try {
@@ -170,6 +166,7 @@ public class AddressDAO {
 		}
 	}
 
+	// Seeding Address Type Data
 	public void createAddressType(AddressType addressType) throws SQLException {
 		Connection conn = DB.connect();
 

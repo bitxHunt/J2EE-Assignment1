@@ -8,6 +8,7 @@
 	pageEncoding="UTF-8"%>
 <%@ page import="models.user.User"%>
 <%@ page import="models.address.Address"%>
+<%@ page import="java.util.ArrayList"%>
 
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -25,8 +26,7 @@
 <body class="bg-base-300 min-h-screen">
 	<%
 	User user = (User) request.getAttribute("user");
-	Address homeAddress = (Address) request.getAttribute("homeAddress");
-	Address officeAddress = (Address) request.getAttribute("officeAddress");
+	ArrayList<Address> addresses = (ArrayList<Address>) request.getAttribute("addresses");
 	%>
 
 	<!-- Navbar -->
@@ -123,52 +123,71 @@
 		<!-- Addresses Section -->
 		<h2 class="text-2xl font-bold mt-8 mb-4">My Addresses</h2>
 
-		<!-- Home Address -->
 		<%
-		if (homeAddress != null) {
+		if (addresses != null) {
+			for (Address address : addresses) {
+				boolean isHome = address.getAddType().getId() == 1;
 		%>
-		<div class="card bg-base-100 shadow-xl">
+		<div class="card bg-base-100 shadow-xl mb-6">
 			<div class="card-body">
+				<div class="flex items-center justify-between mb-6">
+					<div class="flex items-center gap-4">
+						<div
+							class="p-3 <%=isHome ? "bg-primary/10" : "bg-secondary/10"%> rounded-full">
+							<span
+								class="material-symbols-outlined <%=isHome ? "text-primary" : "text-secondary"%> text-2xl">
+								<%=isHome ? "home" : "apartment"%>
+							</span>
+						</div>
+						<h3 class="text-xl font-bold"><%=isHome ? "Home" : "Office"%>
+							Address
+						</h3>
+					</div>
+					<div class="flex gap-2">
+						<form action="${pageContext.request.contextPath}/address/delete"
+							method="POST" class="inline"
+							onsubmit="return confirm('Are you sure you want to delete this address?')">
+							<input type="hidden" name="addressId"
+								value="<%=address.getId()%>">
+							<button type="submit" class="btn btn-error btn-sm gap-2">
+								<span class="material-symbols-outlined">delete</span> Delete
+							</button>
+						</form>
+					</div>
+				</div>
+
 				<form action="${pageContext.request.contextPath}/address/edit"
 					method="POST">
-					<input type="hidden" name="addressId"
-						value="<%=homeAddress.getId()%>"> <input type="hidden"
-						name="addressType" value="HOME">
-
-					<div class="flex items-center gap-4 mb-6">
-						<div class="p-3 bg-primary/10 rounded-full">
-							<span class="material-symbols-outlined text-primary text-2xl">home</span>
-						</div>
-						<h3 class="text-xl font-bold">Home Address</h3>
-					</div>
+					<input type="hidden" name="addressId" value="<%=address.getId()%>">
+					<input type="hidden" name="addressType"
+						value="<%=isHome ? "HOME" : "OFFICE"%>">
 
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<div class="form-control">
 							<label class="label"><span class="label-text">Address</span></label>
 							<input type="text" name="address"
-								value="<%=homeAddress.getAddress()%>"
-								class="input input-bordered" required />
+								value="<%=address.getAddress()%>" class="input input-bordered"
+								required />
 						</div>
 
 						<div class="form-control">
 							<label class="label"><span class="label-text">Unit
 									Number</span></label> <input type="text" name="unit"
-								value="<%=homeAddress.getUnit()%>" class="input input-bordered"
+								value="<%=address.getUnit()%>" class="input input-bordered"
 								required />
 						</div>
 
 						<div class="form-control">
 							<label class="label"><span class="label-text">Postal
 									Code</span></label> <input type="text" name="postalCode"
-								value="<%=homeAddress.getPostalCode()%>"
+								value="<%=address.getPostalCode()%>"
 								class="input input-bordered" required pattern="[0-9]{6}" />
 						</div>
 					</div>
 
-					<div class="flex justify-end gap-4 mt-6">
+					<div class="flex justify-end mt-6">
 						<button type="submit" class="btn btn-primary gap-2">
-							<span class="material-symbols-outlined">save</span> Update Home
-							Address
+							<span class="material-symbols-outlined">save</span> Save Changes
 						</button>
 					</div>
 				</form>
@@ -176,73 +195,19 @@
 		</div>
 		<%
 		}
-		%>
-
-		<!-- Office Address -->
-		<%
-		if (officeAddress != null) {
-		%>
-		<div class="card bg-base-100 shadow-xl">
-			<div class="card-body">
-				<form action="${pageContext.request.contextPath}/address/edit"
-					method="POST">
-					<input type="hidden" name="addressId"
-						value="<%=officeAddress.getId()%>"> <input type="hidden"
-						name="addressType" value="OFFICE">
-
-					<div class="flex items-center gap-4 mb-6">
-						<div class="p-3 bg-secondary/10 rounded-full">
-							<span class="material-symbols-outlined text-secondary text-2xl">apartment</span>
-						</div>
-						<h3 class="text-xl font-bold">Office Address</h3>
-					</div>
-
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-						<div class="form-control">
-							<label class="label"><span class="label-text">Address</span></label>
-							<input type="text" name="address"
-								value="<%=officeAddress.getAddress()%>"
-								class="input input-bordered" required />
-						</div>
-
-						<div class="form-control">
-							<label class="label"><span class="label-text">Unit
-									Number</span></label> <input type="text" name="unit"
-								value="<%=officeAddress.getUnit()%>"
-								class="input input-bordered" required />
-						</div>
-
-						<div class="form-control">
-							<label class="label"><span class="label-text">Postal
-									Code</span></label> <input type="text" name="postalCode"
-								value="<%=officeAddress.getPostalCode()%>"
-								class="input input-bordered" required pattern="[0-9]{6}" />
-						</div>
-					</div>
-
-					<div class="flex justify-end gap-4 mt-6">
-						<button type="submit" class="btn btn-primary gap-2">
-							<span class="material-symbols-outlined">save</span> Update Office
-							Address
-						</button>
-					</div>
-				</form>
-			</div>
-		</div>
-		<%
 		}
 		%>
 
-		<!-- Add Address Section -->
+		<!-- Add New Address Section -->
 		<%
-		if (homeAddress == null || officeAddress == null) {
+		if (addresses == null || addresses.size() < 2) {
 		%>
 		<div class="card bg-base-100 shadow-xl text-center">
 			<div class="card-body">
 				<h3 class="text-xl font-bold mb-4">Add New Address</h3>
 				<a href="${pageContext.request.contextPath}/address/add"
 					class="btn btn-primary gap-2 inline-flex items-center justify-center">
-					<span class="material-symbols-outlined">add</span> Add <%=homeAddress == null ? "Home" : "Office"%>
+					<span class="material-symbols-outlined">add</span> Add <%=addresses != null && addresses.size() == 1 && addresses.get(0).getAddType().getId() == 1 ? "Office" : "Home"%>
 					Address
 				</a>
 			</div>
