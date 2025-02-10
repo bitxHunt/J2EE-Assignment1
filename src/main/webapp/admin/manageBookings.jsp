@@ -107,6 +107,11 @@
 									#${booking.unit}, ${booking.postalCode}</div>
 							</td>
 							<td>${booking.customerPhone}</td>
+							<td><span
+								class="${booking.assignedStaffEmail != null ? 'text-success' : 'text-error'}">
+									${booking.assignedStaffEmail != null ? booking.assignedStaffEmail : 'Not Assigned'}
+									${booking.assignedStaffEmail != null ? (booking.inHouse ? ' (In-house)' : ' (Agency)') : ''}
+							</span></td>
 							<td><c:choose>
 									<c:when test="${booking.status == 'PENDING'}">
 										<button onclick="openAssignModal(${booking.bookingId})"
